@@ -58,8 +58,8 @@ public class FileUtil {
     /**
      * get file content
      *
-     * @param file
-     * @return
+     * @param file file
+     * @return String
      * @throws IOException
      */
     public static String getFileContent(File file) {
