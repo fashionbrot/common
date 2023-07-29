@@ -129,7 +129,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     implementation 'org.slf4j:slf4j-api:1.7.10'
 
-    compileOnly 'javax.servlet:javax.servlet-api:3.0.1'
     compileOnly 'org.springframework:spring-context:4.0.0.RELEASE'
 
 }
