@@ -77,7 +77,7 @@ public class RsaUtil {
 
     /**
      * 公钥 RSAPublicKey 转 String
-     * @param publicKey
+     * @param publicKey publicKey
      * @return String
      */
     public static String publicKeyToString(final RSAPublicKey publicKey) {
@@ -89,7 +89,7 @@ public class RsaUtil {
 
     /**
      * 私钥 RSAPrivateKey 转 字符串
-     * @param privateKey
+     * @param privateKey privateKey
      * @return  String
      */
     public static String privateKeyToString(final RSAPrivateKey privateKey) {
