@@ -9,20 +9,23 @@ import java.util.stream.Collectors;
 
 /**
  * 树工具类
- * @Author panzh
+ * @author panzh
  */
 public class TreeUtil {
 
     /**
      * list转tree
      *
+     * @param <T> T
+     * @param <R> R
+     * @param <U> U
      * @param source           源list
      * @param idFunc           id
      * @param pIdFunc          父id
      * @param setChildListFunc childList 子节点list
      * @param setHasChildFunc  hasChildren 是否有子节点
      * @param rootPIdValue     设置根节点条件 rootPIdValue
-     * @return List
+     * @return <code>List</code>
      */
     public static <T, R, U> List<T> buildTree(List<T> source, Function<T, R> idFunc, Function<T, R> pIdFunc, BiConsumer<T, List<T>> setChildListFunc, BiConsumer<T, U> setHasChildFunc, Predicate<T> rootPIdValue) {
         if (ObjectUtil.isEmpty(source))
@@ -42,7 +45,9 @@ public class TreeUtil {
 
     /**
      * list转tree 根据某个参数，升序排序
-     *
+     * @param <T> T
+     * @param <R> R
+     * @param <U> U
      * @param source           源list
      * @param idFunc           id
      * @param pIdFunc          父id
@@ -65,7 +70,9 @@ public class TreeUtil {
 
     /**
      * list转tree 根据某个参数，降序排序
-     *
+     * @param <T> T
+     * @param <R> R
+     * @param <U> U
      * @param source           源list
      * @param idFunc           id
      * @param pIdFunc          父id
