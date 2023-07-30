@@ -110,6 +110,7 @@ public class BaseLoadBalancer implements ILoadBalancer {
     /**
      * Set the list of servers used as the server pool. This overrides existing
      * server list.
+     * @param serverList serverList
      */
     public void setServersList(List<Server> serverList) {
         Lock writeLock = allServerLock.writeLock();

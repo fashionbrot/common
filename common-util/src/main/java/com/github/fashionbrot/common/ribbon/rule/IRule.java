@@ -8,7 +8,7 @@ public interface IRule {
 
     /**
      * choose a server  from load balancer
-     * @param lb
+     * @param lb ILoadBalancer
      * @return Server
      */
     Server choose(ILoadBalancer lb);
