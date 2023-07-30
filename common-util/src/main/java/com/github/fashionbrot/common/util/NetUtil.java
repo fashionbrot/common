@@ -1,7 +1,6 @@
 package com.github.fashionbrot.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -13,9 +12,9 @@ import java.util.regex.Pattern;
 /**
  * @author fashi
  */
+@Slf4j
 public class NetUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NetUtil.class);
     private static final String LOCALHOST = "127.0.0.1";
 
     private static final String ANY_HOST = "0.0.0.0";
@@ -138,7 +137,7 @@ public class NetUtil {
                 return localAddress;
             }
         } catch (Throwable e) {
-            LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+            log.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
         }
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -155,19 +154,19 @@ public class NetUtil {
                                         return address;
                                     }
                                 } catch (Throwable e) {
-                                    LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+                                    log.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
                                 }
                             }
                         }
                     } catch (Throwable e) {
-                        LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+                        log.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
                     }
                 }
             }
         } catch (Throwable e) {
-            LOGGER.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
+            log.warn("Failed to retrieving ip address, {}", e.getMessage(), e);
         }
-        LOGGER.error("Could not get local host ip address, will use 127.0.0.1 instead.");
+        log.error("Could not get local host ip address, will use 127.0.0.1 instead.");
         return localAddress;
     }
 
