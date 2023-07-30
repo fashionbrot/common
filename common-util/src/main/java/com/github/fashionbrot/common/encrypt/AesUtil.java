@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Aes 加密解密
- * @author fashi
+ * @author fashionbrot
  */
 public class AesUtil {
 

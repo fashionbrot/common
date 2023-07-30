@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.consts;
 
-public class CharsetConst {
+public final class CharsetConst {
 
     public static final String UTF_8 = "UTF-8";
 
