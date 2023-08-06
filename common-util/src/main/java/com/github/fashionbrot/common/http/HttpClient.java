@@ -57,13 +57,13 @@ public class HttpClient {
             if (request.readTimeout() != null) {
                 httpURLConnection.setReadTimeout(request.readTimeout());
             }
+            if (request.contentType()!=null) {
+                httpURLConnection.addRequestProperty("Content-Type", request.contentType().getValue());
+            }
 
             setHeader(httpURLConnection,request);
             setCookie(httpURLConnection,request);
 
-            if (request.contentType()!=null) {
-                httpURLConnection.addRequestProperty("Content-Type", request.contentType().getValue());
-            }
             // 连接
             httpURLConnection.connect();
 
