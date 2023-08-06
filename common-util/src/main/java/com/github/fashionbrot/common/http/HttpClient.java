@@ -22,6 +22,10 @@ import java.util.zip.GZIPInputStream;
 @Slf4j
 public class HttpClient {
 
+    public static void get(String url,HttpCall httpCall){
+        send(new HttpRequest().url(url).httpMethod(HttpMethod.GET),httpCall);
+    }
+
 
     public static void send(HttpRequest request,HttpCall httpCall) {
         HttpURLConnection httpURLConnection = null;

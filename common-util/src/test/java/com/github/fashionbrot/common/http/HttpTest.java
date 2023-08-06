@@ -115,4 +115,30 @@ public class HttpTest {
                     }
                 });
     }
+
+
+    @Test
+    public void test4(){
+        String url = "https://api.apiopen.top/api/getHaoKanVideo?page=0&size=2";
+        HttpClient.get(url,
+                new HttpCall() {
+                    @Override
+                    public void success(HttpRequest request, HttpResponse response) {
+                        String content = IoUtil.toString(response.inputStream(),response.charset());
+
+                        System.out.println("success:"+content);
+                    }
+
+                    @Override
+                    public void failed(HttpRequest request, HttpResponse response) {
+                        System.out.println("failed");
+                    }
+
+                    @Override
+                    public void exception(HttpRequest request, Exception exception) {
+                        System.out.println("exception"+exception.getMessage());
+                        log.error("error",exception);
+                    }
+                });
+    }
 }
