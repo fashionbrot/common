@@ -53,6 +53,18 @@ public class IoUtil {
         }
     }
 
+    public static byte[] toByteAndClose(InputStream input){
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            copy(input, output);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }finally {
+            close(input);
+        }
+        return output.toByteArray();
+    }
 
     public static byte[] toByteArray(InputStream input){
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -121,8 +133,23 @@ public class IoUtil {
     }
 
 
-    public static  String toString(InputStream input, Charset charset) {
-        byte[] bytes = toByteArray(input);
+    public static void write(OutputStream outputStream,byte[] data){
+        try {
+            if (ObjectUtil.isNotEmpty(data)){
+                outputStream.write(data);
+                outputStream.flush();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (outputStream!=null){
+                close(outputStream);
+            }
+        }
+    }
+
+    public static  String toString(InputStream inputStream, Charset charset) {
+        byte[] bytes = toByteArray(inputStream);
         return toString(bytes,charset);
     }
 

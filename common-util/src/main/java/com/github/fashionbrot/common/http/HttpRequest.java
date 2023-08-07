@@ -31,6 +31,6 @@ public class HttpRequest {
 
     private HttpCookie cookie;
 
-    private byte[] body;
+    private byte[] requestBody;
 
 }

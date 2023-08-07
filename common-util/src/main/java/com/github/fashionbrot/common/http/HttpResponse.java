@@ -1,5 +1,6 @@
 package com.github.fashionbrot.common.http;
 
+import com.github.fashionbrot.common.util.IoUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -26,7 +27,11 @@ public class HttpResponse {
 
     private Charset charset;
 
-    private InputStream inputStream;
+    private byte[] responseBody;
 
     private long contentLength;
+
+    public String getResponseBody(){
+        return IoUtil.toString(responseBody,charset);
+    }
 }

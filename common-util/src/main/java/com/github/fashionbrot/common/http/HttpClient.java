@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common.http;
 
 import com.github.fashionbrot.common.consts.CharsetConst;
+import com.github.fashionbrot.common.util.IoUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import java.io.InputStream;
@@ -34,8 +35,11 @@ public class HttpClient {
             URL url = new URL(request.url());
             //得到网络访问对象
             httpURLConnection = (HttpURLConnection) url.openConnection();
-            // 请求方式
-            httpURLConnection.setRequestMethod(request.httpMethod().name());
+
+            if (request.httpMethod()==null){
+                // 请求方式
+                httpURLConnection.setRequestMethod(request.httpMethod().name());
+            }
             httpURLConnection.setDoInput(true);
             if (request.httpMethod() == HttpMethod.POST ||
                     request.httpMethod() == HttpMethod.DELETE ||
@@ -71,13 +75,9 @@ public class HttpClient {
                     request.httpMethod() == HttpMethod.DELETE ||
                     request.httpMethod() == HttpMethod.PATCH ||
                     request.httpMethod() == HttpMethod.PUT ) {
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                if (ObjectUtil.isNotEmpty(request.body())){
-                    outputStream.write(request.body());
-                }
-                outputStream.flush();
-                outputStream.close();
+                IoUtil.write(httpURLConnection.getOutputStream(),request.requestBody());
             }
+
 
             InputStream inputStream = null;
             String encoding = httpURLConnection.getContentEncoding();
@@ -94,7 +94,7 @@ public class HttpClient {
             response.responseMessage(httpURLConnection.getResponseMessage());
             response.requestMethod(httpURLConnection.getRequestMethod());
             response.headerFields(httpURLConnection.getHeaderFields());
-            response.inputStream(inputStream);
+            response.responseBody(IoUtil.toByteAndClose(inputStream));
             response.contentLength(getContentLengthLong(httpURLConnection));
 
             if (responseCode == HttpURLConnection.HTTP_OK){
