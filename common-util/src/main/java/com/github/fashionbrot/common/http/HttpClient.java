@@ -58,6 +58,13 @@ public class HttpClient {
             // 设置此 HttpURLConnection 实例是否应该自动执行 HTTP 重定向
             httpURLConnection.setInstanceFollowRedirects(request.instanceFollowRedirects()!=null?request.instanceFollowRedirects():false);
 
+            if (request.chunkedStreamingMode()!=null) {
+                httpURLConnection.setChunkedStreamingMode(request.chunkedStreamingMode());
+            }
+            if (request.fixedLengthStreamingMode()!=null){
+                httpURLConnection.setFixedLengthStreamingMode(request.fixedLengthStreamingMode());
+            }
+
             if (request.readTimeout() != null) {
                 httpURLConnection.setReadTimeout(request.readTimeout());
             }

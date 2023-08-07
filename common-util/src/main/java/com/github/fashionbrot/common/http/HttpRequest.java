@@ -27,6 +27,10 @@ public class HttpRequest {
 
     private Boolean instanceFollowRedirects;
 
+    private Integer chunkedStreamingMode;
+
+    private Long fixedLengthStreamingMode;
+
     private HttpHeader header;
 
     private HttpCookie cookie;
