@@ -1,8 +1,11 @@
 package com.github.fashionbrot.common.http;
 
+import com.github.fashionbrot.common.util.CharsetUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 

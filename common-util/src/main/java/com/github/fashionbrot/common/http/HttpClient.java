@@ -1,21 +1,7 @@
 package com.github.fashionbrot.common.http;
 
-import com.github.fashionbrot.common.consts.CharsetConst;
-import com.github.fashionbrot.common.util.IoUtil;
-import com.github.fashionbrot.common.util.ObjectUtil;
-import lombok.extern.slf4j.Slf4j;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author fashionbrot
@@ -23,176 +9,24 @@ import java.util.zip.GZIPInputStream;
 @Slf4j
 public class HttpClient {
 
-    public static void get(String url,HttpCall httpCall){
-        send(new HttpRequest().url(url).httpMethod(HttpMethod.GET),httpCall);
+    private static HttpRequest request;
+
+    public HttpClient(HttpRequest request) {
+        this.request = request;
     }
 
-
-    public static void send(HttpRequest request,HttpCall httpCall) {
-        HttpURLConnection httpURLConnection = null;
-        try {
-            //得到访问地址的URL
-            URL url = new URL(request.url());
-            //得到网络访问对象
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-
-            if (request.httpMethod()==null){
-                // 请求方式
-                httpURLConnection.setRequestMethod(request.httpMethod().name());
-            }
-            httpURLConnection.setDoInput(true);
-            if (request.httpMethod() == HttpMethod.POST ||
-                    request.httpMethod() == HttpMethod.DELETE ||
-                    request.httpMethod() == HttpMethod.PATCH ||
-                    request.httpMethod() == HttpMethod.PUT ) {
-
-                // 设置是否输出
-                httpURLConnection.setDoOutput(true);
-            }
-            if (request.connectTimeout() != null) {
-                // 超时时间
-                httpURLConnection.setConnectTimeout(request.connectTimeout());
-            }
-            // 设置是否使用缓存
-            httpURLConnection.setUseCaches(request.useCaches()!=null?request.useCaches():false);
-            // 设置此 HttpURLConnection 实例是否应该自动执行 HTTP 重定向
-            httpURLConnection.setInstanceFollowRedirects(request.instanceFollowRedirects()!=null?request.instanceFollowRedirects():false);
-
-            if (request.chunkedStreamingMode()!=null) {
-                httpURLConnection.setChunkedStreamingMode(request.chunkedStreamingMode());
-            }
-            if (request.fixedLengthStreamingMode()!=null){
-                httpURLConnection.setFixedLengthStreamingMode(request.fixedLengthStreamingMode());
-            }
-
-            if (request.readTimeout() != null) {
-                httpURLConnection.setReadTimeout(request.readTimeout());
-            }
-            if (request.contentType()!=null) {
-                httpURLConnection.addRequestProperty("Content-Type", request.contentType().getValue());
-            }
-
-            setHeader(httpURLConnection,request);
-            setCookie(httpURLConnection,request);
-
-            // 连接
-            httpURLConnection.connect();
-
-            if (request.httpMethod() == HttpMethod.POST ||
-                    request.httpMethod() == HttpMethod.DELETE ||
-                    request.httpMethod() == HttpMethod.PATCH ||
-                    request.httpMethod() == HttpMethod.PUT ) {
-                IoUtil.write(httpURLConnection.getOutputStream(),request.requestBody());
-            }
-
-
-            InputStream inputStream = null;
-            String encoding = httpURLConnection.getContentEncoding();
-            if(ObjectUtil.isNotEmpty(encoding) && encoding.contains("gzip")){
-                inputStream = new GZIPInputStream(httpURLConnection.getInputStream());
-            }else{
-                inputStream = httpURLConnection.getInputStream();
-            }
-
-            int responseCode = httpURLConnection.getResponseCode();
-            HttpResponse response = new HttpResponse();
-            response.charset(getCharset(httpURLConnection));
-            response.responseCode(httpURLConnection.getResponseCode());
-            response.responseMessage(httpURLConnection.getResponseMessage());
-            response.requestMethod(httpURLConnection.getRequestMethod());
-            response.headerFields(httpURLConnection.getHeaderFields());
-            response.responseBody(IoUtil.toByteAndClose(inputStream));
-            response.contentLength(getContentLengthLong(httpURLConnection));
-
-            if (responseCode == HttpURLConnection.HTTP_OK){
-                httpCall.success(request,response);
-            }else {
-                httpCall.failed(request,response);
-            }
-        } catch (Exception e) {
-            log.error("http send error",e);
-            httpCall.exception(request,e);
-        }finally {
-            if (httpURLConnection!=null){
-                httpURLConnection.disconnect();
-            }
-        }
+    public static HttpClient create(HttpRequest request){
+        return new HttpClient(request);
     }
 
-    /** 正则：Content-Type中的编码信息 */
-    public static final Pattern CHARSET_PATTERN = Pattern.compile("charset\\s*=\\s*([a-z0-9-]*)", Pattern.CASE_INSENSITIVE);
-
-    public static Charset getCharset(HttpURLConnection httpURLConnection){
-        if (httpURLConnection!=null){
-            String contentType = httpURLConnection.getContentType();
-            String charsetName =get(CHARSET_PATTERN, contentType, 1);
-            if (ObjectUtil.isNotEmpty(charsetName)){
-                return Charset.forName(charsetName);
-            }
-        }
-        return CharsetConst.DEFAULT_CHARSET;
+    public static void execute(HttpCallback callback){
+        HttpCall httpCall = new HttpReadCall(request);
+        httpCall.execute(callback);
     }
 
-    /**
-     * 获得匹配的字符串，对应分组0表示整个匹配内容，1表示第一个括号分组内容，依次类推
-     *
-     * @param pattern 编译后的正则模式
-     * @param content 被匹配的内容
-     * @param groupIndex 匹配正则的分组序号，0表示整个匹配内容，1表示第一个括号分组内容，依次类推
-     * @return 匹配后得到的字符串，未匹配返回null
-     */
-    public static String get(Pattern pattern, CharSequence content, int groupIndex) {
-        if (null == content || null == pattern) {
-            return null;
-        }
-
-        final Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            return matcher.group(groupIndex);
-        }
-        return null;
+    public static void executeAsync(HttpCallback callback){
+        HttpCall httpCall = new HttpReadCall(request);
+        httpCall.executeAsync(callback);
     }
 
-    public static boolean isHttps(String url){
-        if (ObjectUtil.isNotEmpty(url)){
-            return url.toLowerCase().startsWith("https");
-        }
-        return false;
-    }
-
-    public static void setHeader(HttpURLConnection httpURLConnection,HttpRequest request){
-        HttpHeader header = request.header();
-        if (header!=null){
-            Boolean override = header.getOverride();
-            Map<String, String> headerMap = header.getHeader();
-            if (ObjectUtil.isNotEmpty(headerMap)){
-                Iterator<Map.Entry<String, String>> iterator = headerMap.entrySet().iterator();
-                if (iterator.hasNext()){
-                    Map.Entry<String, String> next = iterator.next();
-                    if (override!=null && override){
-                        httpURLConnection.setRequestProperty(next.getKey(),next.getValue());
-                    }else{
-                        httpURLConnection.addRequestProperty(next.getKey(),next.getValue());
-                    }
-                }
-            }
-        }
-    }
-
-    public static void setCookie(HttpURLConnection httpURLConnection,HttpRequest request){
-        HttpCookie cookie = request.cookie();
-        if (cookie!=null){
-            List<String> cookieList = cookie.getCookieList();
-            if (ObjectUtil.isNotEmpty(cookieList)){
-                for (int i = 0; i < cookieList.size(); i++) {
-                    String cookieString = cookieList.get(i);
-                    httpURLConnection.addRequestProperty("Cookie",cookieString);
-                }
-            }
-        }
-    }
-
-    public static long getContentLengthLong(HttpURLConnection httpURLConnection) {
-        return httpURLConnection.getHeaderFieldLong("Content-Length", -1);
-    }
 }
