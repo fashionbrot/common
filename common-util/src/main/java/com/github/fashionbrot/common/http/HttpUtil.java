@@ -65,9 +65,10 @@ public class HttpUtil {
                 httpURLConnection.setReadTimeout(request.readTimeout());
             }
             if (request.contentType()!=null) {
-                httpURLConnection.addRequestProperty("Content-Type", request.contentType().getValue());
+                httpURLConnection.addRequestProperty(Header.CONTENT_TYPE.name(), request.contentType().getValue());
             }
 
+            setGlobalHeader(httpURLConnection);
             setHeader(httpURLConnection,request);
             setCookie(httpURLConnection,request);
 
@@ -95,9 +96,8 @@ public class HttpUtil {
             response.headerFields(httpURLConnection.getHeaderFields());
             response.responseBody(IoUtil.toByteAndClose(inputStream));
             response.contentLength(getContentLengthLong(httpURLConnection));
+
         }finally {
-
-
             if (httpURLConnection!=null){
                 httpURLConnection.disconnect();
             }
@@ -139,12 +139,6 @@ public class HttpUtil {
         return null;
     }
 
-    public static boolean isHttps(String url){
-        if (ObjectUtil.isNotEmpty(url)){
-            return url.toLowerCase().startsWith("https");
-        }
-        return false;
-    }
 
     public static void setHeader(HttpURLConnection httpURLConnection,HttpRequest request){
         HttpHeader header = request.header();
@@ -224,5 +218,11 @@ public class HttpUtil {
         return toByte(str,(String) null);
     }
 
+
+    public static void setGlobalHeader(HttpURLConnection httpURLConnection){
+        httpURLConnection.addRequestProperty(Header.ACCEPT.name(),"text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8");
+        httpURLConnection.addRequestProperty(Header.ACCEPT_LANGUAGE.name(),"zh-CN,zh;q=0.9,en;q=0.8");
+        httpURLConnection.addRequestProperty(Header.ACCEPT_ENCODING.name(),"gzip, deflate");
+    }
 
 }

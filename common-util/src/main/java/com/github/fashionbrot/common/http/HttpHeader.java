@@ -23,6 +23,16 @@ public class HttpHeader {
         return this;
     }
 
+    public HttpHeader add(Map<String,String> header){
+        header.putAll(header);
+        return this;
+    }
+
+    public HttpHeader set(Map<String,String> header){
+        this.header = header;
+        return this;
+    }
+
     public Map<String,String> getHeader(){
         return header;
     }

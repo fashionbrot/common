@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum HttpContentType {
+public enum ContentType {
 
     //标准表单编码，当action为get时候，浏览器用x-www-form-urlencoded的编码方式把form数据转换成一个字串（name1=value1&name2=value2…）
     FORM_URLENCODED("application/x-www-form-urlencoded"),
