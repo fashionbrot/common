@@ -61,7 +61,7 @@ public class HttpCallTest {
 //                    }
 //                });
 
-        HttpClient.get("http://jobtest.eetalent.com.cn/job/test").execute(new HttpCallback() {
+        HttpClient.get("https://blog.csdn.net/rfgreeee/article/details/82864240111").execute(new HttpCallback() {
             @Override
             public void success(HttpRequest request, HttpResponse response) {
                 System.out.println(response.getResponseBody());
