@@ -87,7 +87,11 @@ public class HttpUtil {
             if(ObjectUtil.isNotEmpty(encoding) && encoding.contains("gzip")){
                 inputStream = new GZIPInputStream(httpURLConnection.getInputStream());
             }else{
-                inputStream = httpURLConnection.getInputStream();
+                if (httpURLConnection.getResponseCode()==HttpURLConnection.HTTP_OK){
+                    inputStream = httpURLConnection.getInputStream();
+                }else{
+                    inputStream = httpURLConnection.getErrorStream();
+                }
             }
             response.charset(getCharset(httpURLConnection));
             response.responseCode(httpURLConnection.getResponseCode());

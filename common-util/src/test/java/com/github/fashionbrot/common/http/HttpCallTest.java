@@ -61,10 +61,20 @@ public class HttpCallTest {
 //                    }
 //                });
 
-        HttpClient.get("https://api.apiopen.top/api/getHaoKanVideo?page=0&size=2&v=1").execute(new HttpCallback() {
+        HttpClient.get("http://jobtest.eetalent.com.cn/job/test").execute(new HttpCallback() {
             @Override
             public void success(HttpRequest request, HttpResponse response) {
                 System.out.println(response.getResponseBody());
+            }
+
+            @Override
+            public void failed(HttpRequest request, HttpResponse response) {
+                System.out.println(response.getResponseBody());
+            }
+
+            @Override
+            public void exception(HttpRequest request, Exception exception) {
+                System.out.println(exception);
             }
         });
 
