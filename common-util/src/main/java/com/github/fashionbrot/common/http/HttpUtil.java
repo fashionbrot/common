@@ -1,17 +1,14 @@
 package com.github.fashionbrot.common.http;
 
 import com.github.fashionbrot.common.consts.CharsetConst;
-import com.github.fashionbrot.common.util.CharsetUtil;
-import com.github.fashionbrot.common.util.IoUtil;
-import com.github.fashionbrot.common.util.ObjectUtil;
+import com.github.fashionbrot.common.util.*;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -32,7 +29,7 @@ public class HttpUtil {
             //得到网络访问对象
             httpURLConnection = (HttpURLConnection) url.openConnection();
 
-            if (request.httpMethod()==null){
+            if (request.httpMethod()!=null){
                 // 请求方式
                 httpURLConnection.setRequestMethod(request.httpMethod().name());
             }
@@ -82,6 +79,13 @@ public class HttpUtil {
                 IoUtil.write(httpURLConnection.getOutputStream(),request.requestBody());
             }
 
+            response.responseCode(httpURLConnection.getResponseCode());
+            response.responseMessage(httpURLConnection.getResponseMessage());
+            response.requestMethod(httpURLConnection.getRequestMethod());
+            response.headerFields(httpURLConnection.getHeaderFields());
+            response.charset(getCharset(httpURLConnection));
+            response.contentLength(getContentLengthLong(httpURLConnection));
+
             InputStream inputStream = null;
             String encoding = httpURLConnection.getContentEncoding();
             if(ObjectUtil.isNotEmpty(encoding) && encoding.contains("gzip")){
@@ -93,13 +97,7 @@ public class HttpUtil {
                     inputStream = httpURLConnection.getErrorStream();
                 }
             }
-            response.charset(getCharset(httpURLConnection));
-            response.responseCode(httpURLConnection.getResponseCode());
-            response.responseMessage(httpURLConnection.getResponseMessage());
-            response.requestMethod(httpURLConnection.getRequestMethod());
-            response.headerFields(httpURLConnection.getHeaderFields());
             response.responseBody(IoUtil.toByteAndClose(inputStream));
-            response.contentLength(getContentLengthLong(httpURLConnection));
 
         }finally {
             if (httpURLConnection!=null){
@@ -228,5 +226,9 @@ public class HttpUtil {
         httpURLConnection.addRequestProperty(Header.ACCEPT_LANGUAGE.name(),"zh-CN,zh;q=0.9,en;q=0.8");
         httpURLConnection.addRequestProperty(Header.ACCEPT_ENCODING.name(),"gzip, deflate");
     }
+
+
+
+
 
 }

@@ -3,13 +3,17 @@ package com.github.fashionbrot.common.http;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author fashionbrot
  */
 @Slf4j
 public class HttpClient {
 
-    private  HttpRequest request;
+    private final HttpRequest request;
 
 
     public HttpClient(HttpRequest request) {
@@ -31,12 +35,18 @@ public class HttpClient {
         return new HttpClient(request);
     }
 
-
-    public static HttpClient get(String url) {
+    public static HttpClient get(final String url) {
         return new HttpClient(new HttpRequest().url(url).httpMethod(HttpMethod.GET));
     }
 
+    public static HttpCall createCall(HttpRequest request){
+        return new HttpReadCall(request);
+    }
 
+
+    public static HttpResponse execute(HttpRequest request) throws Exception {
+        return new HttpReadCall(request).execute();
+    }
 
 
 }

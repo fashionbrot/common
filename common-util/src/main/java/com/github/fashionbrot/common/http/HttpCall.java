@@ -11,4 +11,6 @@ public interface HttpCall {
 
     void executeAsync(HttpCallback callback);
 
+    HttpResponse execute() throws Exception;
+
 }

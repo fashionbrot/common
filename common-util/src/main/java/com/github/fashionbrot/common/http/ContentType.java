@@ -1,7 +1,12 @@
 package com.github.fashionbrot.common.http;
 
+import com.github.fashionbrot.common.util.ObjectUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author fashionbrot
@@ -26,4 +31,26 @@ public enum ContentType {
 
     private String value;
 
+    private static Map<String,ContentType> map=new HashMap<>();
+    static {
+        ContentType[] values = ContentType.values();
+        for (int i = 0; i < values.length; i++) {
+            ContentType value = values[i];
+            map.put(value.value,value);
+        }
+    }
+
+    public static ContentType contains(String contentType){
+        if (ObjectUtil.isEmpty(contentType)){
+            return ContentType.FORM_URLENCODED;
+        }
+        Iterator<Map.Entry<String, ContentType>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, ContentType> next = iterator.next();
+            if (contentType.contains(next.getKey())){
+                return next.getValue();
+            }
+        }
+        return ContentType.FORM_URLENCODED;
+    }
 }

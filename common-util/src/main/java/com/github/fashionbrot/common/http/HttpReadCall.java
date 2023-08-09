@@ -3,6 +3,7 @@ package com.github.fashionbrot.common.http;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.HttpURLConnection;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author fashionbrot
@@ -19,7 +20,7 @@ public class HttpReadCall implements HttpCall{
     @Override
     public void execute(HttpCallback callback) {
         try {
-            HttpResponse response = HttpUtil.send(request);
+            HttpResponse response = execute();
             if (response.responseCode()== HttpURLConnection.HTTP_OK){
                 callback.success(request,response);
             }else{
@@ -39,6 +40,11 @@ public class HttpReadCall implements HttpCall{
             }
         });
         thread.start();
+    }
+
+    @Override
+    public HttpResponse execute() throws Exception {
+        return HttpUtil.send(request);
     }
 
 
