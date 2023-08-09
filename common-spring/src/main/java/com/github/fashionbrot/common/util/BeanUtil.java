@@ -2,6 +2,7 @@ package com.github.fashionbrot.common.util;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
@@ -117,6 +118,21 @@ public class BeanUtil {
         } else {
             return beanFactory.getBeanNamesForType(beanClass, true, false);
         }
+    }
+
+
+    public static Object getSingleton(BeanFactory registry, String beanName) {
+        SingletonBeanRegistry beanRegistry = null;
+        if (registry instanceof SingletonBeanRegistry) {
+            beanRegistry = (SingletonBeanRegistry) registry;
+        } else if (registry instanceof AbstractApplicationContext) {
+            // Maybe AbstractApplicationContext or its sub-classes
+            beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
+        }
+        if (beanRegistry != null) {
+            return beanRegistry.getSingleton(beanName);
+        }
+        return null;
     }
 
 
