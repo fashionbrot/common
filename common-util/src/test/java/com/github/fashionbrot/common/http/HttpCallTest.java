@@ -112,20 +112,13 @@ public class HttpCallTest {
 
     @Test
     public void test() throws Exception {
-        HttpCall request = HttpClient.createCall(new HttpRequest());
-        request.execute((request1, response) -> {
 
-        });
 
-        HttpResponse response = HttpClient.execute(new HttpRequest());
-
-        HttpResponse response1 = HttpClient.executeAsync(new HttpRequest());
     }
 
 
     @Test
     public void test22() throws Exception {
-        HttpResponse response = HttpClient.executeAsync(new HttpRequest());
     }
 
 }

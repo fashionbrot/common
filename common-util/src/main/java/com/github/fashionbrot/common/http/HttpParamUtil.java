@@ -26,7 +26,8 @@ public class HttpParamUtil {
      * 实体类对象转URL参
      * @param t 实体类对象
      * @param <T> 实体类泛型
-     * @return a=1&b=2
+     * @param ignoreNull 是否忽略空值
+     * @return String
      */
     public static <T> String entityToUrlParam(T t,boolean ignoreNull){
         // URL 参数存储器
@@ -45,8 +46,8 @@ public class HttpParamUtil {
      * @param t 实体类对象
      * @param clazz 实体类类型
      * @param urlParam URL 参数存储器
+     * @param ignoreNull 是否忽略空值
      * @param <T> 实体类泛型
-     * @return a=1&b=2
      */
     public static <T> void entitySuperclassToUrlParam(T t,Class clazz,StringBuffer urlParam,boolean ignoreNull){
         if (clazz.equals(Object.class)){
