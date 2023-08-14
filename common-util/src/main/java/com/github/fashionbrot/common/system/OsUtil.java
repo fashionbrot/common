@@ -1,7 +1,6 @@
 package com.github.fashionbrot.common.system;
 
 
-import cn.hutool.system.SystemUtil;
 
 /**
  * @author fashionbrot
@@ -9,7 +8,7 @@ import cn.hutool.system.SystemUtil;
 public class OsUtil {
 
 
-    private final String OS_NAME = SystemUtil.get("os.name", false);
+    private final String OS_NAME = getProperty("os.name");
     private final boolean IS_OS_LINUX = getOSMatches("Linux") || getOSMatches("LINUX");
     private final boolean IS_OS_MAC = getOSMatches("Mac");
     private final boolean IS_OS_WINDOWS = getOSMatches("Windows");

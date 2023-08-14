@@ -1,16 +1,11 @@
 package com.github.fashionbrot.common.util;
 
 
-import cn.hutool.core.io.IORuntimeException;
-import cn.hutool.core.io.StreamProgress;
-import cn.hutool.core.lang.Assert;
 import com.github.fashionbrot.common.consts.CharsetConst;
 
-import javax.crypto.interfaces.PBEKey;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
-import java.nio.channels.Channels;
 import java.nio.charset.Charset;
 
 /**
