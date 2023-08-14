@@ -1,6 +1,5 @@
 package com.github.fashionbrot.common.util;
 
-import com.github.fashionbrot.common.consts.CharsetConst;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.Charset;
@@ -24,12 +23,5 @@ public class CharsetUtil {
         return null;
     }
 
-    public static Charset getCharsetOrDefault(String charsetName){
-        Charset charset = getCharset(charsetName);
-        if (charset==null){
-            return CharsetConst.DEFAULT_CHARSET;
-        }
-        return charset;
-    }
 
 }
