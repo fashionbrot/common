@@ -3,6 +3,7 @@ package com.github.fashionbrot.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.support.AbstractApplicationContext;
 import java.lang.reflect.Constructor;
 
-import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
 
 
 @Slf4j
@@ -19,7 +19,7 @@ public class BeanUtil {
 
 
 
-    public static void registerValidated(BeanDefinitionRegistry registry,String beanName,Class clazz) {
+    public static void registerBean(BeanDefinitionRegistry registry,String beanName,Class clazz) {
         registerInfrastructureBeanIfAbsent(registry, beanName,clazz);
     }
 
@@ -114,7 +114,7 @@ public class BeanUtil {
                                         boolean includingAncestors) {
         // Issue : https://github.com/alibaba/spring-context-support/issues/22
         if (includingAncestors) {
-            return beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
+            return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
         } else {
             return beanFactory.getBeanNamesForType(beanClass, true, false);
         }
@@ -134,6 +134,7 @@ public class BeanUtil {
         }
         return null;
     }
+
 
 
 }

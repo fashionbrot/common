@@ -776,6 +776,47 @@ public class ObjectUtil {
         }
     }
 
+    /**
+     * 验证 Boolean
+     * @param b Boolean
+     * @return boolean
+     */
+    public static boolean isBoolean(Boolean b){
+        if (b==null){
+            return false;
+        }
+        return b;
+    }
+
+    /**
+     * 验证 Boolean 是否是false
+     * @param b Boolean
+     * @return boolean
+     */
+    public static boolean isFalse(Boolean b){
+        if (b==null){
+            return true;
+        }
+        if (!b){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 验证 Boolean 是否是true
+     * @param b Boolean
+     * @return boolean
+     */
+    public static boolean isTrue(Boolean b){
+        if (b==null){
+            return false;
+        }
+        if (b){
+            return true;
+        }
+        return false;
+    }
 
 
     /**

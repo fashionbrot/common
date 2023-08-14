@@ -3,8 +3,6 @@ package com.github.fashionbrot.common.http;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.nio.charset.Charset;
-
 /**
  * @author fashionbrot
  */

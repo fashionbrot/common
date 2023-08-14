@@ -39,12 +39,33 @@ public class HttpPostTest {
 
     @Test
     public void test2(){
-        String requestBody="id=1689145255816355842&title=HttpClient-test2";
         HttpClient.create(new HttpRequest()
-                        .url("http://localhost:8082/banner/updateByIdPost")
+                        .url("http://localhost:8888//open/system/check/update?envCode=dev&appCode=Job&lastId=2")
                         .httpMethod(HttpMethod.POST)
                         .contentType(ContentType.FORM_URLENCODED)
-                        .requestBody(requestBody.getBytes(StandardCharsets.UTF_8))
+//                        .requestBody(requestBody.getBytes(StandardCharsets.UTF_8))
+                )
+                .execute(new HttpCallback() {
+                    @Override
+                    public void success(HttpRequest request, HttpResponse response) {
+                        System.out.println(response.getResponseBody());
+                    }
+
+                    @Override
+                    public void failed(HttpRequest request, HttpResponse response) {
+                        System.out.println(response.responseCode());
+                        System.out.println(response.getResponseBody());
+                    }
+                });
+    }
+
+    @Test
+    public void test3(){
+        HttpClient.create(new HttpRequest()
+                                .url("http://localhost:8888//open/data/check/update?envCode=dev&appCode=Job&lastId=1")
+                                .httpMethod(HttpMethod.POST)
+                                .contentType(ContentType.FORM_URLENCODED)
+//                        .requestBody(requestBody.getBytes(StandardCharsets.UTF_8))
                 )
                 .execute(new HttpCallback() {
                     @Override
