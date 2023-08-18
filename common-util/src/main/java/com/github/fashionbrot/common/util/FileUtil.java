@@ -348,17 +348,6 @@ public class FileUtil {
         return new File(getUserDirectoryPath());
     }
 
-    public static final char WINDOWS_SEPARATOR='\\';
-    public static final char LINUX_SEPARATOR= '/';
-
-    public static boolean isWindows() {
-        return WINDOWS_SEPARATOR == File.separatorChar;
-    }
-
-    public static boolean isLinux(){
-        return LINUX_SEPARATOR ==File.separatorChar;
-    }
-
     /**
      * 可读的文件大小<br>
      * 参考 http://stackoverflow.com/questions/3263892/format-file-size-as-mb-gb-etc
