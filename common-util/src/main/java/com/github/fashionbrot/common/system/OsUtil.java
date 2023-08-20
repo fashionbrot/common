@@ -8,10 +8,10 @@ package com.github.fashionbrot.common.system;
 public class OsUtil {
 
 
-    private final String OS_NAME = getProperty("os.name");
-    private final boolean IS_OS_LINUX = getOSMatches("Linux") || getOSMatches("LINUX");
-    private final boolean IS_OS_MAC = getOSMatches("Mac");
-    private final boolean IS_OS_WINDOWS = getOSMatches("Windows");
+    private final static String OS_NAME = getProperty("os.name");
+    private final static boolean IS_OS_LINUX = getOSMatches("Linux") || getOSMatches("LINUX");
+    private final static boolean IS_OS_MAC = getOSMatches("Mac");
+    private final static boolean IS_OS_WINDOWS = getOSMatches("Windows");
 
 
     public static String getProperty(String key){
@@ -30,7 +30,7 @@ public class OsUtil {
      *
      * @return 如果匹配，则返回<code>true</code>
      */
-    private final boolean getOSMatches(String osNamePrefix) {
+    private static boolean getOSMatches(String osNamePrefix) {
         if (OS_NAME == null) {
             return false;
         }
@@ -47,7 +47,7 @@ public class OsUtil {
      *
      * @return 如果当前OS类型为Linux，则返回<code>true</code>
      */
-    public final boolean isLinux() {
+    public static boolean isLinux() {
         return IS_OS_LINUX;
     }
 
@@ -60,7 +60,7 @@ public class OsUtil {
      *
      * @return 如果当前OS类型为Mac，则返回<code>true</code>
      */
-    public final boolean isMac() {
+    public static boolean isMac() {
         return IS_OS_MAC;
     }
 
@@ -74,7 +74,7 @@ public class OsUtil {
      *
      * @return 如果当前OS类型为Windows，则返回<code>true</code>
      */
-    public final boolean isWindows() {
+    public static final boolean isWindows() {
         return IS_OS_WINDOWS;
     }
 
