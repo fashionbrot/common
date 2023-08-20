@@ -247,18 +247,35 @@ public class FileUtil {
     /**
      * 将文件名中的类型部分去掉。
      *
-     * @param filename 文件名
+     * @param fileName 文件名
      * @return 去掉类型部分的结果
      */
-    public static String getFileSuffix(String filename) {
-        if (ObjectUtil.isEmpty(filename)){
-            return "";
+    public static String getFilePrefix(String fileName) {
+        if (ObjectUtil.isEmpty(fileName)){
+            return ObjectUtil.EMPTY;
         }
-        int index = filename.lastIndexOf(".");
+        int index = fileName.lastIndexOf(".");
         if (index != -1) {
-            return filename.substring(0, index);
+            return fileName.substring(0, index);
         } else {
-            return filename;
+            return fileName;
+        }
+    }
+
+    /**
+     * 获取文件后缀
+     * @param fileName 文件名
+     * @return 文件后缀
+     */
+    public static String getFileSuffix(String fileName){
+        if (ObjectUtil.isEmpty(fileName)){
+            return ObjectUtil.EMPTY;
+        }
+        int index = fileName.lastIndexOf(".");
+        if (index!=-1){
+            return fileName.substring(index+1);
+        }else{
+            return ObjectUtil.EMPTY;
         }
     }
 

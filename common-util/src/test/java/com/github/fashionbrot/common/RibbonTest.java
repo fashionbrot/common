@@ -18,7 +18,7 @@ public class RibbonTest {
             Server server = balancer.chooseServer();
             System.out.println(server);
         }
-
-
     }
+
+
 }
