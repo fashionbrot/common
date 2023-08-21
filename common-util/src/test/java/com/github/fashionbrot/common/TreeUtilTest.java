@@ -5,6 +5,7 @@ import com.github.fashionbrot.common.util.TreeUtil;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -39,5 +40,12 @@ public class TreeUtilTest {
 
         System.out.println(ts);
 
+        List<TreeEntity> ts2 = TreeUtil.buildAscTree(treeList, TreeEntity::getId, TreeEntity::getParentId, TreeEntity::setChild, (treeEntity, b) -> {
+            if (!(Boolean) b) {
+                treeEntity.setChild(null);
+            }
+        }, tree -> tree.getParentId() == 0L, Comparator.comparing(TreeEntity::getId));
+
+        System.out.println(ts2);
     }
 }
