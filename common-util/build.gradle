@@ -121,6 +121,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.10'
 
 
+//    testImplementation 'cn.hutool:hutool-all:5.8.1'
     testImplementation "junit:junit:4.13.2"
     testImplementation 'org.slf4j:slf4j-api:1.7.10'
     testCompileOnly 'org.projectlombok:lombok:1.18.20'

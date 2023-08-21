@@ -27,7 +27,12 @@ public class TreeUtil {
      * @param rootPIdValue     设置根节点条件 rootPIdValue
      * @return <code>List</code>
      */
-    public static <T, R, U> List<T> buildTree(List<T> source, Function<T, R> idFunc, Function<T, R> pIdFunc, BiConsumer<T, List<T>> setChildListFunc, BiConsumer<T, U> setHasChildFunc, Predicate<T> rootPIdValue) {
+    public static <T, R, U> List<T> buildTree(List<T> source,
+                                              Function<T, R> idFunc,
+                                              Function<T, R> pIdFunc,
+                                              BiConsumer<T, List<T>> setChildListFunc,
+                                              BiConsumer<T, U> setHasChildFunc,
+                                              Predicate<T> rootPIdValue) {
         if (ObjectUtil.isEmpty(source)) {
             return source;
         }
@@ -58,7 +63,13 @@ public class TreeUtil {
      * @param sortValue        设置排序条件
      * @return List
      */
-    public static <T, R, U> List<T> buildAscTree(List<T> source, Function<T, R> idFunc, Function<T, R> pIdFunc, BiConsumer<T, List<T>> setChildListFunc, BiConsumer<T, U> setHasChildFunc, Predicate<T> rootPIdValue, Comparator<T> sortValue) {
+    public static <T, R, U> List<T> buildAscTree(List<T> source,
+                                                 Function<T, R> idFunc,
+                                                 Function<T, R> pIdFunc,
+                                                 BiConsumer<T, List<T>> setChildListFunc,
+                                                 BiConsumer<T, U> setHasChildFunc,
+                                                 Predicate<T> rootPIdValue,
+                                                 Comparator<T> sortValue) {
         if (ObjectUtil.isEmpty(source)) {
             return source;
         }
