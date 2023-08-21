@@ -64,14 +64,12 @@ public class HttpParamUtil {
 
         for (int i = 0; i < declaredFields.length; i++) {
             Field field = declaredFields[i];
-            if (MethodUtil.filterField(field)) {
+            if (MethodUtil.isStaticOrFinal(field)) {
                 continue;
             }
             if (!JavaUtil.isPrimitive(field.getType())){
                 continue;
             }
-            //设置可以操作私有成员
-            field.setAccessible(true);
             //获取成员值
             Object value = MethodUtil.getFieldValue(field,t);
             //成员值为 Null 时，则不处理

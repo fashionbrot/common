@@ -9,6 +9,13 @@ import java.util.Properties;
 @Slf4j
 public class PropertiesUtil {
 
+    private static final String PLACEHOLDER_PREFIX = "${";
+
+    private static final String PLACEHOLDER_SUFFIX = "}";
+
+    private static final String VALUE_SEPARATOR = ":";
+
+
     /**
      * file 转  Properties
      * @param file File
@@ -79,12 +86,6 @@ public class PropertiesUtil {
     }
 
 
-
-    private static final String PLACEHOLDER_PREFIX = "${";
-
-    private static final String PLACEHOLDER_SUFFIX = "}";
-
-    private static final String VALUE_SEPARATOR = ":";
 
 
     /**
