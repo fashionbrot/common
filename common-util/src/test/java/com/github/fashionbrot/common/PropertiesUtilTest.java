@@ -15,4 +15,13 @@ public class PropertiesUtilTest {
         Properties properties = PropertiesUtil.toProperties(content);
         Assert.assertEquals("abc",properties.getProperty("abc"));
     }
+
+    @Test
+    public void test2(){
+        String content = "${abc }";
+        String value = PropertiesUtil.resolvePlaceholder(content);
+        System.out.println(value);
+        Assert.assertEquals("abc",value);
+    }
+
 }
