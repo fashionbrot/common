@@ -7,81 +7,82 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 
-
+/**
+ * java 对应工具类
+ */
 public class JavaUtil {
 
 
     /**
-     * Check if it is the basic data type of json data
-     *
-     * @param clazz clazz
+     * 判断 Class  是基本类型 {@link ClassTypeEnum}
+     * @param clazz Class
      * @return boolean
      */
     public static boolean isPrimitive(Class clazz) {
         return ClassTypeEnum.checkClass(clazz.getTypeName());
     }
 
+    /**
+     * 判断 Class  是基本类型 {@link ClassTypeEnum}
+     * @param clazz Class
+     * @return boolean
+     */
     public static boolean isNotPrimitive(Class clazz) {
         return !isPrimitive(clazz);
     }
 
     /**
-     * Check if it is the basic data type of json data
-     *
-     * @param typeName clazz typeName
+     * 判断 Class typeName 是基本类型  {@link ClassTypeEnum}
+     * @param typeName Class typeName
      * @return boolean
      */
     public static boolean isPrimitive(String typeName) {
         return ClassTypeEnum.checkClass(typeName);
     }
 
+    /**
+     * 判断 Class typeName 不是基本类型 {@link ClassTypeEnum}
+     * @param typeName Class typeName
+     * @return boolean
+     */
     public static boolean isNotPrimitive(String typeName) {
         return !isPrimitive(typeName);
     }
 
     /**
-     * validate java collection
-     *
+     * 判断Class 是集合
      * @param  clazz  clazz
      * @return boolean
      */
     public static boolean isCollection(Class clazz) {
-
         return clazz!=null && Collection.class.isAssignableFrom(clazz);
     }
 
+
+    /**
+     * 判断Class 是Map
+     * @param clazz Class
+     * @return boolean
+     */
     public static boolean isMap(Class clazz) {
         return clazz!=null && Map.class.isAssignableFrom(clazz);
     }
 
+
     /**
-     * validate java collection
-     *
-     * @param type java typeName
+     * 判断对象是 Object
+     * @param clazz Class
      * @return boolean
      */
-    public static boolean isCollection(String type) {
-        switch (type) {
-            case "java.util.List":
-            case "java.util.LinkedList":
-            case "java.util.ArrayList":
-            case "java.util.Set":
-            case "java.util.TreeSet":
-            case "java.util.HashSet":
-            case "java.util.SortedSet":
-            case "java.util.Collection":
-            case "java.util.ArrayDeque":
-            case "java.util.PriorityQueue":
-                return true;
-            default:
-                return false;
-        }
-    }
-
     public static boolean isObject(Class clazz){
         return "java.lang.Object".equals(clazz.getTypeName());
     }
 
+    /**
+     * 判断对象不是 Object
+     * @param clazz Class
+     * @return boolean
+     */
     public static boolean isNotObject(Class clazz){
         if (clazz==null){
             return false;
@@ -89,31 +90,32 @@ public class JavaUtil {
         return !isObject(clazz);
     }
 
-    public static boolean isBaseType(Class clazz){
-        if (clazz==null){
-            return false;
-        }
-        return JavaUtil.isNotPrimitive(clazz.getTypeName());
-    }
 
     /**
-     * check array
-     *
-     * @param type type name
+     * 判断class TypeName 是Array
+     * @param typeName Class TypeName
      * @return boolean
      */
-    public static boolean isArray(String type) {
-        return type.endsWith("[]");
+    public static boolean isArray(String typeName) {
+        return ObjectUtil.isNotEmpty(typeName) && typeName.endsWith("[]");
     }
 
     /**
-     * check array
-     *
+     * 判断class TypeName 不是Array
+     * @param typeName Class TypeName
+     * @return boolean
+     */
+    public static boolean isNotArray(String typeName){
+        return !isArray(typeName);
+    }
+
+    /**
+     * 判断Class 是Array
      * @param clazz type name
      * @return boolean
      */
     public static boolean isArray(Class clazz) {
-        return clazz!=null && clazz.isArray();
+        return clazz!=null && isArray(clazz.getTypeName());
     }
 
 
