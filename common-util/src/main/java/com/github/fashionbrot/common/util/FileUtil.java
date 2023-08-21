@@ -110,7 +110,7 @@ public class FileUtil {
 
     /**
      * 删除文件
-     * @param file
+     * @param file File
      */
     public static void deleteFile(File file){
         try {
