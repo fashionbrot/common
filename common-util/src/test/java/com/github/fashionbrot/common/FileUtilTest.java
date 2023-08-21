@@ -4,6 +4,8 @@ import com.github.fashionbrot.common.util.FileUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.*;
+
 /**
  * @author fashionbrot
  */
@@ -49,5 +51,28 @@ public class FileUtilTest {
         System.out.println(fileSuffix);
         Assert.assertEquals("",fileSuffix);
     }
+
+    @Test
+    public void test6(){
+        String content="111\n abc111";
+        File file = new File("D:/abc/test.properties");
+        FileUtil.writeFile(file,content);
+
+        String fileContent = FileUtil.getFileContent(file);
+        System.out.println(fileContent);
+        Assert.assertEquals(content,fileContent);
+
+    }
+
+
+    @Test
+    public void test7(){
+
+        boolean b = FileUtil.mkdirs("D:\\abc\\abc\\abc.txt");
+        System.out.println(b);
+
+
+    }
+
 
 }

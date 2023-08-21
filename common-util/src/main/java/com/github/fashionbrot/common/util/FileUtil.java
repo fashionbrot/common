@@ -1,10 +1,12 @@
 package com.github.fashionbrot.common.util;
 
+import com.github.fashionbrot.common.consts.CharsetConst;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,10 @@ public class FileUtil {
         USER_HOME = System.getProperty("user.home");
     }
 
+    /**
+     * 获取 user.home 路径
+     * @return String
+     */
     public static String getUserHome(){
         return USER_HOME;
     }
@@ -30,6 +36,12 @@ public class FileUtil {
 
     private static final int LOCK_COUNT = 10;
 
+    /**
+     * 按照关键字搜索 文件夹
+     * @param folder   file文件夹
+     * @param keyword  fileName 关键字
+     * @return List
+     */
     public static List<File> searchFiles(File folder, final String keyword) {
         List<File> result = new ArrayList<File>();
         if (folder.isFile()) {
@@ -55,14 +67,22 @@ public class FileUtil {
         return result;
     }
 
-
     /**
-     * get file content
-     *
-     * @param file file
+     * 获取 file 文件内容
+     * @param file  file
      * @return String
      */
     public static String getFileContent(File file) {
+        return getFileContent(file, CharsetConst.DEFAULT_CHARSET);
+    }
+
+    /**
+     * 获取 file 文件内容
+     * @param file  file
+     * @param charset charset
+     * @return String
+     */
+    public static String getFileContent(File file,Charset charset) {
         RandomAccessFile randomAccessFile = null;
         FileLock fileLock = null;
         try {
@@ -76,23 +96,22 @@ public class FileUtil {
                 }
             } while (null == fileLock);
 
-
-            byte[] buf = new byte[1024];
-            StringBuffer sb = new StringBuffer();
-            while ((randomAccessFile.read(buf)) != -1) {
-                sb.append(new String(buf, "UTF-8"));
-                buf = new byte[1024];
-            }
-
-            return sb.toString();
+            byte[] buf = new byte[(int)file.length()];
+            randomAccessFile.read(buf);
+            return IoUtil.toString(buf,charset);
         } catch (Exception e) {
             log.error("getFileContent error", e);
         } finally {
-            close(fileLock, randomAccessFile, null);
+            IoUtil.close(fileLock);
+            IoUtil.close(randomAccessFile);
         }
         return "";
     }
 
+    /**
+     * 删除文件
+     * @param file
+     */
     public static void deleteFile(File file){
         try {
             file.delete();
@@ -101,19 +120,25 @@ public class FileUtil {
         }
     }
 
-    public static void writeFile(File file, String content) {
-        try {
-            if (!file.exists()) {
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
-                file.createNewFile();
-            }
-        } catch (Exception e) {
-            log.error("writeFile error", e);
-            return;
-        }
 
+    /**
+     * 将内容写入 File
+     * @param file      file
+     * @param content   文本内容
+     */
+    public static void writeFile(File file, String content) {
+        writeFile(file,content,Charset.defaultCharset());
+    }
+
+    /**
+     * 将内容写入 File
+     * @param file      file
+     * @param content   文本内容
+     * @param charset   charset
+     */
+    public static void writeFile(File file, String content,Charset charset) {
+
+        createFile(file);
 
         FileChannel fileChannel = null;
         FileLock fileLock = null;
@@ -132,41 +157,56 @@ public class FileUtil {
                     }
                 }
             } while (null == fileLock);
-
-            randomAccessFile.write(content.getBytes("UTF-8"));
+            if (ObjectUtil.isEmpty(content)){
+                content = ObjectUtil.EMPTY;
+            }
+            randomAccessFile.write(content.getBytes(charset));
         } catch (Exception e) {
             log.error("writeFile error", e);
         } finally {
-            close(fileLock, randomAccessFile, fileChannel);
+            IoUtil.close(fileLock);
+            IoUtil.close(randomAccessFile);
+            IoUtil.close(fileChannel);
         }
     }
 
 
-    private static void close(FileLock fileLock, RandomAccessFile randomAccessFile, FileChannel fileChannel) {
-        if (fileLock != null) {
+    public static boolean createFile(File file){
+        if (!file.exists()) {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
             try {
-                fileLock.release();
-                fileLock = null;
+                return file.createNewFile();
             } catch (IOException e) {
-                log.error("fileLock release error");
+                e.printStackTrace();
             }
         }
-        if (randomAccessFile != null) {
-            try {
-                randomAccessFile.close();
-                randomAccessFile = null;
-            } catch (IOException e) {
-                log.error("randomAccessFile close error");
-            }
+        return false;
+    }
+
+    /**
+     * 创建多级目录
+     * @param path path
+     * @return boolean
+     */
+    public static boolean mkdirs(String path){
+        return mkdirs(new File(path));
+    }
+
+    /**
+     * 创建多级目录
+     * @param file File
+     * @return boolean
+     */
+    public static boolean mkdirs(File file){
+        if (file==null ){
+            return false;
         }
-        if (fileChannel != null) {
-            try {
-                fileChannel.close();
-                fileChannel = null;
-            } catch (IOException e) {
-                log.error("fileChannel close error");
-            }
+        if(!file.exists()) {
+            return file.mkdirs();
         }
+        return true;
     }
 
 
@@ -280,6 +320,12 @@ public class FileUtil {
     }
 
 
+    /**
+     * 根据 path 获取文件list
+     * @param path      path
+     * @param fileList  fileList
+     * @param suffix    关键字或后缀
+     */
     public static void findPath(String path, List<File> fileList, String suffix) {
         File f = new File(path);
         if (f != null) {
@@ -297,28 +343,7 @@ public class FileUtil {
     }
 
 
-    public static Properties fileToProperties(File file) {
-        if (file==null){
-            return null;
-        }
-        InputStream in = null;
-        Properties properties = null;
-        try {
-            in = new BufferedInputStream(new FileInputStream(file));
-            properties.load(in);
-        } catch (Exception e) {
-            log.error("putProperties error ", e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return properties;
-    }
+
 
 
     /**
