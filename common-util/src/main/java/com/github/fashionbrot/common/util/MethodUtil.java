@@ -1,6 +1,8 @@
 package com.github.fashionbrot.common.util;
 
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class MethodUtil {
@@ -32,12 +34,18 @@ public class MethodUtil {
         return Modifier.isFinal(field.getModifiers());
     }
 
-    public static Object getFieldValue(Field field,Object obj){
+    /**
+     * 根据 Field 获取 属性值
+     * @param field Field
+     * @param object Object
+     * @return Object
+     */
+    public static Object getFieldValue(Field field,Object object){
         if (field!=null){
             try {
                 //设置可以操作私有成员
                 field.setAccessible(true);
-                return field.get(obj);
+                return field.get(object);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -46,5 +54,53 @@ public class MethodUtil {
     }
 
 
+    /**
+     * Determine whether the given method is a "hashCode" method.
+     * @see java.lang.Object#hashCode()
+     * @param method Method
+     * @return boolean
+     */
+    public static boolean isHashCodeMethod( Method method) {
+        return method != null && method.getParameterCount() == 0 && method.getName().equals("hashCode");
+    }
+
+    /**
+     * Determine whether the given method is a "toString" method.
+     * @see java.lang.Object#toString()
+     * @param method Method
+     * @return boolean
+     */
+    public static boolean isToStringMethod( Method method) {
+        return (method != null && method.getParameterCount() == 0 && method.getName().equals("toString"));
+    }
+
+    /**
+     * Determine whether the given method is originally declared by {@link java.lang.Object}.
+     * @param method Method
+     * @return boolean
+     */
+    public static boolean isObjectMethod( Method method) {
+        return (method != null && (method.getDeclaringClass() == Object.class ||
+                isEqualsMethod(method) || isHashCodeMethod(method) || isToStringMethod(method)));
+    }
+
+    /**
+     * Determine whether the given method is an "equals" method.
+     * @see java.lang.Object#equals(Object)
+     * @param method Method
+     * @return boolean
+     */
+    public static boolean isEqualsMethod( Method method) {
+        if (method == null) {
+            return false;
+        }
+        if (method.getParameterCount() != 1) {
+            return false;
+        }
+        if (!method.getName().equals("equals")) {
+            return false;
+        }
+        return method.getParameterTypes()[0] == Object.class;
+    }
 
 }

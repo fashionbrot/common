@@ -3,11 +3,13 @@ package com.github.fashionbrot.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 /**
  * @author fashi
@@ -115,7 +117,7 @@ public class ObjectUtil {
      * @return boolean
      */
     public static boolean isNotEmpty(final Object[] objects) {
-        return objects != null && objects.length > 0;
+        return !isEmpty(objects);
     }
 
 
@@ -136,7 +138,6 @@ public class ObjectUtil {
     public static boolean isEmpty(final byte[] bytes) {
         return bytes == null || bytes.length==0;
     }
-
 
 
 
@@ -790,32 +791,45 @@ public class ObjectUtil {
 
     /**
      * 验证 Boolean 是否是false
-     * @param b Boolean
+     * @param bool Boolean
      * @return boolean
      */
-    public static boolean isFalse(Boolean b){
-        if (b==null){
-            return true;
-        }
-        if (!b){
-            return true;
-        }
-        return false;
+    public static boolean isFalse(Boolean bool){
+        return bool==null || !isBoolean(bool);
     }
 
     /**
      * 验证 Boolean 是否是true
-     * @param b Boolean
+     * @param bool Boolean
      * @return boolean
      */
-    public static boolean isTrue(Boolean b){
-        if (b==null){
-            return false;
-        }
-        if (b){
-            return true;
-        }
-        return false;
+    public static boolean isTrue(Boolean bool){
+        return isBoolean(bool);
+    }
+
+
+    /**
+     * 判断字符串是否是以指定内容结束。忽略大小写
+     * @param str the {@code String} to check
+     * @param prefix the prefix to look for
+     * @see java.lang.String#startsWith
+     * @return boolean
+     */
+    public static boolean startsWithIgnoreCase(final String str,final String prefix) {
+        return (str != null && prefix != null && str.length() >= prefix.length()
+                && str.regionMatches(true, 0, prefix, 0, prefix.length()));
+    }
+
+    /**
+     * 判断字符串是否已指定内容开头。忽略大小写
+     * @param str the {@code String} to check
+     * @param suffix the suffix to look for
+     * @see java.lang.String#endsWith
+     * @return boolean
+     */
+    public static boolean endsWithIgnoreCase(final String str, final String suffix) {
+        return (str != null && suffix != null && str.length() >= suffix.length() &&
+                str.regionMatches(true, str.length() - suffix.length(), suffix, 0, suffix.length()));
     }
 
 
@@ -828,6 +842,18 @@ public class ObjectUtil {
      */
     public static byte[] toByte(CharSequence str, String charset) {
         return toByte(str, isEmpty(charset) ? Charset.defaultCharset() : Charset.forName(charset));
+    }
+
+
+    /**
+     * 将  com.github.fashionbrot 替换成  window 或 linux 对应的  / 或 \
+     * @param str 字符串
+     * @return String
+     */
+    public static String replacePath(String str){
+        return str.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+                .replaceAll("/",Matcher.quoteReplacement(File.separator))
+                .replaceAll("\\\\",Matcher.quoteReplacement(File.separator));
     }
 
     /**

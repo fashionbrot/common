@@ -2,7 +2,6 @@ package com.github.fashionbrot.common.util;
 
 
 import com.github.fashionbrot.common.consts.CharsetConst;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
@@ -61,24 +60,24 @@ public class IoUtil {
         return output.toByteArray();
     }
 
-    public static byte[] toByteArray(InputStream input){
+    public static byte[] toByte(File file){
+        return toByteAndClose(toInputStream(file));
+    }
+
+    public static byte[] toByte(InputStream input){
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             copy(input, output);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }finally {
+            close(input);
         }
         return output.toByteArray();
     }
 
-    public static int copy(InputStream input, OutputStream output) throws IOException {
-        long count = copyLarge(input, output);
-        if (count > Integer.MAX_VALUE) {
-            return -1;
-        }
-        return (int) count;
-    }
+
     public static long copyLarge(InputStream input, OutputStream output) throws IOException {
         return copyLarge(input, output, new byte[DEFAULT_MIDDLE_BUFFER_SIZE]);
     }
@@ -143,15 +142,120 @@ public class IoUtil {
         }
     }
 
+
+    public static int copy(InputStream in, OutputStream out) throws IOException {
+        try {
+            return copyBuffer(in, out);
+        }
+        finally {
+            close(in);
+            close(out);
+        }
+    }
+
+
+
+    /**
+     * Copy the contents of the given InputStream to the given OutputStream.
+     * <p>Leaves both streams open when done.
+     * @param in the InputStream to copy from
+     * @param out the OutputStream to copy to
+     * @return the number of bytes copied
+     * @throws IOException in case of I/O errors
+     */
+    public static int copyBuffer(InputStream in, OutputStream out) throws IOException {
+        int byteCount = 0;
+        byte[] buffer = new byte[DEFAULT_MIDDLE_BUFFER_SIZE];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+            byteCount += bytesRead;
+        }
+        out.flush();
+        return byteCount;
+    }
+
+    /**
+     * InputStream 转 String
+     * @param inputStream InputStream
+     * @param charset     charset
+     * @return String
+     */
     public static  String toString(InputStream inputStream, Charset charset) {
-        byte[] bytes = toByteArray(inputStream);
+        byte[] bytes = toByte(inputStream);
         return toString(bytes,charset);
     }
 
-    public static String toString(byte[] bytes,Charset charset){
-        if (ObjectUtil.isNotEmpty(bytes)){
-            return new String(bytes,charset!=null?charset: CharsetConst.DEFAULT_CHARSET);
-        }
-        return ObjectUtil.EMPTY;
+    /**
+     * InputStream 转 String
+     * @param inputStream InputStream
+     * @return String
+     */
+    public static String toString(InputStream inputStream){
+        return toString(inputStream,CharsetConst.DEFAULT_CHARSET);
     }
+
+    /**
+     * File 转 String
+     * @param file      File
+     * @param charset   charset
+     * @return String
+     */
+    public static String toString(File file,Charset charset){
+        return toString(toInputStream(file),charset);
+    }
+
+    /**
+     * File 转 String
+     * @param file      File
+     * @return String
+     */
+    public static String toString(File file){
+        return toString(toInputStream(file));
+    }
+
+
+    /**
+     * File 转  FileInputStream
+     * @param file File
+     * @return FileInputStream
+     */
+    public static FileInputStream toInputStream(File file){
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * byte[] 转 String
+     * @param bytes    byte[]
+     * @param charset  charset
+     * @return String
+     */
+    public static String toString(byte[] bytes,Charset charset){
+        if (ObjectUtil.isEmpty(bytes)){
+            return ObjectUtil.EMPTY;
+        }
+        if (charset==null){
+            return new String(bytes);
+        }
+        return new String(bytes,charset);
+    }
+
+    /**
+     * byte[]  转 String
+     * @param bytes byte[]
+     * @return String
+     */
+    public static String toString(byte[] bytes){
+        if (ObjectUtil.isEmpty(bytes)){
+            return ObjectUtil.EMPTY;
+        }
+        return toString(bytes,CharsetConst.DEFAULT_CHARSET);
+    }
+
+
 }
