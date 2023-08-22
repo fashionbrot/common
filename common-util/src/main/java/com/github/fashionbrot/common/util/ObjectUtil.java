@@ -869,6 +869,15 @@ public class ObjectUtil {
     }
 
 
+    /**
+     * 编码字符串
+     *
+     * @param str 字符串
+     * @return byte[]
+     */
+    public static byte[] toByte(CharSequence str) {
+        return toByte(str,Charset.defaultCharset());
+    }
 
     /**
      * 编码字符串
@@ -878,8 +887,8 @@ public class ObjectUtil {
      * @return byte[]
      */
     public static byte[] toByte(CharSequence str, Charset charset) {
-        if (str == null) {
-            return null;
+        if (ObjectUtil.isEmpty(str)) {
+            return new byte[]{};
         }
         if (null == charset) {
             return str.toString().getBytes();
