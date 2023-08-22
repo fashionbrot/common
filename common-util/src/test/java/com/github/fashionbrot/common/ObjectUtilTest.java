@@ -4,6 +4,8 @@ import com.github.fashionbrot.common.util.ObjectUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 public class ObjectUtilTest {
 
 
@@ -42,6 +44,13 @@ public class ObjectUtilTest {
         String s = ObjectUtil.replacePath(path);
         System.out.println(s);
         Assert.assertEquals("a\\b\\c",s);
+    }
+
+    @Test
+    public void test6(){
+        List<String> strings = ObjectUtil.splitContent("", "");
+        strings.add("abc");
+        System.out.println(strings);
     }
 
 }

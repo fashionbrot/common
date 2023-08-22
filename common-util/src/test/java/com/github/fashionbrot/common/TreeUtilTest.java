@@ -44,7 +44,7 @@ public class TreeUtilTest {
             if (!(Boolean) b) {
                 treeEntity.setChild(null);
             }
-        }, tree -> tree.getParentId() == 0L, Comparator.comparing(TreeEntity::getId));
+        }, tree -> tree.getParentId() == 0L, Comparator.comparing(TreeEntity::getName));
 
         System.out.println(ts2);
     }

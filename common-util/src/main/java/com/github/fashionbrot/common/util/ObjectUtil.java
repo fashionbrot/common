@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -855,6 +853,22 @@ public class ObjectUtil {
                 .replaceAll("/",Matcher.quoteReplacement(File.separator))
                 .replaceAll("\\\\",Matcher.quoteReplacement(File.separator));
     }
+
+
+    /**
+     * 分割字符串 返回List
+     * @param content   文本值
+     * @param delimiter 分割符
+     * @return List
+     */
+    public static  List<String> splitContent(String content, String delimiter){
+        if (ObjectUtil.isEmpty(content)){
+            return new ArrayList<>();
+        }
+        return Arrays.asList(content.split(delimiter)) ;
+    }
+
+
 
     /**
      * 编码字符串
