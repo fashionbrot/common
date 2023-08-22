@@ -1,10 +1,16 @@
 package com.github.fashionbrot.common;
 
 import com.github.fashionbrot.common.util.FileUtil;
+import com.github.fashionbrot.common.util.IoUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author fashionbrot
@@ -72,6 +78,20 @@ public class FileUtilTest {
         System.out.println(b);
 
 
+    }
+
+    @Test
+    public void test8() throws IOException {
+        String content="abc\n abc";
+        String fileName="D:\\fileTest.txt";
+        File file = new File(fileName);
+        FileUtil.writeFile(file,content);
+
+        System.out.println(content);
+        String newContent = IoUtil.readFileToString(fileName);
+        System.out.println(newContent);
+        System.out.println(content.equals(newContent));
+        FileUtil.deleteFile(file);
     }
 
 

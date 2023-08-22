@@ -6,6 +6,9 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author fashionbrot
@@ -257,5 +260,37 @@ public class IoUtil {
         return toString(bytes,CharsetConst.DEFAULT_CHARSET);
     }
 
+
+    /**
+     * 根据 Path 获取 byte[]
+     * @param path Path
+     * @return byte[]
+     */
+    public static byte[] readFileToByte(Path path){
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new byte[]{};
+    }
+
+    /**
+     * 获取文件 byte[] 数组
+     * @param fileName 文件路径和名称
+     * @return byte[]
+     */
+    public static byte[] readFileToByte(String fileName){
+        return readFileToByte(Paths.get(fileName));
+    }
+
+    /**
+     * 获取文件
+     * @param fileName 文件路径和名称
+     * @return String
+     */
+    public static String readFileToString(String fileName){
+        return toString(readFileToByte(fileName));
+    }
 
 }
