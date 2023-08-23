@@ -9,12 +9,13 @@ public class OsUtil {
 
 
     private final static String OS_NAME = getProperty("os.name");
+    private final static String USER_HOME = System.getProperty("user.home");
     private final static boolean IS_OS_LINUX = getOSMatches("Linux") || getOSMatches("LINUX");
     private final static boolean IS_OS_MAC = getOSMatches("Mac");
     private final static boolean IS_OS_WINDOWS = getOSMatches("Windows");
 
 
-    public static String getProperty(String key){
+    private static String getProperty(String key){
         try {
             return System.getProperty(key);
         } catch (SecurityException e) {
@@ -22,6 +23,9 @@ public class OsUtil {
         }
     }
 
+    public static String getUserHome(){
+        return USER_HOME;
+    }
 
     /**
      * 匹配OS名称。

@@ -21,6 +21,8 @@ public class IoUtil {
     public static final int DEFAULT_MIDDLE_BUFFER_SIZE = 4096;
     /** 默认大缓存大小 */
     public static final int DEFAULT_LARGE_BUFFER_SIZE = 8192;
+    /** 最大数组 */
+    public static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
     /** 数据流末尾 */
     public static final int EOF = -1;
