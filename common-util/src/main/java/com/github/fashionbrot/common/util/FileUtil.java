@@ -82,6 +82,20 @@ public class FileUtil {
      * @return String
      */
     public static String getFileContent(File file,Charset charset) {
+        byte[] bytes = fileToByte(file);
+        if (ObjectUtil.isNotEmpty(bytes)){
+            return IoUtil.toString(bytes,charset);
+        }
+        return ObjectUtil.EMPTY;
+    }
+
+
+    /**
+     * File 转  byte[]
+     * @param file File
+     * @return byte[]
+     */
+    public static byte[] fileToByte(File file) {
         RandomAccessFile randomAccessFile = null;
         FileLock fileLock = null;
         try {
@@ -98,19 +112,16 @@ public class FileUtil {
             if (length>MAX_BUFFER_SIZE){
                 throw new OutOfMemoryError("Required array size too large");
             }
-            if (length==0){
-                return ObjectUtil.EMPTY;
-            }
             byte[] buf = new byte[(int)file.length()];
             randomAccessFile.read(buf);
-            return IoUtil.toString(buf,charset);
+            return buf;
         } catch (Exception e) {
-            log.error("getFileContent error", e);
+            log.error("fileToByte error", e);
         } finally {
             IoUtil.close(fileLock);
             IoUtil.close(randomAccessFile);
         }
-        return "";
+        return null;
     }
 
     /**
