@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common.util;
 
 import com.github.fashionbrot.common.consts.CharsetConst;
+import com.github.fashionbrot.common.system.OsUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -19,19 +20,17 @@ import java.util.Properties;
 @Slf4j
 public class FileUtil {
 
-    private static final String USER_HOME;
-
-    static {
-        USER_HOME = System.getProperty("user.home");
-    }
 
     /**
      * 获取 user.home 路径
      * @return String
      */
     public static String getUserHome(){
-        return USER_HOME;
+        return OsUtil.getUserHome();
     }
+
+    /** 最大数组 */
+    public static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
 
     private static final int LOCK_COUNT = 10;
@@ -83,6 +82,20 @@ public class FileUtil {
      * @return String
      */
     public static String getFileContent(File file,Charset charset) {
+        byte[] bytes = fileToByte(file);
+        if (ObjectUtil.isNotEmpty(bytes)){
+            return IoUtil.toString(bytes,charset);
+        }
+        return ObjectUtil.EMPTY;
+    }
+
+
+    /**
+     * File 转  byte[]
+     * @param file File
+     * @return byte[]
+     */
+    public static byte[] fileToByte(File file) {
         RandomAccessFile randomAccessFile = null;
         FileLock fileLock = null;
         try {
@@ -95,17 +108,20 @@ public class FileUtil {
                     log.error("getFileContent error", e);
                 }
             } while (null == fileLock);
-
+            long length = file.length();
+            if (length>MAX_BUFFER_SIZE){
+                throw new OutOfMemoryError("Required array size too large");
+            }
             byte[] buf = new byte[(int)file.length()];
             randomAccessFile.read(buf);
-            return IoUtil.toString(buf,charset);
+            return buf;
         } catch (Exception e) {
-            log.error("getFileContent error", e);
+            log.error("fileToByte error", e);
         } finally {
             IoUtil.close(fileLock);
             IoUtil.close(randomAccessFile);
         }
-        return "";
+        return null;
     }
 
     /**
