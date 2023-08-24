@@ -8,6 +8,14 @@ import java.lang.reflect.*;
 public class TypeUtil {
 
 
+
+
+    /**
+     * 获取参数的实际类型参数。
+     *
+     * @param parameter 要获取实际类型参数的参数
+     * @return 参数的实际类型参数数组，如果参数没有实际类型参数，则返回null
+     */
     public static Type[] getActualTypeArguments(Parameter parameter){
         Type parameterizedType = parameter.getParameterizedType();
         if (parameterizedType!=null){
@@ -15,10 +23,23 @@ public class TypeUtil {
         }
         return null;
     }
-    public static Type[] getActualTypeArguments(Field field){
+
+
+
+    /**
+     * 获取字段的实际类型参数。
+     *
+     * @param field 要获取实际类型参数的字段，可以为null
+     * @return 字段的实际类型参数数组，如果字段为null或没有实际类型参数，则返回null
+     */
+    public static Type[] getActualTypeArguments(Field field) {
+        if (field == null) {
+            return null;
+        }
+
         Type parameterizedType = field.getGenericType();
-        if (parameterizedType!=null){
-            return convertActualTypeArguments(field.getGenericType());
+        if (parameterizedType != null) {
+            return convertActualTypeArguments(parameterizedType);
         }
         return null;
     }

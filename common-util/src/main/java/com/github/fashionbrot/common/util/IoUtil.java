@@ -242,7 +242,7 @@ public class IoUtil {
      */
     public static String toString(byte[] bytes,Charset charset){
         if (ObjectUtil.isEmpty(bytes)){
-            return ObjectUtil.EMPTY;
+            return "";
         }
         if (charset==null){
             return new String(bytes);
@@ -257,7 +257,7 @@ public class IoUtil {
      */
     public static String toString(byte[] bytes){
         if (ObjectUtil.isEmpty(bytes)){
-            return ObjectUtil.EMPTY;
+            return "";
         }
         return toString(bytes,CharsetConst.DEFAULT_CHARSET);
     }

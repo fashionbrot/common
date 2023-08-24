@@ -76,17 +76,18 @@ public class FileUtil {
     }
 
     /**
-     * 获取 file 文件内容
-     * @param file  file
-     * @param charset charset
-     * @return String
+     * 读取文件的内容并返回字符串。
+     *
+     * @param file    要读取的文件
+     * @param charset 使用的字符集
+     * @return 文件内容的字符串表示，如果文件为空或读取失败，则返回空字符串
      */
-    public static String getFileContent(File file,Charset charset) {
+    public static String getFileContent(File file, Charset charset) {
         byte[] bytes = fileToByte(file);
-        if (ObjectUtil.isNotEmpty(bytes)){
-            return IoUtil.toString(bytes,charset);
+        if (ObjectUtil.isNotEmpty(bytes)) {
+            return IoUtil.toString(bytes, charset);
         }
-        return ObjectUtil.EMPTY;
+        return "";
     }
 
 
@@ -147,10 +148,11 @@ public class FileUtil {
     }
 
     /**
-     * 将内容写入 File
-     * @param file      file
-     * @param content   文本内容
-     * @param charset   charset
+     * 将内容写入文件。
+     *
+     * @param file     要写入的文件
+     * @param content  要写入的文本内容，可以为null
+     * @param charset  使用的字符集
      */
     public static void writeFile(File file, String content,Charset charset) {
 
@@ -174,7 +176,7 @@ public class FileUtil {
                 }
             } while (null == fileLock);
             if (ObjectUtil.isEmpty(content)){
-                content = ObjectUtil.EMPTY;
+                content = "";
             }
             randomAccessFile.write(content.getBytes(charset));
         } catch (Exception e) {
@@ -301,14 +303,14 @@ public class FileUtil {
 
 
     /**
-     * 将文件名中的类型部分去掉。
+     * 从文件名中去掉文件类型部分。
      *
-     * @param fileName 文件名
-     * @return 去掉类型部分的结果
+     * @param fileName 文件名，可以为null
+     * @return 去掉类型部分的文件名，如果文件名为null，则返回空字符串
      */
     public static String getFilePrefix(String fileName) {
-        if (ObjectUtil.isEmpty(fileName)){
-            return ObjectUtil.EMPTY;
+        if (ObjectUtil.isEmpty(fileName)) {
+            return "";
         }
         int index = fileName.lastIndexOf(".");
         if (index != -1) {
@@ -319,21 +321,23 @@ public class FileUtil {
     }
 
     /**
-     * 获取文件后缀
-     * @param fileName 文件名
-     * @return 文件后缀
+     * 获取文件名的后缀部分。
+     *
+     * @param fileName 文件名，可以为null
+     * @return 文件后缀，如果文件名为null或者没有后缀，则返回空字符串
      */
-    public static String getFileSuffix(String fileName){
-        if (ObjectUtil.isEmpty(fileName)){
-            return ObjectUtil.EMPTY;
+    public static String getFileSuffix(String fileName) {
+        if (ObjectUtil.isEmpty(fileName)) {
+            return "";
         }
         int index = fileName.lastIndexOf(".");
-        if (index!=-1){
-            return fileName.substring(index+1);
-        }else{
-            return ObjectUtil.EMPTY;
+        if (index != -1 && index < fileName.length() - 1) {
+            return fileName.substring(index + 1);
+        } else {
+            return "";
         }
     }
+
 
 
     /**

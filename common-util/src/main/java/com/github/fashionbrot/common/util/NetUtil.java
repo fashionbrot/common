@@ -31,7 +31,7 @@ public class NetUtil {
      */
     public static String toStringAddress(SocketAddress address) {
         if (address == null) {
-            return ObjectUtil.EMPTY;
+            return "";
         }
         return toStringAddress((InetSocketAddress) address);
     }

@@ -40,7 +40,7 @@ public class AesUtil {
      */
     public static String encryptString(String str,String key){
         if (ObjectUtil.isEmpty(str)){
-            return ObjectUtil.EMPTY;
+            return "";
         }
         byte[] encrypt = encrypt(str, key);
         return parseByte2HexStr(encrypt);
@@ -77,7 +77,7 @@ public class AesUtil {
      */
     public static String decryptString(String str,String key){
         if (ObjectUtil.isEmpty(str)){
-            return ObjectUtil.EMPTY;
+            return "";
         }
         byte[] decrypt = decrypt(str, key);
         return byteToString(decrypt);

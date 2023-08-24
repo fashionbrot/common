@@ -92,7 +92,7 @@ public class HttpParamUtil {
 
     public static String mapToUrlParam(Map<String,Object> paramMap,boolean ignoreNull){
         if (ObjectUtil.isEmpty(paramMap)){
-            return ObjectUtil.EMPTY;
+            return "";
         }
         StringBuffer params=new StringBuffer();
         Iterator<Map.Entry<String, Object>> iterator = paramMap.entrySet().iterator();
