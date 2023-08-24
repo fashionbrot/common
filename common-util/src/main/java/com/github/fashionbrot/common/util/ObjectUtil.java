@@ -18,6 +18,26 @@ public class ObjectUtil {
     public static final String EMPTY="";
 
     /**
+     * 比较数据相等 数据类型保持一致否则返回false
+     * @param a Object
+     * @param b Object
+     * @return boolean
+     */
+    public static boolean equals(Object a, Object b) {
+        return (a == b) || (a != null && a.equals(b));
+    }
+
+    /**
+     * 比较数据不相等 数据类型保持一致否则返回false
+     * @param a Object
+     * @param b Object
+     * @return boolean
+     */
+    public static boolean notEquals(Object a, Object b){
+        return !equals(a,b);
+    }
+
+    /**
      * trim
      * @param str str
      * @return String
