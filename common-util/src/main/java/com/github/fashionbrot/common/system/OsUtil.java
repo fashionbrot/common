@@ -15,7 +15,7 @@ public class OsUtil {
     private final static boolean IS_OS_WINDOWS = getOSMatches("Windows");
 
 
-    private static String getProperty(String key){
+    public static String getProperty(String key){
         try {
             return System.getProperty(key);
         } catch (SecurityException e) {

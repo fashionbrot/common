@@ -888,6 +888,30 @@ public class ObjectUtil {
         return Arrays.asList(content.split(delimiter)) ;
     }
 
+    /**
+     * 转大写 防止空指针
+     * @param str str
+     * @return String
+     */
+    public static String toUpperCase(String str){
+        if (ObjectUtil.isEmpty(str)){
+            return EMPTY;
+        }
+        return str.toUpperCase();
+    }
+
+    /**
+     * 转小写 防止空指针
+     * @param str str
+     * @return String
+     */
+    public static String toLowerCase(String str){
+        if (ObjectUtil.isEmpty(str)){
+            return EMPTY;
+        }
+        return str.toLowerCase();
+    }
+
 
     /**
      * 编码字符串
