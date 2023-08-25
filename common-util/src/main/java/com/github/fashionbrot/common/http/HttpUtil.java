@@ -228,6 +228,9 @@ public class HttpUtil {
         }
 
         String contentType = httpURLConnection.getContentType();
+        if (ObjectUtil.isEmpty(contentType)){
+            return CharsetConst.DEFAULT_CHARSET;
+        }
         String charsetName = extractCharsetFromContentType(contentType);
         return (charsetName != null) ? Charset.forName(charsetName) : CharsetConst.DEFAULT_CHARSET;
     }
