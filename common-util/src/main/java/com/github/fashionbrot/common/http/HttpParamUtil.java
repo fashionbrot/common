@@ -7,90 +7,85 @@ import com.github.fashionbrot.common.util.ObjectUtil;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class HttpParamUtil {
 
 
-    public static String formatGetUrl(String url,String params){
-        if (ObjectUtil.isEmpty(params)){
-            return url;
+    /**
+     * 格式化 GET 请求的 URL，将参数拼接到 URL 后面。
+     *
+     * @param url    原始 URL
+     * @param params 要拼接的参数字符串（例如："key1=value1&key2=value2"）
+     * @return 格式化后的 URL
+     */
+    public static String formatGetUrl(String url, String params) {
+        if (ObjectUtil.isEmpty(params)) {
+            return url; // 如果参数为空，直接返回原始 URL
         }
-        if (url.indexOf("?")>0){
-            return url+"&"+params;
+
+        // 使用 Java 的 StringJoiner 来拼接参数
+        StringJoiner joiner = new StringJoiner("&");
+        joiner.add(params);
+
+        // 判断原始 URL 是否已经包含参数
+        if (url.indexOf("?") > 0) {
+            return url + "&" + joiner.toString();
+        } else {
+            return url + "?" + joiner.toString();
         }
-        return url+"?"+params;
     }
 
 
+
     /**
-     * 实体类对象转URL参
-     * @param t 实体类对象
-     * @param <T> 实体类泛型
-     * @param ignoreNull 是否忽略空值
-     * @return String
+     * 将实体类对象转换为 URL 参数字符串。
+     *
+     * @param entity     实体类对象
+     * @param ignoreNull 是否忽略空值字段
+     * @param <T>        实体类的泛型
+     * @return URL 参数字符串
      */
-    public static <T> String entityToUrlParam(T t,boolean ignoreNull){
-        // URL 参数存储器
-        StringBuffer urlParam = new StringBuffer();
-        //扩展转换父类成员功能
-        entitySuperclassToUrlParam(t, t.getClass(),urlParam,ignoreNull);
-        if(urlParam.length()>0){
-            //去除最后一个&字符
+    public static <T> String entityToUrlParam(T entity, boolean ignoreNull) {
+        StringBuilder urlParam = new StringBuilder();
+        entityToUrlParamRecursive(entity, entity.getClass(), urlParam, ignoreNull);
+        if (urlParam.length() > 0) {
             urlParam.deleteCharAt(urlParam.length() - 1);
         }
         return urlParam.toString();
     }
 
-    /**
-     * 实体类对象转URL参
-     * @param t 实体类对象
-     * @param clazz 实体类类型
-     * @param urlParam URL 参数存储器
-     * @param ignoreNull 是否忽略空值
-     * @param <T> 实体类泛型
-     */
-    public static <T> void entitySuperclassToUrlParam(T t,Class clazz,StringBuffer urlParam,boolean ignoreNull){
-        if (clazz.equals(Object.class)){
-            return;
-        }
-        if (JavaUtil.isPrimitive(clazz)){
+    private static <T> void entityToUrlParamRecursive(T entity, Class<?> clazz, StringBuilder urlParam, boolean ignoreNull) {
+        if (clazz.equals(Object.class) || JavaUtil.isPrimitive(clazz)) {
             return;
         }
 
         Field[] declaredFields = clazz.getDeclaredFields();
-        if (ObjectUtil.isEmpty(declaredFields)){
-            return;
-        }
+        for (Field field : declaredFields) {
+            if (MethodUtil.isStaticOrFinal(field) || !JavaUtil.isPrimitive(field.getType())) {
+                continue;
+            }
 
-        for (int i = 0; i < declaredFields.length; i++) {
-            Field field = declaredFields[i];
-            if (MethodUtil.isStaticOrFinal(field)) {
-                continue;
-            }
-            if (!JavaUtil.isPrimitive(field.getType())){
-                continue;
-            }
-            //获取成员值
-            Object value = MethodUtil.getFieldValue(field,t);
-            //成员值为 Null 时，则不处理
-            if (value==null && ignoreNull) {
-                urlParam.append(field.getName()).append("=").append(value).append("&");
-            }else if (value!=null){
-                urlParam.append(field.getName()).append("=").append(value).append("&");
+            field.setAccessible(true);
+            try {
+                Object value = field.get(entity);
+
+                if (value != null || !ignoreNull) {
+                    urlParam.append(field.getName()).append("=").append(value).append("&");
+                }
+            } catch (IllegalAccessException e) {
+                // 忽略异常，继续处理下一个字段
             }
         }
 
-        Class superclass = clazz.getSuperclass();
+        Class<?> superclass = clazz.getSuperclass();
         if (superclass != null && JavaUtil.isNotObject(superclass)) {
-            //获取父类类型
-            clazz = clazz.getSuperclass();
-            //递归调用，获取父类的处理结果
-            entitySuperclassToUrlParam(t,clazz,urlParam,ignoreNull);
+            entityToUrlParamRecursive(entity, superclass, urlParam, ignoreNull);
         }
     }
 
 
-    public static String mapToUrlParam(Map<String,Object> paramMap,boolean ignoreNull){
+    public static String mapToUrlParam2(Map<String,Object> paramMap,boolean ignoreNull){
         if (ObjectUtil.isEmpty(paramMap)){
             return "";
         }
@@ -113,6 +108,40 @@ public class HttpParamUtil {
             params.deleteCharAt(params.length() - 1);
         }
         return params.toString();
+    }
+
+
+    /**
+     * 将 Map 转换为 URL 参数字符串。
+     *
+     * @param paramMap   包含参数的 Map
+     * @param ignoreNull 是否忽略空值字段
+     * @return URL 参数字符串
+     */
+    public static String mapToUrlParam(Map<String, Object> paramMap, boolean ignoreNull) {
+        if (ObjectUtil.isEmpty(paramMap)) {
+            return "";
+        }
+
+        StringBuilder params = new StringBuilder();
+        for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (JavaUtil.isPrimitive(value.getClass())) {
+                if (!ignoreNull || value != null) {
+                    appendParam(params, key, value);
+                }
+            }
+        }
+        if (params.length() > 0) {
+            params.deleteCharAt(params.length() - 1);
+        }
+        return params.toString();
+    }
+
+    private static void appendParam(StringBuilder params, String key, Object value) {
+        params.append(key).append("=").append(value).append("&");
     }
 
 

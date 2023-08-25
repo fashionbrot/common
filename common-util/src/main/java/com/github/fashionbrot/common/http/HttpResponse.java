@@ -9,29 +9,48 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import com.github.fashionbrot.common.util.IoUtil;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
 /**
- * @author fashionbrot
+ * HTTP 响应对象，用于封装服务器响应信息。
  */
 @Data
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class HttpResponse {
 
-    // 获取服务器的响应代码。
+    // 服务器响应的状态代码
     private int responseCode;
-    // 获取服务器的响应消息。
+
+    // 服务器响应的状态消息
     private String responseMessage;
 
+    // 请求的方法（HTTP 方法）
     private String requestMethod;
 
+    // 服务器响应的头字段信息
     private Map<String, List<String>> headerFields;
 
+    // 响应的字符编码
     private Charset charset;
 
+    // 响应体的字节数组
     private byte[] responseBody;
 
+    // 响应体的长度
     private long contentLength;
 
-    public String getResponseBody(){
-        return IoUtil.toString(responseBody,charset);
+    /**
+     * 获取响应体的内容字符串。
+     * @return 响应体内容字符串。
+     */
+    public String getResponseBody() {
+        return IoUtil.toString(responseBody, charset);
     }
 }
+

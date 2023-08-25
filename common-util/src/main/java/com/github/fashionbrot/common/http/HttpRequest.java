@@ -4,57 +4,69 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * @author fashionbrot
+ * HTTP 请求对象，用于封装请求信息。
  */
 @Data
-@Accessors(fluent=true)
+@Accessors(fluent = true)
 public class HttpRequest {
 
     /**
-     * 请求 url
+     * 请求的 URL 地址
      */
     private String url;
 
     /**
-     * 请求方法
+     * 请求方法（GET、POST 等）
      */
     private HttpMethod httpMethod;
+
     /**
-     * 超时时间
+     * 连接超时时间（单位：毫秒）
      */
     private Integer connectTimeout;
+
     /**
-     * 建立连接后从服务器读取到可用资源所用的时间
+     * 从服务器读取数据的超时时间（单位：毫秒）
      */
     private Integer readTimeout;
 
+    /**
+     * 是否使用缓存
+     */
     private Boolean useCaches;
 
     /**
-     * 设置请求类型
+     * 请求的内容类型
      */
     private ContentType contentType;
 
+    /**
+     * 是否自动处理重定向
+     */
     private Boolean instanceFollowRedirects;
 
+    /**
+     * 用于 chunked 流传输的流的大小（字节数）
+     */
     private Integer chunkedStreamingMode;
 
+    /**
+     * 用于固定长度流传输的流的大小（字节数）
+     */
     private Long fixedLengthStreamingMode;
 
     /**
-     * 入参 header
+     * 请求头信息
      */
     private HttpHeader header;
 
     /**
-     * 入参 cookie
+     * 请求时携带的 Cookie
      */
     private HttpCookie cookie;
 
     /**
-     * 入参 不包含GET 请求
+     * 请求体的字节数组（不包含 GET 请求）
      */
     private byte[] requestBody;
-
-
 }

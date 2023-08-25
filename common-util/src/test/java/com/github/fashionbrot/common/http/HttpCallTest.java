@@ -49,7 +49,25 @@ public class HttpCallTest {
             public void success(HttpRequest request, HttpResponse response) {
                 System.out.println(response.getResponseBody());
             }
-        });
+
+              @Override
+              public void failed(HttpRequest request, HttpResponse response) {
+                  System.out.println(response.getResponseBody());
+              }
+
+              @Override
+              public void exception(HttpRequest request, Exception exception) {
+                  exception.printStackTrace();
+              }
+          }
+
+        );
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 

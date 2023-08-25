@@ -1,148 +1,147 @@
 package com.github.fashionbrot.common.http;
 
 import com.github.fashionbrot.common.consts.CharsetConst;
-import com.github.fashionbrot.common.util.*;
+import com.github.fashionbrot.common.util.IoUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-/**
- * @author fashionbrot
- */
+
 public class HttpUtil {
 
+    public static final Integer DEFAULT_CONNECT_TIMEOUT = 5000;
+    public static final Pattern CHARSET_PATTERN = Pattern.compile("charset\\s*=\\s*([a-z0-9-]*)", Pattern.CASE_INSENSITIVE);
 
-    public static HttpResponse send(HttpRequest request)throws Exception {
 
+    /**
+     * 发送 HTTP 请求并获取响应。
+     *
+     * @param request HTTP 请求对象。
+     * @return HttpResponse 响应对象。
+     * @throws Exception 如果出现异常。
+     */
+    public static HttpResponse send(HttpRequest request) throws Exception {
         HttpResponse response = new HttpResponse();
         HttpURLConnection httpURLConnection = null;
+
         try {
-            //得到访问地址的URL
             URL url = new URL(request.url());
-            //得到网络访问对象
             httpURLConnection = (HttpURLConnection) url.openConnection();
 
-            if (request.httpMethod()!=null){
-                // 请求方式
-                httpURLConnection.setRequestMethod(request.httpMethod().name());
-            }
-            httpURLConnection.setDoInput(true);
-            if (request.httpMethod() == HttpMethod.POST ||
-                    request.httpMethod() == HttpMethod.DELETE ||
-                    request.httpMethod() == HttpMethod.PATCH ||
-                    request.httpMethod() == HttpMethod.PUT ) {
+            // 设置连接属性
+            setConnectionProperties(httpURLConnection, request);
 
-                // 设置是否输出
-                httpURLConnection.setDoOutput(true);
-            }
-            if (request.connectTimeout() != null) {
-                // 超时时间
-                httpURLConnection.setConnectTimeout(request.connectTimeout());
-            }
-            // 设置是否使用缓存
-            httpURLConnection.setUseCaches(request.useCaches()!=null?request.useCaches():false);
-            // 设置此 HttpURLConnection 实例是否应该自动执行 HTTP 重定向
-            httpURLConnection.setInstanceFollowRedirects(request.instanceFollowRedirects()!=null?request.instanceFollowRedirects():false);
+            // 连接并写入请求体
+            connectAndWriteRequestBody(httpURLConnection, request);
 
-            if (request.chunkedStreamingMode()!=null) {
-                httpURLConnection.setChunkedStreamingMode(request.chunkedStreamingMode());
-            }
-            if (request.fixedLengthStreamingMode()!=null){
-                httpURLConnection.setFixedLengthStreamingMode(request.fixedLengthStreamingMode());
-            }
+            // 填充响应信息
+            populateResponseInfo(httpURLConnection, response);
 
-            if (request.readTimeout() != null) {
-                httpURLConnection.setReadTimeout(request.readTimeout());
-            }
-            if (request.contentType()!=null) {
-                httpURLConnection.addRequestProperty(Header.CONTENT_TYPE.name(), request.contentType().getValue());
-            }
+            // 读取响应体
+            response.responseBody(readResponseBody(httpURLConnection));
 
-            setGlobalHeader(httpURLConnection);
-            setHeader(httpURLConnection,request);
-            setCookie(httpURLConnection,request);
-
-            // 连接
-            httpURLConnection.connect();
-
-            if (request.httpMethod() == HttpMethod.POST ||
-                    request.httpMethod() == HttpMethod.DELETE ||
-                    request.httpMethod() == HttpMethod.PATCH ||
-                    request.httpMethod() == HttpMethod.PUT ) {
-                IoUtil.write(httpURLConnection.getOutputStream(),request.requestBody());
-            }
-
-            response.responseCode(httpURLConnection.getResponseCode());
-            response.responseMessage(httpURLConnection.getResponseMessage());
-            response.requestMethod(httpURLConnection.getRequestMethod());
-            response.headerFields(httpURLConnection.getHeaderFields());
-            response.charset(getCharset(httpURLConnection));
-            response.contentLength(getContentLengthLong(httpURLConnection));
-
-            InputStream inputStream = null;
-            String encoding = httpURLConnection.getContentEncoding();
-            if(ObjectUtil.isNotEmpty(encoding) && encoding.contains("gzip")){
-                inputStream = new GZIPInputStream(httpURLConnection.getInputStream());
-            }else{
-                if (httpURLConnection.getResponseCode()==HttpURLConnection.HTTP_OK){
-                    inputStream = httpURLConnection.getInputStream();
-                }else{
-                    inputStream = httpURLConnection.getErrorStream();
-                }
-            }
-            response.responseBody(IoUtil.toByteAndClose(inputStream));
-
-        }finally {
-            if (httpURLConnection!=null){
+        } finally {
+            if (httpURLConnection != null) {
                 httpURLConnection.disconnect();
             }
         }
+
         return response;
     }
 
-    /** 正则：Content-Type中的编码信息 */
-    public static final Pattern CHARSET_PATTERN = Pattern.compile("charset\\s*=\\s*([a-z0-9-]*)", Pattern.CASE_INSENSITIVE);
 
-    public static Charset getCharset(HttpURLConnection httpURLConnection){
-        if (httpURLConnection!=null){
-            String contentType = httpURLConnection.getContentType();
-            String charsetName =get(CHARSET_PATTERN, contentType, 1);
-            if (ObjectUtil.isNotEmpty(charsetName)){
-                return Charset.forName(charsetName);
-            }
+    /**
+     * 设置连接属性，如请求方法、超时时间、请求头等。
+     */
+    public static void setConnectionProperties(HttpURLConnection connection, HttpRequest request) throws ProtocolException {
+        connection.setRequestMethod(request.httpMethod().name());
+        connection.setDoInput(true);
+
+        HttpMethod httpMethod = request.httpMethod();
+        if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.DELETE ||
+                httpMethod == HttpMethod.PATCH || httpMethod == HttpMethod.PUT) {
+            connection.setDoOutput(true);
         }
-        return CharsetConst.DEFAULT_CHARSET;
+
+        // 设置连接超时时间
+        connection.setConnectTimeout(request.connectTimeout() != null ? request.connectTimeout() : DEFAULT_CONNECT_TIMEOUT);
+        connection.setUseCaches(request.useCaches() != null ? request.useCaches() : false);
+        connection.setInstanceFollowRedirects(request.instanceFollowRedirects() != null ? request.instanceFollowRedirects() : false);
+
+        // 设置请求头、全局请求头、Cookie 等
+        setRequestHeaders(connection, request);
+        setGlobalHeader(connection);
+        setCookie(connection, request);
     }
 
     /**
-     * 获得匹配的字符串，对应分组0表示整个匹配内容，1表示第一个括号分组内容，依次类推
-     *
-     * @param pattern 编译后的正则模式
-     * @param content 被匹配的内容
-     * @param groupIndex 匹配正则的分组序号，0表示整个匹配内容，1表示第一个括号分组内容，依次类推
-     * @return 匹配后得到的字符串，未匹配返回null
+     * 连接并写入请求体，用于 POST、DELETE、PATCH 和 PUT 请求。
      */
-    public static String get(Pattern pattern, CharSequence content, int groupIndex) {
-        if (null == content || null == pattern) {
-            return null;
-        }
+    public static void connectAndWriteRequestBody(HttpURLConnection connection, HttpRequest request) throws IOException {
+        connection.connect();
 
-        final Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            return matcher.group(groupIndex);
+        HttpMethod httpMethod = request.httpMethod();
+        if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.DELETE ||
+                httpMethod == HttpMethod.PATCH || httpMethod == HttpMethod.PUT) {
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                IoUtil.write(outputStream, request.requestBody());
+            }
         }
-        return null;
+    }
+
+    /**
+     * 填充响应信息到 HttpResponse 对象。
+     */
+    public static void populateResponseInfo(HttpURLConnection connection, HttpResponse response) throws IOException {
+        response.responseCode(connection.getResponseCode());
+        response.responseMessage(connection.getResponseMessage());
+        response.requestMethod(connection.getRequestMethod());
+        response.headerFields(connection.getHeaderFields());
+        response.charset(getCharset(connection));
+        response.contentLength(getContentLengthLong(connection));
+    }
+
+    /**
+     * 读取响应体，考虑 gzip 压缩等情况。
+     */
+    public static byte[] readResponseBody(HttpURLConnection connection) throws IOException {
+        String encoding = connection.getContentEncoding();
+        try (InputStream inputStream = getContentStream(connection, encoding)) {
+            return IoUtil.toByteAndClose(inputStream);
+        }
+    }
+
+    /**
+     * 获取响应体的输入流，考虑 gzip 压缩等情况。
+     */
+    public static InputStream getContentStream(HttpURLConnection connection, String encoding) throws IOException {
+        int responseCode = connection.getResponseCode();
+
+        if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            if (ObjectUtil.isNotEmpty(encoding) && encoding.contains("gzip")) {
+                return new GZIPInputStream(connection.getInputStream());
+            } else {
+                return connection.getInputStream();
+            }
+        } else {
+            return connection.getErrorStream();
+        }
     }
 
 
-    public static void setHeader(HttpURLConnection httpURLConnection,HttpRequest request){
+    public static void setRequestHeaders(HttpURLConnection httpURLConnection,HttpRequest request){
         HttpHeader header = request.header();
         if (header!=null){
             Boolean override = header.getOverride();
@@ -174,51 +173,6 @@ public class HttpUtil {
         }
     }
 
-    public static long getContentLengthLong(HttpURLConnection httpURLConnection) {
-        return httpURLConnection.getHeaderFieldLong("Content-Length", -1);
-    }
-
-    /**
-     * 字符串转 byte[]
-     * @param str 字符串
-     * @param charsetName charsetName如utf-8、gbk...
-     * @return byte[]
-     */
-    public static byte[] toByte(String str,String charsetName){
-        if (ObjectUtil.isEmpty(str)){
-            return null;
-        }
-        Charset charset = CharsetUtil.getCharset(charsetName);
-        if (charset!=null){
-            return str.getBytes(charset);
-        }
-        return str.getBytes();
-    }
-
-    /**
-     * 字符串转 byte[]
-     * @param str 字符串
-     * @param charset Charset
-     * @return byte[]
-     */
-    public static byte[] toByte(String str,Charset charset){
-        if (ObjectUtil.isEmpty(str)){
-            return null;
-        }
-        if (charset!=null){
-            return str.getBytes(charset);
-        }
-        return str.getBytes();
-    }
-
-    /**
-     * 字符串转 byte[]
-     * @param str 字符串
-     * @return byte[]
-     */
-    public static byte[] toByte(String str){
-        return toByte(str,(String) null);
-    }
 
 
     public static void setGlobalHeader(HttpURLConnection httpURLConnection){
@@ -228,7 +182,48 @@ public class HttpUtil {
     }
 
 
+    /**
+     * 从 HTTP 响应头的 Content-Type 中获取字符集信息。
+     *
+     * @param httpURLConnection HttpURLConnection 对象。
+     * @return 解析到的字符集，如果没有找到则返回默认字符集。
+     */
+    public static Charset getCharset(HttpURLConnection httpURLConnection) {
+        if (httpURLConnection == null) {
+            return CharsetConst.DEFAULT_CHARSET;
+        }
+
+        String contentType = httpURLConnection.getContentType();
+        String charsetName = extractCharsetFromContentType(contentType);
+        return (charsetName != null) ? Charset.forName(charsetName) : CharsetConst.DEFAULT_CHARSET;
+    }
+
+    /**
+     * 从 Content-Type 字符串中提取字符集信息。
+     *
+     * @param contentType Content-Type 字符串。
+     * @return 提取到的字符集，如果没有找到则返回 null。
+     */
+    public static String extractCharsetFromContentType(String contentType) {
+        Matcher matcher = CHARSET_PATTERN.matcher(contentType);
+        return matcher.find() ? matcher.group(1) : "";
+    }
 
 
+    private static final long DEFAULT_CONTENT_LENGTH = -1;
+
+    /**
+     * 获取 HTTP 响应中的 Content-Length 头字段值。
+     *
+     * @param httpURLConnection HttpURLConnection 对象。
+     * @return Content-Length 头字段值，如果没有找到则返回默认值。
+     */
+    public static long getContentLengthLong(HttpURLConnection httpURLConnection) {
+        if (httpURLConnection == null) {
+            throw new IllegalArgumentException("HttpURLConnection cannot be null");
+        }
+
+        return httpURLConnection.getHeaderFieldLong("Content-Length", DEFAULT_CONTENT_LENGTH);
+    }
 
 }
