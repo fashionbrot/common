@@ -26,7 +26,15 @@ public class GenericTokenUtil {
         return true;
     }
 
-
+    /**
+     * 解析文本中的模板占位符，将占位符替换为映射中对应的值。
+     *
+     * @param text 待解析的文本
+     * @param openToken 开始占位符标记
+     * @param closeToken 结束占位符标记
+     * @param map 用于替换的映射
+     * @return 解析后的文本
+     */
     public static String parse(String text, String openToken, String closeToken, Map<String,Object> map) {
         if (ObjectUtil.isEmpty(text)) {
             return "";
