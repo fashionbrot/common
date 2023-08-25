@@ -242,6 +242,9 @@ public class HttpUtil {
      * @return 提取到的字符集，如果没有找到则返回 null。
      */
     public static String extractCharsetFromContentType(String contentType) {
+        if (ObjectUtil.isEmpty(contentType)){
+            return CharsetConst.UTF_8;
+        }
         Matcher matcher = CHARSET_PATTERN.matcher(contentType);
         return matcher.find() ? matcher.group(1) : "";
     }
