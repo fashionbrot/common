@@ -52,34 +52,27 @@ public class IoUtil {
         }
     }
 
-    public static byte[] toByteAndClose(InputStream input){
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
-            copy(input, output);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }finally {
-            close(input);
-        }
-        return output.toByteArray();
-    }
+
 
     public static byte[] toByte(File file){
-        return toByteAndClose(toInputStream(file));
+        return toByte(toInputStream(file));
     }
 
-    public static byte[] toByte(InputStream input){
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
+    /**
+     * 从 InputStream 复制内容到 ByteArrayOutputStream 并返回字节数组。
+     * 同时确保 InputStream 自动关闭。
+     *
+     * @param input InputStream 输入流
+     * @return byte[] 字节数组，复制失败时返回 null
+     */
+    public static byte[] toByte(InputStream input) {
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             copy(input, output);
+            return output.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }finally {
-            close(input);
         }
-        return output.toByteArray();
     }
 
 

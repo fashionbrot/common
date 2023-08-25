@@ -119,7 +119,7 @@ public class HttpUtil {
     public static byte[] readResponseBody(HttpURLConnection connection) throws IOException {
         String encoding = connection.getContentEncoding();
         try (InputStream inputStream = getContentStream(connection, encoding)) {
-            return IoUtil.toByteAndClose(inputStream);
+            return IoUtil.toByte(inputStream);
         }
     }
 
@@ -140,47 +140,59 @@ public class HttpUtil {
         }
     }
 
-
-    public static void setRequestHeaders(HttpURLConnection httpURLConnection,HttpRequest request){
+    /**
+     * 设置请求头信息到 HttpURLConnection 请求中。
+     *
+     * @param httpURLConnection HttpURLConnection 对象
+     * @param request           包含请求头信息的请求对象
+     */
+    public static void setRequestHeaders(HttpURLConnection httpURLConnection, HttpRequest request) {
         HttpHeader header = request.header();
-        if (header!=null){
+        if (header != null) {
             Boolean override = header.getOverride();
             Map<String, String> headerMap = header.getHeader();
-            if (ObjectUtil.isNotEmpty(headerMap)){
-                Iterator<Map.Entry<String, String>> iterator = headerMap.entrySet().iterator();
-                if (iterator.hasNext()){
-                    Map.Entry<String, String> next = iterator.next();
-                    if (override!=null && override){
-                        httpURLConnection.setRequestProperty(next.getKey(),next.getValue());
-                    }else{
-                        httpURLConnection.addRequestProperty(next.getKey(),next.getValue());
+            if (ObjectUtil.isNotEmpty(headerMap)) {
+                for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    if (ObjectUtil.isTrue(override)) {
+                        httpURLConnection.setRequestProperty(key, value);
+                    } else {
+                        httpURLConnection.addRequestProperty(key, value);
                     }
                 }
             }
         }
     }
 
-    public static void setCookie(HttpURLConnection httpURLConnection,HttpRequest request){
+
+    /**
+     * 设置 Cookie 到 HttpURLConnection 请求头中。
+     *
+     * @param httpURLConnection HttpURLConnection 对象
+     * @param request           包含 Cookie 信息的请求对象
+     */
+    public static void setCookie(HttpURLConnection httpURLConnection, HttpRequest request) {
         HttpCookie cookie = request.cookie();
-        if (cookie!=null){
+        if (cookie != null) {
             List<String> cookieList = cookie.getCookieList();
-            if (ObjectUtil.isNotEmpty(cookieList)){
-                for (int i = 0; i < cookieList.size(); i++) {
-                    String cookieString = cookieList.get(i);
-                    httpURLConnection.addRequestProperty("Cookie",cookieString);
-                }
+            for (String cookieString : cookieList) {
+                httpURLConnection.addRequestProperty("Cookie", cookieString);
             }
         }
     }
 
 
-
-    public static void setGlobalHeader(HttpURLConnection httpURLConnection){
-        httpURLConnection.addRequestProperty(Header.ACCEPT.name(),"text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8");
-        httpURLConnection.addRequestProperty(Header.ACCEPT_LANGUAGE.name(),"zh-CN,zh;q=0.9,en;q=0.8");
-        httpURLConnection.addRequestProperty(Header.ACCEPT_ENCODING.name(),"gzip, deflate");
+    /**
+     * 设置全局请求头信息到 HttpURLConnection 请求中。
+     *
+     * @param httpURLConnection HttpURLConnection 对象
+     */
+    public static void setGlobalHeader(HttpURLConnection httpURLConnection) {
+        httpURLConnection.setRequestProperty(Header.ACCEPT.name(), "text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8");
+        httpURLConnection.setRequestProperty(Header.ACCEPT_LANGUAGE.name(), "zh-CN,zh;q=0.9,en;q=0.8");
+        httpURLConnection.setRequestProperty(Header.ACCEPT_ENCODING.name(), "gzip, deflate");
     }
-
 
     /**
      * 从 HTTP 响应头的 Content-Type 中获取字符集信息。
