@@ -236,7 +236,7 @@ public class RsaUtil {
      */
     public static String decrypt(String str, RSAPrivateKey privateKey) {
         if (ObjectUtil.isNotEmpty(str)){
-            byte[] inputByte = Base64Util.decode(str.getBytes());
+            byte[] inputByte = Base64Util.decode(str);
             byte[] decrypt = decrypt(inputByte, privateKey);
             if (ObjectUtil.isNotEmpty(decrypt)){
                 return new String(decrypt);
@@ -274,24 +274,6 @@ public class RsaUtil {
     }
 
 
-//    public static void main(String[] args) throws Exception {
-//        Map<String, String> stringStringMap = genKeyPairMap(512,"12345678".getBytes());
-//
-//        System.out.println(stringStringMap);
-//
-//
-//        String encrypt = encrypt(new String("{张三哦}".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), stringStringMap.get("public"));
-//        System.out.println("encrypt:" + encrypt);
-//        String decrypt = decrypt(encrypt, stringStringMap.get("private"));
-//        System.out.println("decrypt:" + decrypt);
-//
-//
-//        KeyPair keyPair = genKeyPair(512,"12345678".getBytes());
-//        String encrypt1 = encrypt(keyPair, "{张三哦}");
-//        System.out.println("encrypt1:"+encrypt1);
-//        String decrypt1 = decrypt(keyPair, encrypt1);
-//        System.out.println("decrypt1:"+decrypt1);
-//
-//    }
+
 
 }
