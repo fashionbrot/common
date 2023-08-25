@@ -13,11 +13,11 @@ public class HttpParamUtil {
 
 
     /**
-     * 格式化 GET 请求的 URL，将参数拼接到 URL 后面。
+     * 格式化 GET 请求的 URL，将参数拼接到 URL 上。
      *
-     * @param url    原始 URL
-     * @param params 要拼接的参数字符串（例如："key1=value1&key2=value2"）
-     * @return 格式化后的 URL
+     * @param url    原始 URL。
+     * @param params 参数字符串。
+     * @return 格式化后的 URL。
      */
     public static String formatGetUrl(String url, String params) {
         if (ObjectUtil.isEmpty(params)) {

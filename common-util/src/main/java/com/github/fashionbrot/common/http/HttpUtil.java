@@ -63,7 +63,11 @@ public class HttpUtil {
 
 
     /**
-     * 设置连接属性，如请求方法、超时时间、请求头等。
+     * 设置 HttpURLConnection 连接属性，包括请求方法、超时时间、请求头等。
+     *
+     * @param connection HttpURLConnection 连接对象。
+     * @param request    HttpRequest 请求对象。
+     * @throws ProtocolException 如果请求方法不支持，将抛出此异常。
      */
     public static void setConnectionProperties(HttpURLConnection connection, HttpRequest request) throws ProtocolException {
         connection.setRequestMethod(request.httpMethod().name());
@@ -88,6 +92,10 @@ public class HttpUtil {
 
     /**
      * 连接并写入请求体，用于 POST、DELETE、PATCH 和 PUT 请求。
+     *
+     * @param connection HTTP连接。
+     * @param request    HttpRequest 请求。
+     * @throws IOException 如果发生I/O错误。
      */
     public static void connectAndWriteRequestBody(HttpURLConnection connection, HttpRequest request) throws IOException {
         connection.connect();
@@ -102,7 +110,11 @@ public class HttpUtil {
     }
 
     /**
-     * 填充响应信息到 HttpResponse 对象。
+     * 从HTTP连接中提取响应信息并填充到 HttpResponse 对象中。
+     *
+     * @param connection HTTP连接。
+     * @param response   HttpResponse 对象。
+     * @throws IOException 如果发生I/O错误。
      */
     public static void populateResponseInfo(HttpURLConnection connection, HttpResponse response) throws IOException {
         response.responseCode(connection.getResponseCode());
@@ -114,7 +126,11 @@ public class HttpUtil {
     }
 
     /**
-     * 读取响应体，考虑 gzip 压缩等情况。
+     * 读取 HttpURLConnection 的响应体并返回字节数组。
+     *
+     * @param connection HttpURLConnection 连接对象。
+     * @return 字节数组表示的响应体内容。
+     * @throws IOException 如果读取过程中出现 IO 错误，将抛出此异常。
      */
     public static byte[] readResponseBody(HttpURLConnection connection) throws IOException {
         String encoding = connection.getContentEncoding();
@@ -123,8 +139,14 @@ public class HttpUtil {
         }
     }
 
+
     /**
      * 获取响应体的输入流，考虑 gzip 压缩等情况。
+     *
+     * @param connection HTTP连接。
+     * @param encoding   内容的编码。
+     * @return 包含内容的输入流。
+     * @throws IOException 如果发生I/O错误。
      */
     public static InputStream getContentStream(HttpURLConnection connection, String encoding) throws IOException {
         int responseCode = connection.getResponseCode();
