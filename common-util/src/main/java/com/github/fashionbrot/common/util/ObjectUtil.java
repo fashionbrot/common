@@ -116,10 +116,6 @@ public class ObjectUtil {
      *
      * @param map 待判断的Map
      * @return 如果Map为空，则返回true；否则返回false。
-     * @apiNote 如果传入的Map为null或不包含任何键值对，则被视为空。
-     * @example
-     * Map<String, Integer> emptyMap = new HashMap<>();
-     * boolean isEmpty = ObjectUtil.isEmpty(emptyMap); // 返回 true
      */
     public static boolean isEmpty(final Map<?, ?> map) {
         return (map == null || map.isEmpty());
@@ -130,11 +126,6 @@ public class ObjectUtil {
      *
      * @param map 待判断的Map
      * @return 如果Map不为空，则返回true；否则返回false。
-     * @apiNote 如果传入的Map不为null且至少包含一个键值对，则被视为不为空。
-     * @example
-     * Map<String, Integer> nonEmptyMap = new HashMap<>();
-     * nonEmptyMap.put("key1", 1);
-     * boolean isNotEmpty = ObjectUtil.isNotEmpty(nonEmptyMap); // 返回 true
      */
     public static boolean isNotEmpty(final Map<?, ?> map) {
         return !isEmpty(map);
@@ -146,10 +137,6 @@ public class ObjectUtil {
      *
      * @param objects 待判断的数组
      * @return 如果数组为空，则返回true；否则返回false。
-     * @apiNote 如果传入的数组为null或长度为0，则被视为空数组。
-     * @example
-     * Object[] emptyArray = new Object[0];
-     * boolean isEmpty = ObjectUtil.isEmpty(emptyArray); // 返回 true
      */
     public static boolean isEmpty(final Object[] objects) {
         return objects == null || objects.length == 0;
@@ -160,10 +147,6 @@ public class ObjectUtil {
      *
      * @param objects 待判断的数组
      * @return 如果数组不为空，则返回true；否则返回false。
-     * @apiNote 如果传入的数组不为null且长度大于0，则被视为非空数组。
-     * @example
-     * Object[] nonEmptyArray = new Object[] { 1, "hello", new Object() };
-     * boolean isNotEmpty = ObjectUtil.isNotEmpty(nonEmptyArray); // 返回 true
      */
     public static boolean isNotEmpty(final Object[] objects) {
         return !isEmpty(objects);
@@ -175,13 +158,68 @@ public class ObjectUtil {
      *
      * @param bytes 待判断的字节数组
      * @return 如果字节数组为空，则返回true；否则返回false。
-     * @apiNote 如果传入的字节数组为null或长度为0，则被视为空字节数组。
-     * @example
-     * byte[] emptyBytes = new byte[0];
-     * boolean isEmpty = ObjectUtil.isEmpty(emptyBytes); // 返回 true
      */
     public static boolean isEmpty(final byte[] bytes) {
         return bytes == null || bytes.length == 0;
+    }
+
+
+    /**
+     * 验证 Boolean 对象的值。
+     *
+     * @param b 要验证的 Boolean 对象，可以为null
+     * @return 如果输入的 Boolean 对象不为null且为true，则返回true；否则返回false
+     */
+    public static boolean isBoolean(Boolean b) {
+        return b != null && b;
+    }
+
+    /**
+     * 验证 Boolean 是否为 false。
+     *
+     * @param bool 要验证的 Boolean 对象，可以为 null
+     * @return 如果输入的 Boolean 对象为 null 或者为 false，则返回 true；否则返回 false
+     */
+    public static boolean isFalse(Boolean bool) {
+        return bool == null || !bool;
+    }
+
+
+    /**
+     * 验证 Boolean 是否为 true。
+     *
+     * @param bool 要验证的 Boolean 对象，可以为 null
+     * @return 如果输入的 Boolean 对象不为 null 且为 true，则返回 true；否则返回 false
+     */
+    public static boolean isTrue(Boolean bool) {
+        return isBoolean(bool);
+    }
+
+
+    /**
+     * 将字符串转换为大写形式，防止空指针。
+     *
+     * @param str 要转换的字符串，可以为null
+     * @return 转换为大写的字符串，如果输入为null，则返回空字符串
+     */
+    public static String toUpperCase(String str) {
+        if (ObjectUtil.isEmpty(str)) {
+            return "";
+        }
+        return str.toUpperCase();
+    }
+
+    /**
+     * 将字符串转换为小写形式，防止空指针。
+     *
+     * @param str 要转换的字符串，可以为null
+     * @return 转换为小写的字符串，如果输入为null，则返回空字符串
+     */
+    public static String toLowerCase(String str) {
+        if (ObjectUtil.isEmpty(str)) {
+            return "";
+        }
+        return str.toLowerCase();
     }
 
     /**
@@ -189,10 +227,6 @@ public class ObjectUtil {
      *
      * @param bytes 待判断的字节数组
      * @return 如果字节数组不为空，则返回true；否则返回false。
-     * @apiNote 如果传入的字节数组不为null且长度大于0，则被视为非空字节数组。
-     * @example
-     * byte[] nonEmptyBytes = new byte[] { 1, 2, 3 };
-     * boolean isNotEmpty = ObjectUtil.isNotEmpty(nonEmptyBytes); // 返回 true
      */
     public static boolean isNotEmpty(final byte[] bytes) {
         return !isEmpty(bytes);
@@ -205,11 +239,7 @@ public class ObjectUtil {
      *
      * @param str 待检查的字符串
      * @return 如果字符串仅包含数字字符，则返回 true；否则返回 false。
-     * @apiNote 这个方法委托给了 isNumeric 方法来执行实际的数字判断。
      * @see ObjectUtil#isNumeric(CharSequence)
-     * @example
-     * boolean containsOnlyDigits = ObjectUtil.isDigits("12345"); // 返回 true
-     * boolean containsNonDigits = ObjectUtil.isDigits("123abc"); // 返回 false
      */
     public static boolean isDigits(String str) {
         return isNumeric(str);
@@ -221,10 +251,6 @@ public class ObjectUtil {
      *
      * @param cs 要检查的字符序列
      * @return 如果字符序列是数字，则返回 true；否则返回 false。
-     * @apiNote 这个方法会检查字符序列中的每个字符，如果字符不是数字字符（'0' 到 '9'），则返回 false。
-     * @example
-     * boolean isNum = ObjectUtil.isNumeric("12345"); // 返回 true
-     * boolean isNotNum = ObjectUtil.isNumeric("123abc"); // 返回 false
      */
     public static boolean isNumeric(final CharSequence cs) {
         if (isEmpty(cs)) {
@@ -258,10 +284,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 Short 值，如果字符串为空则返回 0。
-     * @apiNote 这个方法尝试将输入字符串解析为 Short 值，如果解析失败则返回默认值 0。
-     * @example
-     * Short value = ObjectUtil.parseShort("123"); // 返回 123
-     * Short defaultValue = ObjectUtil.parseShort("abc", (short) 456); // 返回 456
      */
     public static Short parseShort(final String str) {
         return parseShort(str, (short) 0);
@@ -273,10 +295,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 Short 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 Short 值，如果解析失败则返回指定的默认值。
-     * @example
-     * Short value = ObjectUtil.parseShort("123", (short) 0); // 返回 123
-     * Short defaultValue = ObjectUtil.parseShort("abc", (short) 456); // 返回 456
      */
     public static Short parseShort(final String str, final Short defaultValue) {
         if (isEmpty(str)) {
@@ -295,10 +313,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 Float 值，如果字符串为空则返回 0.0。
-     * @apiNote 这个方法尝试将输入字符串解析为 Float 值，如果解析失败则返回默认值 0.0。
-     * @example
-     * Float value = ObjectUtil.parseFloat("3.14"); // 返回 3.14
-     * Float defaultValue = ObjectUtil.parseFloat("abc", 1.23F); // 返回 1.23
      */
     public static Float parseFloat(final String str) {
         return parseFloat(str, 0.0F);
@@ -310,10 +324,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 Float 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 Float 值，如果解析失败则返回指定的默认值。
-     * @example
-     * Float value = ObjectUtil.parseFloat("3.14", 1.23F); // 返回 3.14
-     * Float defaultValue = ObjectUtil.parseFloat("abc", 1.23F); // 返回 1.23
      */
     public static Float parseFloat(final String str, final Float defaultValue) {
         if (isEmpty(str)) {
@@ -334,10 +344,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 Double 值，如果字符串为空则返回 0.0。
-     * @apiNote 这个方法尝试将输入字符串解析为 Double 值，如果解析失败则返回默认值 0.0。
-     * @example
-     * Double value = ObjectUtil.parseDouble("3.14"); // 返回 3.14
-     * Double defaultValue = ObjectUtil.parseDouble("abc", 1.23); // 返回 1.23
      */
     public static Double parseDouble(final String str) {
         return parseDouble(str, 0.0D);
@@ -349,10 +355,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 Double 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 Double 值，如果解析失败则返回指定的默认值。
-     * @example
-     * Double value = ObjectUtil.parseDouble("3.14", 1.23); // 返回 3.14
-     * Double defaultValue = ObjectUtil.parseDouble("abc", 1.23); // 返回 1.23
      */
     public static Double parseDouble(final String str, final Double defaultValue) {
         if (isEmpty(str)) {
@@ -373,10 +375,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 Integer 值，如果字符串为空则返回 0。
-     * @apiNote 这个方法尝试将输入字符串解析为 Integer 值，如果解析失败则返回默认值 0。
-     * @example
-     * Integer value = ObjectUtil.parseInteger("123"); // 返回 123
-     * Integer defaultValue = ObjectUtil.parseInteger("abc", 456); // 返回 456
      */
     public static Integer parseInteger(final String str){
         return parseInteger(str, 0);
@@ -388,10 +386,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 Integer 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 Integer 值，如果解析失败则返回指定的默认值。
-     * @example
-     * Integer value = ObjectUtil.parseInteger("123", 456); // 返回 123
-     * Integer defaultValue = ObjectUtil.parseInteger("abc", 456); // 返回 456
      */
     public static Integer parseInteger(final String str, final Integer defaultValue) {
         if (isEmpty(str)) {
@@ -412,10 +406,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 Long 值，如果字符串为空则返回 0L。
-     * @apiNote 这个方法尝试将输入字符串解析为 Long 值，如果解析失败则返回默认值 0L。
-     * @example
-     * Long value = ObjectUtil.parseLong("123"); // 返回 123L
-     * Long defaultValue = ObjectUtil.parseLong("abc", 456L); // 返回 456L
      */
     public static Long parseLong(final String str){
         return parseLong(str, 0L);
@@ -427,10 +417,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 Long 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 Long 值，如果解析失败则返回指定的默认值。
-     * @example
-     * Long value = ObjectUtil.parseLong("123", 456L); // 返回 123L
-     * Long defaultValue = ObjectUtil.parseLong("abc", 456L); // 返回 456L
      */
     public static Long parseLong(final String str, final Long defaultValue) {
         if (isEmpty(str)) {
@@ -449,10 +435,6 @@ public class ObjectUtil {
      *
      * @param str 要解析的字符串
      * @return 解析后的 boolean 值，如果字符串为空则返回 false。
-     * @apiNote 这个方法尝试将输入字符串解析为 boolean 值，如果解析失败则返回默认值 false。
-     * @example
-     * boolean value = ObjectUtil.parseBoolean("true"); // 返回 true
-     * boolean defaultValue = ObjectUtil.parseBoolean("abc", false); // 返回 false
      */
     public static boolean parseBoolean(final String str){
         return parseBoolean(str, false);
@@ -464,10 +446,6 @@ public class ObjectUtil {
      * @param str 要解析的字符串
      * @param defaultValue 解析失败时返回的默认值
      * @return 解析后的 boolean 值，如果字符串为空或解析失败则返回默认值。
-     * @apiNote 这个方法尝试将输入字符串解析为 boolean 值，如果解析失败则返回指定的默认值。
-     * @example
-     * boolean value = ObjectUtil.parseBoolean("true", false); // 返回 true
-     * boolean defaultValue = ObjectUtil.parseBoolean("abc", false); // 返回 false
      */
     public static boolean parseBoolean(final String str, boolean defaultValue) {
         if (isEmpty(str)) {
@@ -487,10 +465,6 @@ public class ObjectUtil {
      *
      * @param object 要格式化的 Object
      * @return 格式化后的 Integer 值，如果 Object 为 null 或无法解析为数字则返回默认值 0。
-     * @apiNote 这个方法尝试将输入的 Object 格式化为 Integer 值，如果无法解析为数字则返回默认值 0。
-     * @example
-     * Integer value = ObjectUtil.formatInteger(123); // 返回 123
-     * Integer defaultValue = ObjectUtil.formatInteger("abc"); // 返回 0
      */
     public static Integer formatInteger(final Object object) {
         if (object == null) {
@@ -514,10 +488,6 @@ public class ObjectUtil {
      *
      * @param object 要格式化的 Object
      * @return 格式化后的 Long 值，如果 Object 为 null 或无法解析为数字则返回默认值 0L。
-     * @apiNote 这个方法尝试将输入的 Object 格式化为 Long 值，如果无法解析为数字则返回默认值 0L。
-     * @example
-     * Long value = StringParseUtil.formatLong(12345L); // 返回 12345L
-     * Long defaultValue = StringParseUtil.formatLong("abc"); // 返回 0L
      */
     public static Long formatLong(final Object object) {
         if (object == null) {
@@ -542,10 +512,6 @@ public class ObjectUtil {
      *
      * @param object 要格式化的 Object
      * @return 格式化后的 Double 值，如果 Object 为 null 或无法解析为 Double 则返回默认值 0.00。
-     * @apiNote 这个方法尝试将输入的 Object 格式化为 Double 值，如果无法解析为 Double 则返回默认值 0.00。
-     * @example
-     * Double value = StringParseUtil.formatDouble(12.34); // 返回 12.34
-     * Double defaultValue = StringParseUtil.formatDouble("abc"); // 返回 0.00
      */
     public static Double formatDouble(final Object object) {
         if (object == null) {
@@ -566,10 +532,6 @@ public class ObjectUtil {
      *
      * @param object 要格式化的 Object
      * @return 格式化后的 Float 值，如果 Object 为 null 或无法解析为 Float 则返回默认值 0.0F。
-     * @apiNote 这个方法尝试将输入的 Object 格式化为 Float 值，如果无法解析为 Float 则返回默认值 0.0F。
-     * @example
-     * Float value = StringParseUtil.formatFloat(12.34); // 返回 12.34
-     * Float defaultValue = StringParseUtil.formatFloat("abc"); // 返回 0.0F
      */
     public static Float formatFloat(final Object object){
         if (object == null){
@@ -589,10 +551,6 @@ public class ObjectUtil {
      *
      * @param object 要格式化的 Object
      * @return 格式化后的 Short 值，如果 Object 为 null 或无法解析为 Short 则返回默认值 0。
-     * @apiNote 这个方法尝试将输入的 Object 格式化为 Short 值，如果无法解析为 Short 则返回默认值 0。
-     * @example
-     * Short value = StringParseUtil.formatShort("123"); // 返回 123
-     * Short defaultValue = StringParseUtil.formatShort("abc"); // 返回 0
      */
     public static Short formatShort(final Object object){
         if (object == null){
@@ -616,11 +574,6 @@ public class ObjectUtil {
      * @param object 要进行格式化的 Object 对象，可以为 null
      * @return 如果成功将对象格式化为 boolean，则返回格式化后的 boolean 值，否则返回 false
      *
-     * @apiNote 这个方法依赖于 Object 的 toString() 方法来获取字符串表示形式。
-     *         转换过程中，它将尝试解析字符串为 boolean 值，"true"（不区分大小写）会转换为 true，
-     *         其他情况会转换为 false。
-     *
-     * @example
      * <pre>
      * {@code
      * Object trueObject = "true";
@@ -669,7 +622,6 @@ public class ObjectUtil {
      * @return String with only digits,
      *           or an empty ("") String if no digits found,
      *           or {@code null} String if {@code str} is null
-     * @since 3.6
      */
     public static String getDigits(final String str) {
         if (str == null) {
@@ -718,7 +670,6 @@ public class ObjectUtil {
      * @param str  the String to truncate, may be null
      * @param maxWidth  maximum length of result String, must be positive
      * @return truncated String, {@code null} if null String input
-     * @since 3.5
      */
     public static String truncate(final String str, final int maxWidth) {
         return truncate(str, 0, maxWidth);
@@ -781,7 +732,6 @@ public class ObjectUtil {
      * @param offset  left edge of source String
      * @param maxWidth  maximum length of result String, must be positive
      * @return truncated String, {@code null} if null String input
-     * @since 3.5
      */
     public static String truncate(final String str, final int offset, final int maxWidth) {
         if (offset < 0) {
@@ -809,18 +759,6 @@ public class ObjectUtil {
      *
      * @param string 要转换的字符串，可以为null
      * @return UTF-8编码的字节数组，如果输入为null则返回空字节数组
-     *
-     * @apiNote 这个方法可以用于将字符串转换为UTF-8编码的字节数组，从而方便在网络传输或持久化存储时使用。
-     *         如果输入字符串为null，将返回一个空字节数组。
-     *
-     * @example
-     * <pre>
-     * {@code
-     * String input = "Hello, world!";
-     * byte[] utf8Bytes = ObjectUtil.getBytesUtf8(input);
-     * // 现在 utf8Bytes 包含了 "Hello, world!" 的UTF-8编码字节数组
-     * }
-     * </pre>
      */
     public static byte[] getBytesUtf8(final String string) {
         if (string == null) {
@@ -846,12 +784,12 @@ public class ObjectUtil {
     }
 
 
-    public static String newStringUsAscii(final byte[] bytes) {
-        return newString(bytes, Charset.forName("UTF-8"));
+    public static String byteToString(final byte[] bytes) {
+        return byteToString(bytes,CharsetConst.UTF8_CHARSET);
     }
 
 
-    private static String newString(final byte[] bytes, final Charset charset) {
+    private static String byteToString(final byte[] bytes, final Charset charset) {
         return bytes == null ? null : new String(bytes, charset);
     }
 
@@ -956,40 +894,6 @@ public class ObjectUtil {
         }
     }
 
-    /**
-     * 验证 Boolean 对象的值。
-     *
-     * @param b 要验证的 Boolean 对象，可以为null
-     * @return 如果输入的 Boolean 对象不为null且为true，则返回true；否则返回false
-     */
-    public static boolean isBoolean(Boolean b) {
-        // 如果输入为null，返回false
-        return b != null && b;
-    }
-
-    /**
-     * 验证 Boolean 是否为 false。
-     *
-     * @param bool 要验证的 Boolean 对象，可以为 null
-     * @return 如果输入的 Boolean 对象为 null 或者为 false，则返回 true；否则返回 false
-     */
-    public static boolean isFalse(Boolean bool) {
-        return bool == null || !bool;
-    }
-
-
-    /**
-     * 验证 Boolean 是否为 true。
-     *
-     * @param bool 要验证的 Boolean 对象，可以为 null
-     * @return 如果输入的 Boolean 对象不为 null 且为 true，则返回 true；否则返回 false
-     */
-    public static boolean isTrue(Boolean bool) {
-        return isBoolean(bool);
-    }
-
-
-
 
     /**
      * 判断字符串是否以指定内容开始，忽略大小写。
@@ -1057,31 +961,7 @@ public class ObjectUtil {
         return Arrays.asList(content.split(delimiter)) ;
     }
 
-    /**
-     * 将字符串转换为大写形式，防止空指针。
-     *
-     * @param str 要转换的字符串，可以为null
-     * @return 转换为大写的字符串，如果输入为null，则返回空字符串
-     */
-    public static String toUpperCase(String str) {
-        if (ObjectUtil.isEmpty(str)) {
-            return "";
-        }
-        return str.toUpperCase();
-    }
 
-    /**
-     * 将字符串转换为小写形式，防止空指针。
-     *
-     * @param str 要转换的字符串，可以为null
-     * @return 转换为小写的字符串，如果输入为null，则返回空字符串
-     */
-    public static String toLowerCase(String str) {
-        if (ObjectUtil.isEmpty(str)) {
-            return "";
-        }
-        return str.toLowerCase();
-    }
 
 
 

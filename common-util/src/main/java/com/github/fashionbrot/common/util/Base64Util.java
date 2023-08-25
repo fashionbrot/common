@@ -94,7 +94,7 @@ public class Base64Util {
      * @return String
      */
     public static String encodeBase64String(final byte[] binaryData) {
-        return ObjectUtil.newStringUsAscii(encode(binaryData));
+        return ObjectUtil.byteToString(encode(binaryData));
     }
 
 
