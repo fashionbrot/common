@@ -24,4 +24,18 @@ public class PropertiesUtilTest {
         Assert.assertEquals("abc",value);
     }
 
+    @Test
+    public void test3(){
+        String content = "abc=你\n" +
+                "t1=好\n"+
+                "test=${abc}${t1}";
+        Properties properties = PropertiesUtil.toProperties(content);
+        Properties resolve = PropertiesUtil.resolve(properties);
+        String test = resolve.getProperty("test");
+        System.out.println(resolve.toString());
+        System.out.println(test);
+        Assert.assertEquals("你好",test);
+    }
+
+
 }

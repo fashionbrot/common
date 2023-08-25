@@ -5,16 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class PropertiesUtil {
 
-    private static final String PLACEHOLDER_PREFIX = "${";
+    public static final String PLACEHOLDER_PREFIX = "${";
 
-    private static final String PLACEHOLDER_SUFFIX = "}";
+    public static final String PLACEHOLDER_SUFFIX = "}";
 
-    private static final String VALUE_SEPARATOR = ":";
+    public static final String VALUE_SEPARATOR = ":";
 
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
 
     /**
      * file 转  Properties
@@ -89,57 +92,78 @@ public class PropertiesUtil {
 
 
     /**
-     * ${abc} 返回 abc
-     * @param placeholder 要解析的内容
-     * @return String
+     * 解析占位符，从占位符字符串中提取内容。
+     *
+     * @param placeholder 要解析的占位符字符串。
+     * @return 提取的内容，如果占位符格式不正确则返回 null。
      */
     public static String resolvePlaceholder(String placeholder) {
+        // 检查占位符是否以预定的前缀开始，如果不是则返回 null
         if (!placeholder.startsWith(PLACEHOLDER_PREFIX)) {
-            return null;
+            return "";
         }
 
+        // 检查占位符是否以预定的后缀结尾，如果不是则返回 null
         if (!placeholder.endsWith(PLACEHOLDER_SUFFIX)) {
-            return null;
+            return "";
         }
 
+        // 检查占位符长度是否足够容纳实际内容，如果不是则返回 null
         if (placeholder.length() <= PLACEHOLDER_PREFIX.length() + PLACEHOLDER_SUFFIX.length()) {
-            return null;
+            return "";
         }
-
+        // 计算提取内容的起始和结束索引
         int beginIndex = PLACEHOLDER_PREFIX.length();
-        int endIndex = placeholder.length() - PLACEHOLDER_PREFIX.length() + 1;
+        int endIndex = placeholder.length() - PLACEHOLDER_SUFFIX.length();
+        // 提取实际内容部分
         placeholder = placeholder.substring(beginIndex, endIndex);
+        // 查找值分隔符的索引
         int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
+
+        // 如果存在值分隔符，则返回分隔符之前的部分作为提取的内容
         if (separatorIndex != -1) {
             return placeholder.substring(0, separatorIndex);
         }
+        // 否则，返回经过去除首尾空白后的内容
         return ObjectUtil.trim(placeholder);
     }
 
 
 
-    public static Properties resolve(Map<?, ?> properties, Properties source) {
+    /**
+     * 解析属性值中的占位符。
+     *
+     * @param properties 带有占位符的输入属性。
+     * @return 带有已解析占位符的 Properties 对象。
+     */
+    public static Properties resolve(Properties properties) {
         Properties resolvedProperties = new Properties();
-        for (Map.Entry<?, ?> entry : properties.entrySet()) {
-            if (entry.getValue() instanceof CharSequence) {
-                String key = String.valueOf(entry.getKey());
-                String value = String.valueOf(entry.getValue());
 
-                String resolvedKey = resolvePlaceholder(value);
-                if (ObjectUtil.isEmpty(resolvedKey)){
-                    resolvedProperties.setProperty(key, value);
-                }else{
-                    if (source!=null && source.containsKey(resolvedKey)){
-                        String resolvedValue = source.getProperty( resolvedKey) ;
-                        resolvedProperties.setProperty(key, resolvedValue);
-                    }else{
-                        resolvedProperties.setProperty(key, "");
-                    }
+        for (Map.Entry<?, ?> entry : properties.entrySet()) {
+            Object valueObj = entry.getValue();
+            if (valueObj instanceof CharSequence) {
+                String value = valueObj.toString();
+                String key = entry.getKey().toString();
+
+                Matcher matcher = PLACEHOLDER_PATTERN.matcher(value);
+                StringBuffer resolvedValue = new StringBuffer();
+
+                while (matcher.find()) {
+                    String placeholder = matcher.group(1);
+                    String replacement = properties.getProperty(placeholder, ""); // 如有需要，可以提供默认值
+                    matcher.appendReplacement(resolvedValue, Matcher.quoteReplacement(replacement));
                 }
+                matcher.appendTail(resolvedValue);
+                resolvedProperties.setProperty(key, resolvedValue.toString());
+            } else {
+                // 若值不是 CharSequence，保持其原样放入已解析属性中
+                resolvedProperties.put(entry.getKey(), valueObj);
             }
         }
+
         return resolvedProperties;
     }
+
 
 
 
