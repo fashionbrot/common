@@ -15,6 +15,7 @@ import java.util.Locale;
 
 /**
  * cookie 工具
+ * 表示 HTTP 响应中的 Cookie 信息。
  * @author fashionbrot
  */
 @Builder
@@ -23,20 +24,28 @@ import java.util.Locale;
 @NoArgsConstructor
 public class ResponseCookie {
 
+    /** Set-Cookie 头的字段名 */
     public static final String SET_COOKIE = "Set-Cookie";
 
+    /** Cookie 名称 */
     private String name;
 
+    /** Cookie 值 */
     private String value;
 
-    private  Duration maxAge;
+    /** 最大存活时间 */
+    private Duration maxAge;
 
-    private  String domain;
+    /** Cookie 所属域 */
+    private String domain;
 
+    /** Cookie 路径 */
     private String path;
 
+    /** 是否只允许安全连接发送 */
     private boolean secure;
 
+    /** 是否只允许服务器访问 */
     private boolean httpOnly;
     /**
      * Strict:仅允许一方请求携带Cookie，即浏览器将只发送相同站点请求的Cookie，即当前网页URL与请求目标URL完全一致，浏览器默认该模式。
