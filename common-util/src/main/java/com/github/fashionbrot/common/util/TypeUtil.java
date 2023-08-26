@@ -44,6 +44,12 @@ public class TypeUtil {
         return null;
     }
 
+    /**
+     * 从给定的 Type 中提取实际的类型参数数组。
+     *
+     * @param type 要提取类型参数的 Type
+     * @return 实际类型参数数组，如果类型不是 ParameterizedType，则返回 null
+     */
     public static Type[] convertActualTypeArguments(Type type){
         if (type!=null){
             if ( type instanceof ParameterizedType) {
@@ -73,29 +79,46 @@ public class TypeUtil {
         return null;
     }
 
+    /**
+     * 从给定的 Type 中提取泛型类型变量数组。
+     *
+     * @param type 要提取泛型类型变量的 Type
+     * @return 泛型类型变量数组，如果无法提取则返回 null
+     */
     public static TypeVariable[] getTypeVariable(Type type){
-        Class typeClass = null;
         if(type instanceof  Class){
-            typeClass = (Class) type;
+            return ((Class<?>) type).getTypeParameters();
         }else if (type instanceof ParameterizedType){
-            typeClass = (Class) ((ParameterizedType) type).getRawType();
-        }
-        if (typeClass!=null){
-            return typeClass.getTypeParameters();
+            // 如果 Type 是 ParameterizedType，则获取原始类型，并返回其类型参数
+            Class<?> rawType = (Class<?>) ((ParameterizedType) type).getRawType();
+            return rawType.getTypeParameters();
         }
         return null;
     }
 
-    public static Class typeConvertClass(Type type) {
-        Class typeClass = null;
-        if(type instanceof  Class){
-            typeClass = (Class) type;
-        }else if (type instanceof ParameterizedType){
-            typeClass = (Class) ((ParameterizedType) type).getRawType();
+    /**
+     * 将给定的 Type 转换为对应的 Class。
+     *
+     * @param type 要转换的 Type
+     * @return 转换后的 Class，如果无法转换则返回 null
+     */
+    public static Class<?> convertTypeToClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            return (Class<?>) ((ParameterizedType) type).getRawType();
         }
-        return typeClass;
+        return null;
     }
 
+
+    /**
+     * 在给定的泛型类型变量数组中查找指定类型变量名称，并返回其索引。
+     *
+     * @param typeVariables   泛型类型变量数组
+     * @param fieldTypeName   要查找的类型变量名称
+     * @return 类型变量名称的索引，如果未找到则返回 null
+     */
     public static Integer getTypeVariableIndex(TypeVariable<?>[] typeVariables, String fieldTypeName) {
         if (ObjectUtil.isNotEmpty(typeVariables) && ObjectUtil.isNotEmpty(fieldTypeName)) {
             for (int i = 0; i < typeVariables.length; i++) {
@@ -168,7 +191,7 @@ public class TypeUtil {
     public static Class getFieldTypeClass(Field field,Type classType){
         Type fieldType = getFieldType(field, classType);
         if (fieldType!=null){
-            return TypeUtil.typeConvertClass(fieldType);
+            return TypeUtil.convertTypeToClass(fieldType);
         }
         return null;
     }

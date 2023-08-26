@@ -16,13 +16,19 @@ java {
 }
 
 jar {
+
+    // 将LICENSE文件添加到META-INF目录
     into("META-INF/") {
         from rootProject.file("LICENSE")
     }
+
+    // 生成POM文件并放置在META-INF/maven目录下
     into("META-INF/maven/$project.group/$project.name") {
         from { generatePomFileForMavenJavaPublication }
         rename ".*", "pom.xml"
     }
+
+    // 设置MANIFEST.MF文件的属性
     afterEvaluate {
         manifest {
             attributes 'Implementation-Title': archiveBaseName
@@ -132,7 +138,12 @@ dependencies {
 
 
 
-
+test {
+    // 在这里设置自定义编译选项
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += ["-parameters"]
+    }
+}
 
 
 

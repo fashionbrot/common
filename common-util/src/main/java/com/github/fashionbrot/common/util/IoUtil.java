@@ -53,7 +53,12 @@ public class IoUtil {
     }
 
 
-
+    /**
+     * 将文件转换为字节数组。
+     *
+     * @param file 要转换的文件
+     * @return 文件内容的字节数组表示
+     */
     public static byte[] toByte(File file){
         return toByte(toInputStream(file));
     }
@@ -66,6 +71,9 @@ public class IoUtil {
      * @return byte[] 字节数组，复制失败时返回 null
      */
     public static byte[] toByte(InputStream input) {
+        if (input==null){
+            return new byte[0];
+        }
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             copy(input, output);
             return output.toByteArray();

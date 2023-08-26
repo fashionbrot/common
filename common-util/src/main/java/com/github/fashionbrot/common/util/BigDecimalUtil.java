@@ -21,7 +21,7 @@ public class BigDecimalUtil {
      * @param val 要格式化的 BigDecimal 值
      * @return 格式化后的 BigDecimal 值，如果输入为 null 则返回零值
      */
-    public static BigDecimal formatBigDecimal(final BigDecimal val) {
+    public static BigDecimal format(final BigDecimal val) {
         return val == null ? BigDecimal.ZERO : val;
     }
 
@@ -31,7 +31,7 @@ public class BigDecimalUtil {
      * @param object 要格式化为 BigDecimal 的对象
      * @return 格式化后的 BigDecimal 对象，如果输入对象为 null 或无法转换为 BigDecimal，则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(final Object object) {
+    public static BigDecimal format(final Object object) {
         if (object != null) {
             try {
                 return new BigDecimal(object.toString());
@@ -49,7 +49,7 @@ public class BigDecimalUtil {
      * @param value Integer 值
      * @return 对应的 BigDecimal 值，如果 value 为 null 则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(final Integer value) {
+    public static BigDecimal format(final Integer value) {
         if (value != null) {
             try {
                 return new BigDecimal(Integer.toString(value));
@@ -66,7 +66,7 @@ public class BigDecimalUtil {
      * @param value 要格式化为 BigDecimal 的 Long 值
      * @return 格式化后的 BigDecimal 对象，如果输入值为 null 或无法转换为 BigDecimal，则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(final Long value) {
+    public static BigDecimal format(final Long value) {
         if (value != null) {
             try {
                 return new BigDecimal(value.toString() );
@@ -83,7 +83,7 @@ public class BigDecimalUtil {
      * @param value 要格式化为 BigDecimal 的 Double 值
      * @return 格式化后的 BigDecimal 对象，如果输入值为 null，则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(final Double value) {
+    public static BigDecimal format(final Double value) {
         if (value != null) {
             try {
                 return new BigDecimal(value.toString());
@@ -100,7 +100,7 @@ public class BigDecimalUtil {
      * @param value value
      * @return BigDecimal
      */
-    public static BigDecimal formatBigDecimal(final String value) {
+    public static BigDecimal format(final String value) {
         if (ObjectUtil.isNotEmpty(value)) {
             try {
                 return new BigDecimal(value);
@@ -119,7 +119,7 @@ public class BigDecimalUtil {
      * @return 减法结果，如果输入为 null 则当作零值处理
      */
     public static BigDecimal subtract(BigDecimal a1, BigDecimal b2) {
-        return formatBigDecimal(a1).subtract(formatBigDecimal(b2));
+        return format(a1).subtract(format(b2));
     }
 
     /**
@@ -130,7 +130,7 @@ public class BigDecimalUtil {
      * @return 减法结果，如果输入为 null 则当作零值处理
      */
     public static double subtractDouble(Double a1, Double b2) {
-        return subtract(formatBigDecimal(a1), formatBigDecimal(b2)).doubleValue();
+        return subtract(format(a1), format(b2)).doubleValue();
     }
 
 
@@ -168,7 +168,7 @@ public class BigDecimalUtil {
      * @return 乘法结果，如果输入为 null 则当作零值处理
      */
     public static BigDecimal multiply(BigDecimal a1, BigDecimal b2, int newScale, RoundingMode roundingMode) {
-        return formatBigDecimal(a1).multiply(formatBigDecimal(b2)).setScale(newScale, roundingMode);
+        return format(a1).multiply(format(b2)).setScale(newScale, roundingMode);
     }
 
 
@@ -180,7 +180,7 @@ public class BigDecimalUtil {
      * @return 乘法结果，保留6位小数并按照舍入模式 HALF_UP 进行舍入
      */
     public static double multiplyDouble(Double a1, Double b2) {
-        return multiply(formatBigDecimal(a1), formatBigDecimal(b2)).setScale(6, RoundingMode.HALF_UP).doubleValue();
+        return multiply(format(a1), format(b2)).setScale(6, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -192,7 +192,7 @@ public class BigDecimalUtil {
      * @return 乘法结果，按照指定精度和舍入模式 HALF_UP 进行舍入
      */
     public static double multiplyDouble(Double a1, Double b2, int newScale) {
-        return multiply(formatBigDecimal(a1), formatBigDecimal(b2)).setScale(newScale, RoundingMode.HALF_UP).doubleValue();
+        return multiply(format(a1), format(b2)).setScale(newScale, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -203,7 +203,7 @@ public class BigDecimalUtil {
      * @return 乘法结果，作为 BigDecimal 返回
      */
     public static BigDecimal multiply(Double a1, Double b2) {
-        return multiply(formatBigDecimal(a1), formatBigDecimal(b2));
+        return multiply(format(a1), format(b2));
     }
 
     /**
@@ -214,7 +214,7 @@ public class BigDecimalUtil {
      * @return 相加结果，作为 BigDecimal 返回
      */
     public static BigDecimal add(BigDecimal a1, BigDecimal b2) {
-        return formatBigDecimal(a1).add(formatBigDecimal(b2));
+        return format(a1).add(format(b2));
     }
 
     /**
@@ -225,7 +225,7 @@ public class BigDecimalUtil {
      * @return 相加结果，作为双精度浮点数返回
      */
     public static double addDouble(Double a1, Double b2) {
-        return add(formatBigDecimal(a1), formatBigDecimal(b2)).doubleValue();
+        return add(format(a1), format(b2)).doubleValue();
     }
 
 
@@ -235,13 +235,13 @@ public class BigDecimalUtil {
      * @param values 多个双精度浮点数操作数（可变参数）
      * @return 累加结果，作为双精度浮点数返回
      */
-    public static double addDouble(Double... values) {
+    public static double add(Double... values) {
         if (ObjectUtil.isEmpty(values)){
             return 0D;
         }
         BigDecimal sum = BigDecimal.ZERO;
         for (Double value : values) {
-            sum = add(sum, formatBigDecimal(value));
+            sum = add(sum, format(value));
         }
         return sum.doubleValue();
     }
@@ -252,7 +252,7 @@ public class BigDecimalUtil {
      * @param values 多个 BigDecimal 操作数（可变参数）
      * @return 累加结果，作为 BigDecimal 返回
      */
-    public static BigDecimal addBigDecimal(BigDecimal... values) {
+    public static BigDecimal add(BigDecimal... values) {
         if (ObjectUtil.isEmpty(values)){
             return BigDecimal.ZERO;
         }
@@ -265,21 +265,41 @@ public class BigDecimalUtil {
         return sum;
     }
 
+
+    /**
+     * 计算一组 BigDecimal 数值的平均值。
+     *
+     * @param values 要计算平均值的 BigDecimal 数值数组
+     * @return 平均值结果，如果输入数组为空则返回 0
+     */
+    public static BigDecimal avg(BigDecimal... values) {
+        if (ObjectUtil.isEmpty(values)){
+            return BigDecimal.ZERO;
+        }
+        BigDecimal sum = BigDecimal.ZERO;
+        for (BigDecimal value : values) {
+            if (value != null) {
+                sum = sum.add(value);
+            }
+        }
+        return divide(sum,format(values.length));
+    }
+
     /**
      * 计算一组双精度浮点数的平均值。
      *
      * @param values 多个双精度浮点数操作数（可变参数）
      * @return 平均值，作为双精度浮点数返回
      */
-    public static double avgDouble(Double... values) {
+    public static double avg(Double... values) {
         if (ObjectUtil.isEmpty(values)){
             return 0D;
         }
         BigDecimal sum = BigDecimal.ZERO;
         for (Double value : values) {
-            sum = add(sum, formatBigDecimal(value));
+            sum = add(sum, format(value));
         }
-        return divide(sum,formatBigDecimal(values.length)).doubleValue();
+        return divide(sum,format(values.length)).doubleValue();
     }
 
 
@@ -320,8 +340,8 @@ public class BigDecimalUtil {
         if (a1==null && b2==null){
             return BigDecimal.ZERO;
         }
-        BigDecimal a = formatBigDecimal(a1);
-        BigDecimal b = formatBigDecimal(b2);
+        BigDecimal a = format(a1);
+        BigDecimal b = format(b2);
         // 检查被除数和除数是否为零，如果是零则直接返回 BigDecimal.ZERO
         if (a.compareTo(BigDecimal.ZERO) ==0 || b.compareTo(BigDecimal.ZERO)==0){
             return BigDecimal.ZERO;
@@ -337,7 +357,7 @@ public class BigDecimalUtil {
      * @return 除法结果，如果被除数或除数为零则返回 BigDecimal.ZERO
      */
     public static BigDecimal divide(Double a1, Double b2) {
-        return divide(formatBigDecimal(a1),formatBigDecimal(b2));
+        return divide(format(a1),format(b2));
     }
 
 
@@ -350,7 +370,7 @@ public class BigDecimalUtil {
      * @return 除法结果，如果被除数或除数为零则返回 BigDecimal.ZERO
      */
     public static BigDecimal divide(Double a1, Double b2,int newScale) {
-        return divide(formatBigDecimal(a1),formatBigDecimal(b2),newScale);
+        return divide(format(a1),format(b2),newScale);
     }
 
     /**
@@ -383,11 +403,11 @@ public class BigDecimalUtil {
      * @param scale 新精度，指定结果的小数位数
      * @return 格式化后的双精度浮点数，如果输入对象为 null 则返回 0.0D
      */
-    public static double formatDouble(Object value, int scale) {
+    public static double format(Object value, int scale) {
         if (value == null) {
             return 0.0D;
         }
-        BigDecimal v = formatBigDecimal(value);
+        BigDecimal v = format(value);
         return v.setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -398,11 +418,11 @@ public class BigDecimalUtil {
      * @param scale 新精度，指定结果的小数位数
      * @return 格式化后的双精度浮点数，如果输入值为 null 则返回 0.00D
      */
-    public static double formatDouble(Double value, int scale) {
+    public static double format(Double value, int scale) {
         if (value == null) {
             return 0.00D;
         }
-        BigDecimal v = formatBigDecimal(value);
+        BigDecimal v = format(value);
         return v.setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -427,10 +447,7 @@ public class BigDecimalUtil {
      * @return 转换后的双精度浮点数，如果输入值为 null 则返回 0.0D
      */
     public static double formatDouble(BigDecimal value, int newScale) {
-        if (value == null) {
-            return 0.0D;
-        }
-        return value.setScale(newScale, RoundingMode.HALF_UP).doubleValue();
+        return format(value,newScale).doubleValue();
     }
 
     /**
@@ -440,7 +457,7 @@ public class BigDecimalUtil {
      * @param newScale 新精度，指定结果的小数位数
      * @return 格式化后的 BigDecimal，如果输入值为 null 则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(BigDecimal value, int newScale) {
+    public static BigDecimal format(BigDecimal value, int newScale) {
         if (value == null) {
             return BigDecimal.ZERO;
         }
@@ -458,7 +475,7 @@ public class BigDecimalUtil {
         if (value == null) {
             return BigDecimal.ZERO;
         }
-        BigDecimal v = formatBigDecimal(value);
+        BigDecimal v = format(value);
         return v.setScale(newScale, RoundingMode.HALF_UP);
     }
 
@@ -469,11 +486,11 @@ public class BigDecimalUtil {
      * @param newScale 新精度，指定结果的小数位数
      * @return 格式化后的 BigDecimal，如果输入字符串为空则返回 BigDecimal.ZERO
      */
-    public static BigDecimal formatBigDecimal(String value, int newScale) {
+    public static BigDecimal format(String value, int newScale) {
         if (ObjectUtil.isEmpty(value)) {
             return BigDecimal.ZERO;
         }
-        BigDecimal v = formatBigDecimal(value);
+        BigDecimal v = format(value);
         return v.setScale(newScale, RoundingMode.HALF_UP);
     }
 
@@ -484,9 +501,60 @@ public class BigDecimalUtil {
      * @param newScale 新精度，指定结果的小数位数
      * @return 格式化后的双精度浮点数，如果输入字符串为空则返回 0.00D
      */
-    public static double formatString(String value, int newScale) {
-        return formatBigDecimal(value,newScale).doubleValue();
+    public static double formatDouble(String value, int newScale) {
+        return format(value,newScale).doubleValue();
     }
+
+
+    /**
+     * 比较两个 BigDecimal 数值是否相等。
+     *
+     * @param a1 第一个 BigDecimal 数值
+     * @param b2 第二个 BigDecimal 数值
+     * @return 如果两个数值相等，返回 true，否则返回 false；如果任一数值为 null，也返回 false
+     */
+    public static boolean equals(BigDecimal a1 ,BigDecimal b2){
+        if (a1==null || b2==null){
+            return false;
+        }
+        return a1.compareTo(b2)==0;
+    }
+
+    /**
+     * 比较两个 Double 值是否相等。
+     *
+     * @param a1 第一个 Double 值
+     * @param b2 第二个 Double 值
+     * @return 如果两个 Double 值相等则返回 true，否则返回 false
+     */
+    public static boolean equals(Double a1,Double b2){
+        return equals(format(a1),format(b2));
+    }
+
+
+    /**
+     * 比较一个 BigDecimal 值和一个 Double 值是否相等。
+     *
+     * @param a1 第一个 BigDecimal 值
+     * @param b2 第二个 Double 值
+     * @return 如果两个值相等则返回 true，否则返回 false
+     */
+    public static boolean equals(BigDecimal a1,Double b2){
+        return equals(format(a1),format(b2));
+    }
+
+
+    /**
+     * 返回一个数的相反数。
+     *
+     * @param value 要取反的数
+     * @return 输入数的相反数
+     */
+    public static BigDecimal negate(BigDecimal value){
+        return format(value).negate();
+    }
+
+
 
 
 }

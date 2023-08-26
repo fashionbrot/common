@@ -62,10 +62,11 @@ public class Base64Util {
     }
 
     /**
-     * 将字符串编码为字节数组。
+     * 对字符串进行 Base64 编码。
      *
-     * @param str 要编码的字符串
-     * @return 编码后的字节数组，如果输入字符串为空，则返回空数组
+     * @param str     要编码的字符串
+     * @param charset 使用的字符编码
+     * @return Base64 编码后的字节数组
      */
     public static byte[] encode(final String str, Charset charset) {
         if (ObjectUtil.isNotEmpty(str)) {

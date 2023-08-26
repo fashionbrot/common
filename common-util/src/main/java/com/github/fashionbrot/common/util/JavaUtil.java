@@ -13,10 +13,12 @@ import java.util.Map;
 public class JavaUtil {
 
 
+
     /**
-     * 判断 Class  是基本类型 {@link ClassTypeEnum}
-     * @param clazz Class
-     * @return boolean
+     * 检查一个类是否为基本数据类型。 {@link ClassTypeEnum}
+     *
+     * @param clazz 要检查的类
+     * @return 如果类是基本数据类型，返回 true，否则返回 false
      */
     public static boolean isPrimitive(Class clazz) {
         return ClassTypeEnum.checkClass(clazz.getTypeName());
