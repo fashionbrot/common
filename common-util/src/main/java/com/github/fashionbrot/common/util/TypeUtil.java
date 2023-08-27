@@ -1,11 +1,13 @@
 package com.github.fashionbrot.common.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.*;
-import java.nio.file.Paths;
 
 /**
  * @author fashionbrot
  */
+@Slf4j
 public class TypeUtil {
 
 
@@ -66,7 +68,7 @@ public class TypeUtil {
      * @param parameter 要提取类型参数的方法参数。
      * @return 泛型类型的类型参数数组，如果未找到则返回 null。
      */
-    public static TypeVariable[] getTypeVariable(Parameter parameter){
+    public static TypeVariable[] getTypeVariables(Parameter parameter){
         if (parameter==null){
             return null;
         }
@@ -83,7 +85,7 @@ public class TypeUtil {
      * @param field 要提取类型参数的字段。
      * @return 泛型类型的类型参数数组，如果未找到则返回 null。
      */
-    public static TypeVariable[] getTypeVariable(Field field){
+    public static TypeVariable[] getTypeVariables(Field field){
         if (field==null) {
             return null;
         }
@@ -188,11 +190,11 @@ public class TypeUtil {
      * @param genericType 泛型类型。
      * @return 泛型类型的实际类型，如果未找到则返回 null。
      */
-    public static Type getGenericType(Type classType,Type genericType){
+    public static Type getActualTypeArgument(Type classType,Type genericType){
         if (genericType==null){
             return null;
         }
-        return getGenericType(classType,genericType.getTypeName());
+        return getActualTypeArgument(classType,genericType.getTypeName());
     }
 
     /**
@@ -202,7 +204,7 @@ public class TypeUtil {
      * @param genericTypeName  泛型类型的名称。
      * @return 泛型类型的实际类型，如果未找到则返回 null。
      */
-    public static Type getGenericType(Type classType, String genericTypeName) {
+    public static Type getActualTypeArgument(Type classType, String genericTypeName) {
         if (ObjectUtil.isNotEmpty(genericTypeName)) {
             Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(classType);
             TypeVariable[] typeVariables = TypeUtil.getTypeVariables(classType);
@@ -212,59 +214,51 @@ public class TypeUtil {
     }
 
 
-    public static Type getFieldType(Field field,Type classType){
-        Type fieldGenericType = field.getGenericType();
-        if (fieldGenericType instanceof Class){
-            return field.getType().getComponentType();
-        }else if (fieldGenericType instanceof GenericArrayType){
-
-//            Type genericComponentType = ((GenericArrayType) fieldGenericType).getGenericComponentType();
-//            Type[] convertActualTypeArguments = TypeUtil.getActualTypeArguments(classType);
-//            TypeVariable[] typeVariables = TypeUtil.getTypeVariable(classType);
-//            Type typeByTypeName = getTypeByTypeName(convertActualTypeArguments, typeVariables, genericComponentType.getTypeName());
-//            return typeByTypeName;
-            return getGenericType(classType,fieldGenericType);
-
-        }else if (fieldGenericType instanceof TypeVariable){
-
-//            Type[] convertActualTypeArguments = TypeUtil.getActualTypeArguments(classType);
-//            TypeVariable[] typeVariables = TypeUtil.getTypeVariable(classType);
-//            Type typeByTypeName = getTypeByTypeName(convertActualTypeArguments, typeVariables, fieldGenericType.getTypeName());
-//            return typeByTypeName;
-            return getGenericType(classType,fieldGenericType);
-
-        }else if (fieldGenericType instanceof ParameterizedType){
-
-            if (JavaUtil.isCollection(field.getType())){
-
-                Type[] fieldActualTypeArguments = TypeUtil.getActualTypeArguments(fieldGenericType);
-                if (ObjectUtil.isNotEmpty(fieldActualTypeArguments)){
-                    if (fieldActualTypeArguments[0] instanceof Class){
-                        return fieldActualTypeArguments[0];
-                    }else if (fieldActualTypeArguments[0] instanceof ParameterizedType) {
-//                        TypeVariable[] typeVariables = TypeUtil.getTypeVariable(classType);
-//                        Type[] convertActualTypeArguments = TypeUtil.getActualTypeArguments(classType);
-//                        Type typeByTypeName = getTypeByTypeName(convertActualTypeArguments, typeVariables, fieldActualTypeArguments[0].getTypeName());
-//                        return typeByTypeName;
-                    }else if (fieldActualTypeArguments[0] instanceof TypeVariable){
-//                        TypeVariable[] typeVariables = TypeUtil.getTypeVariable(classType);
-//                        Type[] convertActualTypeArguments = TypeUtil.getActualTypeArguments(classType);
-//                        Type typeByTypeName = getTypeByTypeName(convertActualTypeArguments, typeVariables, fieldActualTypeArguments[0].getTypeName());
-//                        return typeByTypeName;
-                    }
+    /**
+     * 获取泛型实际类型的 Class Type 对象。
+     *
+     * @param classType    使用泛型的类或接口的 Type 对象
+     * @param genericType  泛型类型的 Type 对象
+     * @return 泛型实际类型的 Class 对象，如果无法解析则返回 null
+     */
+    public static Type getActualType(Type classType,Type genericType){
+        if (classType==null || genericType==null){
+            return null;
+        }
+        if (genericType instanceof Class){
+            return ((Class<?>) genericType).getComponentType();
+        }else if ( genericType instanceof GenericArrayType){
+            Type genericComponentType = ((GenericArrayType) genericType).getGenericComponentType();
+            return getActualType(classType,genericComponentType);
+        }else if (genericType instanceof TypeVariable){
+            return getActualType(classType,genericType);
+        }else if (genericType instanceof ParameterizedType){
+            if (JavaUtil.isCollection(genericType.getClass())){
+                Type[] actualTypeArguments = getActualTypeArguments(genericType);
+                if (ObjectUtil.isNotEmpty(actualTypeArguments)){
+                    Type actualTypeArgument = actualTypeArguments[0];
+                    return getActualType(classType,actualTypeArgument);
                 }
             }
-
-        }
-        return null;
-
-    }
-
-    public static Class getFieldTypeClass(Field field,Type classType){
-        Type fieldType = getFieldType(field, classType);
-        if (fieldType!=null){
-            return TypeUtil.convertTypeToClass(fieldType);
+        }else{
+            log.error("getActualTypeClass error genericType:{}",genericType.toString());
         }
         return null;
     }
+
+    /**
+     * 获取泛型实际类型的 Class 对象。
+     *
+     * @param classType    使用泛型的类或接口的 Type 对象
+     * @param genericType  泛型类型的 Type 对象
+     * @return 泛型实际类型的 Class 对象，如果无法解析则返回 null
+     */
+    public static Class getActualTypeClass(Type classType,Type genericType){
+        Type actualType = getActualType(classType, genericType);
+        if (actualType!=null){
+            return convertTypeToClass(actualType);
+        }
+        return null;
+    }
+
 }

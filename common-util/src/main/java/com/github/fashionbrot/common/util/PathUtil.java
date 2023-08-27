@@ -7,7 +7,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
 /**
- * @author fashi
+ * @author fashionbrot
  */
 public class PathUtil {
 
