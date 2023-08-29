@@ -54,4 +54,11 @@ public class TypeUtilTest {
             e.printStackTrace();
         }
     }
+
+
+    public static void main(String[] args) {
+        Integer status=1;
+        Integer status2=1;
+        System.out.println(status.equals(status2));
+    }
 }
