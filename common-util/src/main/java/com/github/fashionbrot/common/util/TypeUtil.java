@@ -53,8 +53,13 @@ public class TypeUtil {
      * @return 实际类型参数数组，如果未找到则返回 null。
      */
     public static Type[] getActualTypeArguments(Type type){
-        if (type!=null && type instanceof ParameterizedType){
+        if (type==null){
+            return null;
+        }
+        if (type instanceof ParameterizedType){
             return ((ParameterizedType) type).getActualTypeArguments();
+        }else if (type instanceof TypeVariable){
+            return  ((TypeVariable) type).getBounds();
         }
         return null;
     }

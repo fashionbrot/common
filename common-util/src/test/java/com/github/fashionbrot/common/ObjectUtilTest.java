@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class ObjectUtilTest {
 
 
@@ -51,6 +54,40 @@ public class ObjectUtilTest {
         List<String> strings = ObjectUtil.splitContent("", "");
         strings.add("abc");
         System.out.println(strings);
+    }
+
+
+
+
+
+    @Test
+    public void testIsTrueWithTrueString() {
+        assertTrue(ObjectUtil.isTrue("true"));
+        assertTrue(ObjectUtil.isTrue("TRUE"));
+        assertTrue(ObjectUtil.isTrue("TrUe"));
+    }
+
+    @Test
+    public void testIsTrueWithFalseString() {
+        assertFalse(ObjectUtil.isTrue("false"));
+        assertFalse(ObjectUtil.isTrue("FALSE"));
+        assertFalse(ObjectUtil.isTrue("random"));
+        assertFalse(ObjectUtil.isTrue(""));
+    }
+
+    @Test
+    public void testIsFalseWithTrueString() {
+        assertFalse(ObjectUtil.isFalse("true"));
+        assertFalse(ObjectUtil.isFalse("TRUE"));
+        assertFalse(ObjectUtil.isFalse("TrUe"));
+    }
+
+    @Test
+    public void testIsFalseWithFalseString() {
+        assertTrue(ObjectUtil.isFalse("false"));
+        assertTrue(ObjectUtil.isFalse("FALSE"));
+        assertTrue(ObjectUtil.isFalse("random"));
+        assertTrue(ObjectUtil.isFalse(""));
     }
 
 }

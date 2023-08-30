@@ -163,6 +163,28 @@ public class ObjectUtil {
         return bytes == null || bytes.length == 0;
     }
 
+    /**
+     * 判断给定的字符串是否代表真值。
+     *
+     * @param str 要检查的字符串。
+     * @return 如果字符串不为空且代表真值，则返回 {@code true}，否则返回 {@code false}。
+     */
+    public static boolean isTrue(final String str){
+        if (ObjectUtil.isEmpty(str)){
+            return false;
+        }
+        return parseBoolean(str);
+    }
+
+    /**
+     * 判断给定的字符串是否代表假值。
+     *
+     * @param str 要检查的字符串。
+     * @return 如果字符串为空或代表假值，则返回 {@code true}，否则返回 {@code false}。
+     */
+    public static boolean isFalse(final String str){
+        return !isTrue(str);
+    }
 
     /**
      * 验证 Boolean 对象的值。
