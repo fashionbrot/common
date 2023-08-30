@@ -12,7 +12,7 @@ public class NameUtil {
      * @return 转换后的字符串，如果输入字符串为空则返回空字符串
      */
     public static String capitalizeFirstLetter(String str) {
-        if (ObjectUtil.isNotEmpty(str)) {
+        if (ObjectUtil.isEmpty(str)) {
            return "";
         }
         // 进行字母的ascii编码前移，效率要高于截取字符串进行转换的操作
