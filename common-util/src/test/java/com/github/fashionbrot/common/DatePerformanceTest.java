@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common;
 
-import com.github.fashionbrot.common.util.DateUtil;
+import com.github.fashionbrot.common.date.LocalDateTimeUtil;
 import com.github.fashionbrot.common.util.SimpleDateFormatUtil;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class DatePerformanceTest {
         // 使用 DateTimeFormatter 进行测试
         startTime = System.nanoTime();
         for (int i = 0; i < iterations; i++) {
-            Date date = DateUtil.parseDateTime("2023-08-29 01:01:01");
+            Date date = LocalDateTimeUtil.parseDateTime("2023-08-29 01:01:01");
             if (date==null){
                 System.out.println("DateTimeFormatter 异常");
             }
