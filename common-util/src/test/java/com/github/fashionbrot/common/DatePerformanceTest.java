@@ -1,10 +1,11 @@
 package com.github.fashionbrot.common;
 
+import com.github.fashionbrot.common.date.DateUtil;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
-import com.github.fashionbrot.common.util.SimpleDateFormatUtil;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DatePerformanceTest {
@@ -30,7 +31,7 @@ public class DatePerformanceTest {
         // 使用 ThreadLocal<SimpleDateFormat> 进行测试
         startTime = System.nanoTime();
         for (int i = 0; i < iterations; i++) {
-            Date date = SimpleDateFormatUtil.parseDateTime("2023-08-29 01:01:01");
+            Date date = DateUtil.parseDateTime("2023-08-29 01:01:01");
             if (date==null){
                 System.out.println("ThreadLocal<SimpleDateFormat> 异常");
             }
@@ -52,6 +53,48 @@ public class DatePerformanceTest {
         }
         endTime = System.nanoTime();
         System.out.println("SimpleDateFormat took: " + (endTime - startTime) + " ns");
+    }
+
+
+
+    @Test
+    public void formatDate(){
+        long startTime, endTime;
+        int iterations = 1000000; // 要执行的迭代次数
+
+        // 使用 DateTimeFormatter 进行测试
+        startTime = System.nanoTime();
+        for (int i = 0; i < iterations; i++) {
+            Date now = new Date();
+            DateUtil.truncateTime(now);
+        }
+        endTime = System.nanoTime();
+        System.out.println("LocalDate took: " + (endTime - startTime) + " ns");
+
+        // 使用 ThreadLocal<SimpleDateFormat> 进行测试
+        startTime = System.nanoTime();
+        for (int i = 0; i < iterations; i++) {
+            Date now = new Date();
+            formatDate(now);
+        }
+        endTime = System.nanoTime();
+        System.out.println("formatDat took: " + (endTime - startTime) + " ns");
+
+    }
+
+
+    public static Date formatDate(Date date){
+        Calendar c= Calendar.getInstance();
+        c.setTime(date);
+        // 时
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        // 分
+        c.set(Calendar.MINUTE, 0);
+        // 秒
+        c.set(Calendar.SECOND, 0);
+        // 毫秒
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
 }
