@@ -32,11 +32,12 @@ public class CollectionUtil {
 
 
     /**
-     * 在列表中根据给定的条件过滤元素，并返回第一个符合条件的元素。
+     * 从给定的列表中筛选出第一个满足指定条件的元素，并返回该元素。
      *
-     * @param list      要过滤的列表
-     * @param predicate 过滤条件
-     * @return 第一个符合条件的元素，如果没有符合条件的元素则返回 {@code null}
+     * @param <T>        列表元素的类型
+     * @param list       要筛选的列表
+     * @param predicate  用于筛选元素的谓词条件
+     * @return           第一个满足条件的元素，如果没有找到则返回null
      */
     public static  <T> T filter(List<T> list, Predicate<? super T> predicate) {
         if (ObjectUtil.isEmpty(list)) {

@@ -7,12 +7,15 @@ import java.util.function.Supplier;
 public class ExecutionUtil {
 
     /**
-     * 执行带有超时限制的操作
-     * @param callable 要执行的操作
-     * @param timeout 超时时间
-     * @param timeUnit 时间单位
-     * @param <T> 操作结果类型
-     * @return 操作结果或超时时的默认值
+     * 执行一个带有超时限制的任务，并返回任务的结果。如果任务在指定的超时时间内未完成，
+     * 则返回默认值。
+     *
+     * @param <T>         任务结果的类型
+     * @param callable    要执行的任务
+     * @param timeout     超时时间
+     * @param timeUnit    超时时间的时间单位
+     * @param defaultValue 当任务超时时返回的默认值
+     * @return            任务的结果，如果任务超时则返回默认值
      */
     public static <T> T executeWithTimeout(Callable<T> callable,
                                            long timeout,
