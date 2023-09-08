@@ -34,8 +34,8 @@ public class DateUtilTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateConst.DATE_TIME_PATTERN);
 
         // 创建起始日期和结束日期
-        Date startDate = new Date();
-        Date endDate = DateUtil.addDays(startDate,3);
+        Date startDate = DateUtil.parseDateTime("2023-09-01 01:01:01");
+        Date endDate = DateUtil.parseDateTime("2023-09-04 23:59:59");
 
         // 调用方法获取日期列表
         List<Date> dateList = DateUtil.getDatesBetween(startDate, endDate);
