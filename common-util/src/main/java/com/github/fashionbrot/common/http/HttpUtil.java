@@ -232,7 +232,7 @@ public class HttpUtil {
             return CharsetConst.DEFAULT_CHARSET;
         }
         String charsetName = extractCharsetFromContentType(contentType);
-        return (charsetName != null) ? Charset.forName(charsetName) : CharsetConst.DEFAULT_CHARSET;
+        return (ObjectUtil.isNotEmpty(charsetName)) ? Charset.forName(charsetName) : CharsetConst.DEFAULT_CHARSET;
     }
 
     /**

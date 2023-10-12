@@ -39,6 +39,11 @@ public class HttpGetTest {
                 String result = response.getResponseBody();
                 System.out.println(result);
             }
+
+            @Override
+            public void exception(HttpRequest request, Exception exception) {
+                exception.printStackTrace();
+            }
         });
     }
 
