@@ -556,5 +556,34 @@ public class BigDecimalUtil {
 
 
 
+    /**
+     * 返回两个 BigDecimal 值中的最小值。
+     *
+     * @param value1 第一个 BigDecimal 值。
+     * @param value2 第二个 BigDecimal 值。
+     * @return value1 和 value2 中的最小值。
+     */
+    public static BigDecimal min(BigDecimal value1, BigDecimal value2) {
+        if (format(value1).compareTo(format(value2)) < 0) {
+            return value1;
+        } else {
+            return value2;
+        }
+    }
+
+    /**
+     * 返回两个 BigDecimal 值中的最大值。
+     *
+     * @param value1 第一个 BigDecimal 值。
+     * @param value2 第二个 BigDecimal 值。
+     * @return value1 和 value2 中的最大值。
+     */
+    public static BigDecimal max(BigDecimal value1, BigDecimal value2) {
+        if (format(value1).compareTo(format(value2)) > 0) {
+            return value1;
+        } else {
+            return value2;
+        }
+    }
 
 }
