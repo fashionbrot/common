@@ -14,7 +14,7 @@ public class SetUtil {
      * @return 初始化并包含传入值的 Set
      */
     public static <T> Set<T> newSet(T... values) {
-        Set<T> set = new HashSet<>(values.length);
+        Set<T> set = new HashSet<>();
         if (values != null) {
             for (T value : values) {
                 if (value!=null) {
