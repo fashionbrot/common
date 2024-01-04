@@ -458,10 +458,19 @@ public class BigDecimalUtil {
      * @return 格式化后的 BigDecimal，如果输入值为 null 则返回 BigDecimal.ZERO
      */
     public static BigDecimal format(BigDecimal value, int newScale) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value.setScale(newScale, RoundingMode.HALF_UP);
+        return format(value,newScale,RoundingMode.HALF_UP);
+    }
+
+    /**
+     * 格式化 BigDecimal 对象，并指定新的小数位数和舍入模式。
+     *
+     * @param value           要格式化的 BigDecimal 对象
+     * @param newScale        新的小数位数
+     * @param roundingMode    舍入模式
+     * @return 格式化后的 BigDecimal 对象
+     */
+    public static BigDecimal format(BigDecimal value, int newScale ,RoundingMode roundingMode) {
+        return format(value).setScale(newScale, roundingMode);
     }
 
     /**
@@ -487,11 +496,23 @@ public class BigDecimalUtil {
      * @return 格式化后的 BigDecimal，如果输入字符串为空则返回 BigDecimal.ZERO
      */
     public static BigDecimal format(String value, int newScale) {
+        return format(value,newScale,RoundingMode.HALF_UP);
+    }
+
+    /**
+     * 格式化字符串为 BigDecimal 对象，并指定新的小数位数和舍入模式。
+     *
+     * @param value           要格式化的字符串值
+     * @param newScale        新的小数位数
+     * @param roundingMode    舍入模式
+     * @return 格式化后的 BigDecimal 对象
+     */
+    public static BigDecimal format(String value, int newScale ,RoundingMode roundingMode) {
         if (ObjectUtil.isEmpty(value)) {
             return BigDecimal.ZERO;
         }
         BigDecimal v = format(value);
-        return v.setScale(newScale, RoundingMode.HALF_UP);
+        return v.setScale(newScale, roundingMode);
     }
 
     /**

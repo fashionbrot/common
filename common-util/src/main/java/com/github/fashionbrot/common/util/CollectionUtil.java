@@ -50,4 +50,40 @@ public class CollectionUtil {
                 .orElse(null);
     }
 
+    /**
+     * 将传入的可变参数值转换为 List。
+     *
+     * @param values 传入的可变参数值
+     * @param <T>    List 中元素的类型
+     * @return 包含传入值的 List
+     */
+    public static <T> List<T> convertToList(T... values) {
+        return new ArrayList<>(Arrays.asList(values));
+    }
+
+
+    /**
+     * 检查传入的可变参数值是否与指定值相等。
+     *
+     * @param val    要比较的值
+     * @param values 要检查相等性的可变参数值
+     * @param <T>    值的类型
+     * @return 如果任一可变参数值与指定值相等，则返回 true；否则返回 false
+     */
+    public static <T> boolean isEqualToAny(T val, T... values) {
+        return values != null && Arrays.stream(values).anyMatch(value -> Objects.equals(val, value));
+    }
+
+    /**
+     * 检查指定值是否存在于列表中。
+     *
+     * @param val  要检查的值
+     * @param list 列表
+     * @param <T>  值的类型
+     * @return 如果值存在于列表中则返回 true，否则返回 false
+     */
+    public static <T> boolean containsValue(T val, List<T> list) {
+        return list != null && list.contains(val);
+    }
+
 }
