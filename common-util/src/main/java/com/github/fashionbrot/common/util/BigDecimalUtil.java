@@ -542,6 +542,28 @@ public class BigDecimalUtil {
     }
 
     /**
+     * 比较两个BigDecimal对象是否相等，忽略空值。
+     *
+     * @param b1 第一个BigDecimal对象
+     * @param b2 第二个BigDecimal对象
+     * @return 如果两个对象相等（忽略空值），则返回true；否则返回false。
+     */
+    public static boolean equalsIgnoreNull(BigDecimal b1,BigDecimal b2){
+        return format(b1).compareTo(format(b2))==0;
+    }
+
+    /**
+     * 比较两个BigDecimal对象的大小。
+     *
+     * @param b1 第一个BigDecimal对象
+     * @param b2 第二个BigDecimal对象
+     * @return 如果b1大于b2，返回正数；如果b1等于b2，返回0；如果b1小于b2，返回负数。
+     */
+    public static int compareTo(BigDecimal b1 ,BigDecimal b2){
+        return format(b1).compareTo(format(b2));
+    }
+
+    /**
      * 比较两个 Double 值是否相等。
      *
      * @param a1 第一个 Double 值

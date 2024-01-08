@@ -143,4 +143,15 @@ public class BigDecimalUtilTest {
         assertTrue(BigDecimalUtil.equals(BigDecimal.ZERO, result));
     }
 
+    @Test
+    public void testCompareTo() {
+        BigDecimal b1 = new BigDecimal("123.45");
+        BigDecimal b2 = new BigDecimal("678.90");
+        BigDecimal b3 = new BigDecimal("123.45");
+
+        assertEquals(-1, BigDecimalUtil.compareTo(b1, b2));
+        assertEquals(0, BigDecimalUtil.compareTo(b1, b3));
+        assertEquals(1, BigDecimalUtil.compareTo(b2, b3));
+    }
+
 }
