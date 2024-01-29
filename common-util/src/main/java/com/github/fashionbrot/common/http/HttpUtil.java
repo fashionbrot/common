@@ -11,7 +11,10 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Iterator;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.*;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,6 +40,10 @@ public class HttpUtil {
         HttpURLConnection httpURLConnection = null;
 
         try {
+            if (!request.verifySsl()){
+                trustAllCertificates();
+            }
+
             URL url = new URL(request.url());
             httpURLConnection = (HttpURLConnection) url.openConnection();
 
@@ -59,6 +66,27 @@ public class HttpUtil {
         }
 
         return response;
+    }
+
+    private static void trustAllCertificates() throws NoSuchAlgorithmException, KeyManagementException {
+        // 创建信任所有证书的 TrustManager
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+        // 获取 SSL 上下文
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        // 设置默认的 SSLSocketFactory 和 HostnameVerifier
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
     }
 
 
@@ -184,6 +212,9 @@ public class HttpUtil {
                     }
                 }
             }
+        }
+        if (header==null && request.contentType()!=null){
+            httpURLConnection.setRequestProperty("Content-Type",request.contentType().getValue());;
         }
     }
 

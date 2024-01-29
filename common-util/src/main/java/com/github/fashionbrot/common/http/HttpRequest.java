@@ -69,4 +69,9 @@ public class HttpRequest {
      * 请求体的字节数组（不包含 GET 请求）
      */
     private byte[] requestBody;
+
+    /**
+     * 将 SSL/TLS 证书验证切换为打开或关闭。默认为 TRUE（开启）
+     */
+    private boolean verifySsl = true;
 }
