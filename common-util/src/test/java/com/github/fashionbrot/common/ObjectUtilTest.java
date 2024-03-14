@@ -90,4 +90,97 @@ public class ObjectUtilTest {
         assertTrue(ObjectUtil.isFalse(""));
     }
 
+
+
+    @Test
+    public void testGt_ColumnGreaterThanValue() {
+        assertTrue(ObjectUtil.gt(5L, 3));
+    }
+
+    @Test
+    public void testGt_ColumnLessThanValue() {
+        assertFalse(ObjectUtil.gt(3L, 5));
+    }
+
+    @Test
+    public void testGt_ColumnEqualToValue() {
+        assertFalse(ObjectUtil.gt(5L, 5));
+    }
+
+    @Test
+    public void testGt_ColumnIsNull() {
+        assertFalse(ObjectUtil.gt((Long) null, 5));
+    }
+
+    // Test cases for gt method with boolean condition
+
+    @Test
+    public void testGt_ConditionTrueColumnGreaterThanValue() {
+        assertTrue(ObjectUtil.gt(true, 5L, 3));
+    }
+
+    @Test
+    public void testGt_ConditionFalseColumnGreaterThanValue() {
+        assertFalse(ObjectUtil.gt(false, 5L, 3));
+    }
+
+    @Test
+    public void testGt_ConditionTrueColumnLessThanValue() {
+        assertFalse(ObjectUtil.gt(true, 3L, 5));
+    }
+
+    @Test
+    public void testGt_ConditionFalseColumnLessThanValue() {
+        assertFalse(ObjectUtil.gt(false, 3L, 5));
+    }
+
+    @Test
+    public void testGt_ConditionTrueColumnEqualToValue() {
+        assertFalse(ObjectUtil.gt(true, 5L, 5));
+    }
+
+    @Test
+    public void testGt_ConditionFalseColumnEqualToValue() {
+        assertFalse(ObjectUtil.gt(false, 5L, 5));
+    }
+
+    @Test
+    public void testGt_ConditionTrueColumnIsNull() {
+        assertFalse(ObjectUtil.gt(true, (Long) null, 5L));
+    }
+
+    @Test
+    public void testGt_ConditionFalseColumnIsNull() {
+        assertFalse(ObjectUtil.gt(false, (Long) null, 5));
+    }
+
+
+    @Test
+    public void testLeTrueCondition() {
+        // Arrange
+        Double column = 5.0;
+        double val = 10.0;
+
+        // Act
+        boolean result = ObjectUtil.le(true, column, val);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    public void testLeFalseCondition() {
+        // Arrange
+        Double column = 15.0;
+        double val = 10.0;
+
+        // Act
+        boolean result = ObjectUtil.le(false, column, val);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
+
 }

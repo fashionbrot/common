@@ -18,6 +18,22 @@ import java.util.List;
 @Slf4j
 public class DateUtil {
 
+    /**
+     * 获取当前日期和时间，格式为yyyy-MM-dd HH:mm:ss
+     * @return 返回格式化后的当前日期和时间字符串
+     */
+    public static String getCurrentDateTime(){
+        return LocalDateTimeUtil.toString(LocalDateTime.now());
+    }
+
+    /**
+     * 获取当前日期，格式为yyyy-MM-dd
+     * @return 返回格式化后的当前日期字符串
+     */
+    public static String getCurrentDate(){
+        return LocalDateUtil.toString(LocalDate.now());
+    }
+
 
 
     /**

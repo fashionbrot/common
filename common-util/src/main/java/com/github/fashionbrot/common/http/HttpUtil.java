@@ -40,7 +40,7 @@ public class HttpUtil {
         HttpURLConnection httpURLConnection = null;
 
         try {
-            if (!request.verifySsl()){
+            if (ObjectUtil.isTrue(request.verifySsl())) {
                 trustAllCertificates();
             }
 
@@ -167,6 +167,10 @@ public class HttpUtil {
         }
     }
 
+    public static InputStream getContentStream(HttpURLConnection connection) throws IOException {
+        String encoding = connection.getContentEncoding();
+        return getContentStream(connection,encoding);
+    }
 
     /**
      * 获取响应体的输入流，考虑 gzip 压缩等情况。

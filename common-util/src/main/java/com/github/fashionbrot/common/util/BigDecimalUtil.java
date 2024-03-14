@@ -629,4 +629,100 @@ public class BigDecimalUtil {
         }
     }
 
+
+    /**
+     * 检查 BigDecimal 列的值是否大于给定值。
+     *
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值大于给定值，则返回 true，否则返回 false
+     */
+    public static boolean gt(BigDecimal column, BigDecimal val) {
+        return gt(true, column, val);
+    }
+
+    /**
+     * 根据布尔条件，检查 BigDecimal 列的值是否大于给定值。
+     *
+     * @param condition 要检查的布尔条件
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值大于给定值且条件为 true，则返回 true，否则返回 false
+     */
+    public static boolean gt(boolean condition, BigDecimal column, BigDecimal val) {
+        return condition && column != null && val != null && column.compareTo(val) > 0;
+    }
+
+    /**
+     * 检查 BigDecimal 列的值是否大于或等于给定值。
+     *
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值大于或等于给定值，则返回 true，否则返回 false
+     */
+    public static boolean ge(BigDecimal column, BigDecimal val) {
+        return ge(true, column, val);
+    }
+
+    /**
+     * 根据布尔条件，检查 BigDecimal 列的值是否大于或等于给定值。
+     *
+     * @param condition 要检查的布尔条件
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值大于或等于给定值且条件为 true，则返回 true，否则返回 false
+     */
+    public static boolean ge(boolean condition, BigDecimal column, BigDecimal val) {
+        return condition && column != null && val != null && column.compareTo(val) >= 0;
+    }
+
+    /**
+     * 检查 BigDecimal 列的值是否小于给定值。
+     *
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值小于给定值，则返回 true，否则返回 false
+     */
+    public static boolean lt(BigDecimal column, BigDecimal val) {
+        return lt(true, column, val);
+    }
+
+    /**
+     * 根据布尔条件，检查 BigDecimal 列的值是否小于给定值。
+     *
+     * @param condition 要检查的布尔条件
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值小于给定值且条件为 true，则返回 true，否则返回 false
+     */
+    public static boolean lt(boolean condition, BigDecimal column, BigDecimal val) {
+        return condition && column != null && val != null && column.compareTo(val) < 0;
+    }
+
+    /**
+     * 检查 BigDecimal 列的值是否小于或等于给定值。
+     *
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值小于或等于给定值，则返回 true，否则返回 false
+     */
+    public static boolean le(BigDecimal column, BigDecimal val) {
+        return le(true, column, val);
+    }
+
+    /**
+     * 根据布尔条件，检查 BigDecimal 列的值是否小于或等于给定值。
+     *
+     * @param condition 要检查的布尔条件
+     * @param column 要比较的 BigDecimal 列值
+     * @param val 要比较的值
+     * @return 如果列值小于或等于给定值且条件为 true，则返回 true，否则返回 false
+     */
+    public static boolean le(boolean condition, BigDecimal column, BigDecimal val) {
+        return condition && column != null && val != null && column.compareTo(val) <= 0;
+    }
+
+
+
+
 }

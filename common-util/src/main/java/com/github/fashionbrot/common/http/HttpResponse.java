@@ -1,7 +1,7 @@
 package com.github.fashionbrot.common.http;
 
 import com.github.fashionbrot.common.util.IoUtil;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.InputStream;
@@ -22,6 +22,9 @@ import java.util.Map;
  */
 @Data
 @Accessors(fluent = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HttpResponse {
 
     // 服务器响应的状态代码
@@ -45,12 +48,5 @@ public class HttpResponse {
     // 响应体的长度
     private long contentLength;
 
-    /**
-     * 获取响应体的内容字符串。
-     * @return 响应体内容字符串。
-     */
-    public String getResponseBody() {
-        return IoUtil.toString(responseBody, charset);
-    }
 }
 

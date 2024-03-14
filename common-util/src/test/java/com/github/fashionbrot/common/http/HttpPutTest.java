@@ -1,5 +1,7 @@
 package com.github.fashionbrot.common.http;
 
+import com.github.fashionbrot.common.consts.CharsetConst;
+import com.github.fashionbrot.common.util.IoUtil;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -8,29 +10,32 @@ public class HttpPutTest {
 
 
     @Test
-    public void test1(){
-        String requestBody="{\"id\":\"1689144167306387457\", \"title\": \"HttpClient修改了1\"}";
-        HttpClient.create(new HttpRequest()
-                        .url("http://localhost:8082/banner/updateById")
-                        .httpMethod(HttpMethod.PUT)
-                        .contentType(ContentType.JSON)
-                        .requestBody(requestBody.getBytes(StandardCharsets.UTF_8))
-                        .header(new HttpHeader().add("Content-Type","application/json;charset=UTF-8"))
-                )
-                .execute(new HttpCallback() {
-                    @Override
-                    public void success(HttpRequest request, HttpResponse response) {
-                        System.out.println(response.getResponseBody());
-                    }
+    public void test1() {
 
-                    @Override
-                    public void failed(HttpRequest request, HttpResponse response) {
-                        System.out.println(response.responseCode());
-                        System.out.println(response.getResponseBody());
-                    }
-                });
+        String url ="http://localhost:8083//api/put";
+        String entityToUrlParam = "{\"cityCode\":\"110100\"}";
+
+        HttpRequest request = HttpRequest.builder()
+                .httpMethod(HttpMethod.PUT)
+                .url(url)
+                .contentType(ContentType.JSON)
+                .header(new HttpHeader()
+                        .add("Content-Type","application/json;charset=UTF-8"))
+                .requestBody(entityToUrlParam.getBytes(StandardCharsets.UTF_8))
+                .build();
+        String responseText = "";
+        try {
+            HttpResponse response = HttpUtil.send(request);
+            if (response!=null){
+                byte[] bytes = response.responseBody();
+                responseText = IoUtil.toString(bytes, CharsetConst.UTF8_CHARSET);
+            }
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+        }
+
+        System.out.println(responseText);
     }
-
 
 
 

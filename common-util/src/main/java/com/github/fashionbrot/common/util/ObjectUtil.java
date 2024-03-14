@@ -3,6 +3,7 @@ package com.github.fashionbrot.common.util;
 
 import com.github.fashionbrot.common.consts.CharsetConst;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -1013,6 +1014,288 @@ public class ObjectUtil {
         }
         return str.toString().getBytes(charset);
     }
+
+
+    /**
+     * 检查Long列是否大于指定的长整型值。
+     *
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值大于指定值，则返回true；否则返回false
+     */
+    public static boolean gt(Long column, long val) {
+        return gt(true, column, val);
+    }
+
+    /**
+     * 检查Long列是否大于指定的长整型值，并考虑附加的条件。
+     *
+     * @param condition 附加的条件
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值大于指定值，则返回true；否则返回false
+     */
+    public static boolean gt(boolean condition, Long column, long val) {
+        return condition && column != null && column > val;
+    }
+
+    /**
+     * 检查Long列是否大于或等于指定的长整型值。
+     *
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值大于或等于指定值，则返回true；否则返回false
+     */
+    public static boolean ge(Long column, long val) {
+        return ge(true, column, val);
+    }
+
+    /**
+     * 检查Long列是否大于或等于指定的长整型值，并考虑附加的条件。
+     *
+     * @param condition 附加的条件
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值大于或等于指定值，则返回true；否则返回false
+     */
+    public static boolean ge(boolean condition, Long column, long val) {
+        return condition && column != null && column >= val;
+    }
+
+    /**
+     * 检查Long列是否小于指定的长整型值。
+     *
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值小于指定值，则返回true；否则返回false
+     */
+    public static boolean lt(Long column, long val) {
+        return lt(true, column, val);
+    }
+
+    /**
+     * 检查Long列是否小于指定的长整型值，并考虑附加的条件。
+     *
+     * @param condition 附加的条件
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值小于指定值，则返回true；否则返回false
+     */
+    public static boolean lt(boolean condition, Long column, long val) {
+        return condition && column != null && column < val;
+    }
+
+    /**
+     * 检查Long列是否小于或等于指定的长整型值。
+     *
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值小于或等于指定值，则返回true；否则返回false
+     */
+    public static boolean le(Long column, long val) {
+        return le(true, column, val);
+    }
+
+    /**
+     * 检查Long列是否小于或等于指定的长整型值，并考虑附加的条件。
+     *
+     * @param condition 附加的条件
+     * @param column 要比较的Long列
+     * @param val 指定的长整型值
+     * @return 如果条件为真且列值小于或等于指定值，则返回true；否则返回false
+     */
+    public static boolean le(boolean condition, Long column, long val) {
+        return condition && column != null && column <= val;
+    }
+
+
+
+    /**
+     * 检查给定的整数列是否大于指定的值。
+     *
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果整数列大于指定的值，则为 true；否则为 false
+     */
+    public static boolean gt(Integer column, int val) {
+        return gt(true, column, val);
+    }
+
+    /**
+     * 根据给定的条件，检查给定的整数列是否大于指定的值。
+     *
+     * @param condition 条件，如果为 true，则进行比较；否则直接返回 false
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果满足条件且整数列大于指定的值，则为 true；否则为 false
+     */
+    public static boolean gt(boolean condition, Integer column, int val) {
+        return condition && column != null && column > val;
+    }
+
+    /**
+     * 检查给定的整数列是否大于或等于指定的值。
+     *
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果整数列大于或等于指定的值，则为 true；否则为 false
+     */
+    public static boolean ge(Integer column, int val) {
+        return ge(true, column, val);
+    }
+
+    /**
+     * 根据给定的条件，检查给定的整数列是否大于或等于指定的值。
+     *
+     * @param condition 条件，如果为 true，则进行比较；否则直接返回 false
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果满足条件且整数列大于或等于指定的值，则为 true；否则为 false
+     */
+    public static boolean ge(boolean condition, Integer column, int val) {
+        return condition && column != null && column >= val;
+    }
+
+    /**
+     * 检查给定的整数列是否小于指定的值。
+     *
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果整数列小于指定的值，则为 true；否则为 false
+     */
+    public static boolean lt(Integer column, int val) {
+        return lt(true, column, val);
+    }
+
+    /**
+     * 根据给定的条件，检查给定的整数列是否小于指定的值。
+     *
+     * @param condition 条件，如果为 true，则进行比较；否则直接返回 false
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果满足条件且整数列小于指定的值，则为 true；否则为 false
+     */
+    public static boolean lt(boolean condition, Integer column, int val) {
+        return condition && column != null && column < val;
+    }
+
+    /**
+     * 检查给定的整数列是否小于或等于指定的值。
+     *
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果整数列小于或等于指定的值，则为 true；否则为 false
+     */
+    public static boolean le(Integer column, int val) {
+        return le(true, column, val);
+    }
+
+    /**
+     * 根据给定的条件，检查给定的整数列是否小于或等于指定的值。
+     *
+     * @param condition 条件，如果为 true，则进行比较；否则直接返回 false
+     * @param column 要比较的整数列
+     * @param val 要比较的值
+     * @return 如果满足条件且整数列小于或等于指定的值，则为 true；否则为 false
+     */
+    public static boolean le(boolean condition, Integer column, int val) {
+        return condition && column != null && column <= val;
+    }
+
+
+
+    /**
+     * 判断给定的列值是否大于指定值。
+     *
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果列值大于指定值，则返回 true，否则返回 false
+     */
+    public static boolean gt(Double column, double val) {
+        return gt(true, column, val);
+    }
+
+    /**
+     * 根据条件判断给定的列值是否大于指定值。
+     *
+     * @param condition 判断条件
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果条件成立且列值大于指定值，则返回 true，否则返回 false
+     */
+    public static boolean gt(boolean condition, Double column, double val) {
+        return condition && column != null && column > val;
+    }
+
+    /**
+     * 判断给定的列值是否大于等于指定值。
+     *
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果列值大于等于指定值，则返回 true，否则返回 false
+     */
+    public static boolean ge(Double column, double val) {
+        return ge(true, column, val);
+    }
+
+    /**
+     * 根据条件判断给定的列值是否大于等于指定值。
+     *
+     * @param condition 判断条件
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果条件成立且列值大于等于指定值，则返回 true，否则返回 false
+     */
+    public static boolean ge(boolean condition, Double column, double val) {
+        return condition && column != null && column >= val;
+    }
+
+    /**
+     * 判断给定的列值是否小于指定值。
+     *
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果列值小于指定值，则返回 true，否则返回 false
+     */
+    public static boolean lt(Double column, double val) {
+        return lt(true, column, val);
+    }
+
+    /**
+     * 根据条件判断给定的列值是否小于指定值。
+     *
+     * @param condition 判断条件
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果条件成立且列值小于指定值，则返回 true，否则返回 false
+     */
+    public static boolean lt(boolean condition, Double column, double val) {
+        return condition && column != null && column < val;
+    }
+
+    /**
+     * 判断给定的列值是否小于等于指定值。
+     *
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果列值小于等于指定值，则返回 true，否则返回 false
+     */
+    public static boolean le(Double column, double val) {
+        return le(true, column, val);
+    }
+
+    /**
+     * 根据条件判断给定的列值是否小于等于指定值。
+     *
+     * @param condition 判断条件
+     * @param column 列值
+     * @param val 指定值
+     * @return 如果条件成立且列值小于等于指定值，则返回 true，否则返回 false
+     */
+    public static boolean le(boolean condition, Double column, double val) {
+        return condition && column != null && column <= val;
+    }
+
 
 
 }

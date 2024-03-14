@@ -1,6 +1,9 @@
 package com.github.fashionbrot.common.http;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -8,6 +11,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(fluent = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HttpRequest {
 
     /**
@@ -71,7 +77,7 @@ public class HttpRequest {
     private byte[] requestBody;
 
     /**
-     * 将 SSL/TLS 证书验证切换为打开或关闭。默认为 TRUE（开启）
+     * 将 SSL/TLS 证书验证切换为打开或关闭。默认为 false（开启）
      */
-    private boolean verifySsl = true;
+    private Boolean verifySsl;
 }
