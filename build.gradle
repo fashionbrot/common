@@ -13,7 +13,7 @@ allprojects {
     apply plugin: 'idea'
 
     group 'com.github.fashionbrot'
-    version '0.1.0'
+    version '0.1.1'
 
 
     // 指定java版本
