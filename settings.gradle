@@ -1,4 +1,5 @@
 rootProject.name = 'common'
 include 'common-util'
 include 'common-spring'
+include 'common-auth'
 
