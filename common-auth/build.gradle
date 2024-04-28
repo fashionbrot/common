@@ -128,13 +128,14 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     implementation 'org.slf4j:slf4j-api:1.7.10'
+    implementation 'com.auth0:java-jwt:4.4.0'
 
     compileOnly 'org.springframework:spring-context:4.3.10.RELEASE'
     compileOnly 'org.springframework:spring-webmvc:4.3.10.RELEASE'
 
     testImplementation "junit:junit:4.13.2"
     testImplementation 'org.springframework:spring-webmvc:4.3.10.RELEASE'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
 }
 
 compileJava.options.encoding = "UTF-8"

@@ -24,7 +24,7 @@ public class MapUtil {
         Map<String, Object> map = new HashMap<>((int) (kv.length / 1.5)); // 默认负载因子为0.75，适当调整初始容量
 
         for (int i = 0; i < kv.length; i += 2) {
-            String key = String.valueOf(kv[i]);  // 使用 String.valueOf 防止空指针异常
+            String key = ObjectUtil.toString(kv[i]);  // 使用 String.valueOf 防止空指针异常
             Object value = kv[i + 1];
             map.put(key, value);
         }
