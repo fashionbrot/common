@@ -8,6 +8,7 @@ public interface SignatureVerificationFunction {
 
     /**
      * 验证签名失败 执行
+     * @param exception 失败异常
      */
     void throwException(Exception exception);
 
