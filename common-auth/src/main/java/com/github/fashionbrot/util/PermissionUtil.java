@@ -50,6 +50,18 @@ public class PermissionUtil {
         return decode;
     }
 
+    public static <T> T getToken(Algorithm algorithm,
+                                 GetTokenFunction tokenFunction,
+                                 TokenExpiredFunction tokenExpiredFunction,
+                                 SignatureVerificationFunction signatureVerificationFunction,
+                                 String key,
+                                 Class<T> resultClass){
+        Map<String, Claim> stringClaimMap = checkToken(algorithm, tokenFunction, tokenExpiredFunction, signatureVerificationFunction);
+        if (ObjectUtil.isEmpty(stringClaimMap)){
+            return null;
+        }
+        return JwtUtil.get(stringClaimMap, key, resultClass,null);
+    }
 
     public static <T> T getToken(Algorithm algorithm,
                                  GetTokenFunction tokenFunction,

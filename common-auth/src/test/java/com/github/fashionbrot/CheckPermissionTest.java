@@ -114,4 +114,32 @@ public class CheckPermissionTest {
         CommonException.throwMsg("token 验证签名失败");
     };
 
+
+    @Test
+    public void test5() throws Exception {
+
+        String secret = "12345678";
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+
+        String[] array = new String[]{"1"};
+        List<Integer> list=new ArrayList<>();
+        list.add(1);
+
+        Map<String, Object> mm=new HashMap<>();
+        mm.put("abc",22);
+
+
+        Map<String, Object> map = MapUtil.createMap("userId", 1000, "array", array, "list", list,"str","张三","date",new Date(),"map",mm);
+
+        String token = JwtUtil.encrypt(algorithm, 10,map);
+        System.out.println("token:"+token);
+
+        GetTokenFunction tokenFunction = ()-> {
+            return token;
+        };
+
+        Date userId = PermissionUtil.getToken(algorithm, tokenFunction,tokenExpiredFunction,signatureVerificationFunction,"date",Date.class);
+        System.out.println(userId);
+    }
+
 }
