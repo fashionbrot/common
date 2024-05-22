@@ -300,6 +300,85 @@ public class ObjectUtil {
         return (object == null) ? "" : object.toString();
     }
 
+    /**
+     * 将对象转换为字符串，如果对象为null，则返回空字符串。
+     *
+     * @param var 要转换的对象
+     * @return 对象的字符串表示，如果对象为null，则返回空字符串
+     */
+    public static String toString(final Object var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Long类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Long变量
+     * @return Long变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Long var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Integer类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Integer变量
+     * @return Integer变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Integer var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Short类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Short变量
+     * @return Short变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Short var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Float类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Float变量
+     * @return Float变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Float var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Double类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Double变量
+     * @return Double变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Double var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Byte类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Byte变量
+     * @return Byte变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Byte var) {
+        return (var == null) ? "" : var.toString();
+    }
+
+    /**
+     * 将Boolean类型变量转换为字符串，如果为null，则返回空字符串。
+     *
+     * @param var 要转换的Boolean变量
+     * @return Boolean变量的字符串表示，如果为null，则返回空字符串
+     */
+    public static String toString(final Boolean var) {
+        return (var == null) ? "" : var.toString();
+    }
 
 
     /**
