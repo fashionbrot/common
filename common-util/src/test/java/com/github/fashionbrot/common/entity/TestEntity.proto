@@ -13,6 +13,13 @@ option java_outer_classname="TestEntityProto";
 
 message TestEntity {
   int64 id = 1;
-  int64 parent_id = 2;
-  string name = 3;
+  string name = 2;
+  int64 parent_id = 3;
+  string parent_name = 4;
+  int64 test5 = 5;
+  int64 test6 = 6;
+  string test7= 7;
+  int64 test8 = 8;
+  int64 test9 =9;
+  string test10 = 10;
 }

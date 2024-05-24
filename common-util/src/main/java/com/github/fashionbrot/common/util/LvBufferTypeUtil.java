@@ -195,10 +195,21 @@ public class LvBufferTypeUtil {
         return builder.toString();
     }
 
+    public static String maxString(){
+        int maxLength = 2; // 近似最大长度，减去一些以避免OutOfMemoryError
+        StringBuilder sb = new StringBuilder(maxLength);
+        for (int i = 0; i < maxLength; i++) {
+            sb.append('a');
+        }
+        return sb.toString();
+    }
 
-//    public static void main(String[] args) throws IOException {
-//        byte[] bytes = encodeVarInteger(11);
-//        int i = decodeVarInteger(bytes);
-//        System.out.println(i);
-//    }
+
+    public static void main(String[] args) throws IOException {
+        byte[] bytes = encodeVarInteger(128);
+        System.out.println(bytes.length);
+        int ii = decodeVarInteger(bytes);
+        System.out.println(ii);
+
+    }
 }

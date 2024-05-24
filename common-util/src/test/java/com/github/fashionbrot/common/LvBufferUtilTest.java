@@ -28,7 +28,25 @@ public class LvBufferUtilTest {
     }
 
     public static void test() throws IOException {
+        int index=0;
+        for (int i = 0x00; i <= 0xFF; i++) {
+            // 将整数转换为十六进制字符串，并打印
+            System.out.println(index+" 0x" + Integer.toHexString(i).toUpperCase());
+            index++;
+        }
+        System.out.println(Integer.MAX_VALUE);
+        if (true){
+            return;
+        }
+
+        int maxLength = 65565; // 近似最大长度，减去一些以避免OutOfMemoryError
+        StringBuilder sb = new StringBuilder(maxLength);
+        for (int i = 0; i < maxLength; i++) {
+            sb.append('a');
+        }
+
         LvEntity build = LvEntity.builder()
+                .b(sb.toString())
                 .b1((byte) 0x01)
                 .b2(ObjectUtil.formatShort("12346"))
                 .b3(333333333)
@@ -47,7 +65,7 @@ public class LvBufferUtilTest {
         System.out.println(Arrays.toString(serialize));
 
 
-        LvEntity deserialize = LvBufferUtil.deserialize(LvEntity.class, serialize);
+        LvEntity deserialize = LvBufferUtil.deserialize2(LvEntity.class, serialize);
         System.out.println(deserialize);
     }
 

@@ -115,7 +115,7 @@ public class ByteUtilTest {
         TestEntity build = TestEntity.builder()
                 .id(Long.MAX_VALUE)
                 .name("张三")
-                .parentId(0L)
+                .parentId(Long.MAX_VALUE)
                 .build();
         byte[] jsonBytes = JSON.toJSONBytes(build);
         System.out.println("转成json："+jsonBytes.length);
@@ -126,12 +126,20 @@ public class ByteUtilTest {
         long l2 = System.currentTimeMillis();
         System.out.println("----------------------自己实现的压缩---------------------start");
         TestEntity build2 = TestEntity.builder()
-                .id(Long.MAX_VALUE)
-                .name("张三")
-                .parentId(0L)
+                .id(22L)
+                .name(LvBufferTypeUtil.maxString())
+                .parentId(33L)
+                .parentName(LvBufferTypeUtil.maxString())
+                .test5(55L)
+                .test6(66L)
+                .test7(LvBufferTypeUtil.maxString())
+                .test8(88L)
+                .test9(99L)
+                .test10("aa")
                 .build();
         byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
+        System.out.println(Arrays.toString(bytes2));
 
 
         TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
@@ -145,19 +153,34 @@ public class ByteUtilTest {
         long l1 = System.currentTimeMillis();
         System.out.println("----------------------protobuf---------------------start");
         TestEntityProto.TestEntity test= TestEntityProto.TestEntity.newBuilder()
-                .setId(Long.MAX_VALUE)
-                .setParentId(0L)
-                .setName("张三")
+                .setId(22L)
+                .setParentId(33L)
+                .setName(LvBufferTypeUtil.maxString())
+                .setParentName(LvBufferTypeUtil.maxString())
+                .setTest5(55L)
+                .setTest6(66L)
+                .setTest7(LvBufferTypeUtil.maxString())
+                .setTest8(88L)
+                .setTest9(99L)
+                .setTest10("aa")
                 .build();
 
         byte[] byteArray = test.toByteArray();
         System.out.println("protobuf："+byteArray.length+"byte");
+        System.out.println(Arrays.toString(byteArray));
 
         TestEntityProto.TestEntity test1 = TestEntityProto.TestEntity.parseFrom(byteArray);
         TestEntity build1 = TestEntity.builder()
                 .id(test1.getId())
                 .name(test1.getName())
                 .parentId(test1.getParentId())
+                .parentName(test1.getParentName())
+                .test5(test1.getTest5())
+                .test6(test1.getTest6())
+                .test7(test1.getTest7())
+                .test8(test1.getTest8())
+                .test9(test1.getTest9())
+                .test10(test1.getTest10())
                 .build();
         System.out.println(build1.toString());
         System.out.println(System.currentTimeMillis()-l1+"毫秒");

@@ -17,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class LvEntity {
 
+    private String b;
     private Byte b1;
     private Short b2;
     private Integer b3;
@@ -28,4 +29,5 @@ public class LvEntity {
     private LocalTime b9;
     private LocalDate b10;
     private LocalDateTime b11;
+
 }
