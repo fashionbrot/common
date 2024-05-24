@@ -54,6 +54,19 @@ public class MethodUtil {
     }
 
 
+    public static void setFieldValue(Field field,Object object,Object value){
+        if (field!=null){
+            try {
+                //设置可以操作私有成员
+                field.setAccessible(true);
+                field.set(object,value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     /**
      * Determine whether the given method is a "hashCode" method.
      * @see java.lang.Object#hashCode()
@@ -101,6 +114,17 @@ public class MethodUtil {
             return false;
         }
         return method.getParameterTypes()[0] == Object.class;
+    }
+
+
+    public static  <T> T newInstance(Class<T> resultClass){
+        try {
+            return resultClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -1,0 +1,18 @@
+
+
+syntax = "proto3";
+
+//生成 proto 文件所在包路径
+package com.jinxing.hemu.protobuf;
+
+//生成 proto 文件所在包路径
+option java_package = "com.github.fashionbrot.common.entity";
+
+//生成 proto 文件名
+option java_outer_classname="TestEntityProto";
+
+message TestEntity {
+  int64 id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+}
