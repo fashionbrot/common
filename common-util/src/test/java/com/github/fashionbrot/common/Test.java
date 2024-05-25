@@ -1,6 +1,10 @@
 package com.github.fashionbrot.common;
 
+import com.github.fashionbrot.common.entity.TestEntity;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -8,26 +12,20 @@ import java.util.Arrays;
  */
 public class Test {
 
-    public static void main(String[] args) {
-        String binaryNumber = "11010";
+    public static void main(String[] args) throws IOException {
 
-        // 移位后的二进制数
-        String shiftedBinaryNumber = shift(binaryNumber);
+        TestEntity build = TestEntity.builder()
+                .id(Long.MAX_VALUE)
+                .name("张三")
+                .build();
+        System.out.println( ByteBuffer.allocate(Long.BYTES).putLong(build.getId()).array().length+(build.getName().getBytes().length));
+        byte[] serialize = ProtobufSerializer.serialize(build);
+        System.out.println(serialize.length);
+        System.out.println(Arrays.toString(serialize));
 
-        // 输出结果
-        System.out.println("原始二进制数：" + binaryNumber +" "+Integer.parseInt(binaryNumber,2));
-        System.out.println("移位后的二进制数：" + shiftedBinaryNumber+" "+Integer.parseInt(shiftedBinaryNumber,2));
+        TestEntity deserialize = ProtobufDeserializer.deserialize(serialize);
+        System.out.println(deserialize);
+
     }
 
-    // 移位操作
-    public static String shift(String binaryNumber) {
-        // 在二进制数末尾添加一个零
-        String shiftedBinaryNumber = binaryNumber + "0";
-        // 将第4位移到第5位
-        shiftedBinaryNumber = shiftedBinaryNumber.substring(0, 4) + shiftedBinaryNumber.charAt(2) + shiftedBinaryNumber.substring(4);
-        // 将第2位移到第3位
-        shiftedBinaryNumber = shiftedBinaryNumber.substring(0, 2) + shiftedBinaryNumber.charAt(0) + shiftedBinaryNumber.substring(2);
-
-        return shiftedBinaryNumber;
-    }
 }

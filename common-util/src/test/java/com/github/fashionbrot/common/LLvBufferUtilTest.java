@@ -6,6 +6,7 @@ import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.entity.LvEntity;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
+import com.github.fashionbrot.common.util.LLvBufferUtil;
 import com.github.fashionbrot.common.util.LvBufferUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
-public class LvBufferUtilTest {
+public class LLvBufferUtilTest {
 
     public static void main(String[] args) throws IOException {
         long l = System.currentTimeMillis();
@@ -50,12 +51,12 @@ public class LvBufferUtilTest {
                 .b11(LocalDateTimeUtil.toLocalDateTime(new Date()))
                 .build();
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = LvBufferUtil.serialize2(LvEntity.class, build);
+        byte[] serialize = LLvBufferUtil.serialize(LvEntity.class, build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
 
-        LvEntity deserialize = LvBufferUtil.deserialize2(LvEntity.class, serialize);
+        LvEntity deserialize = LLvBufferUtil.deserialize(LvEntity.class, serialize);
         System.out.println(deserialize);
     }
 

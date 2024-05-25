@@ -3,6 +3,7 @@ package com.github.fashionbrot.common;
 import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.entity.TestEntity;
 import com.github.fashionbrot.common.entity.TestEntityProto;
+import com.github.fashionbrot.common.util.LLvBufferUtil;
 import com.github.fashionbrot.common.util.MethodUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 import com.github.fashionbrot.common.util.LvBufferTypeUtil;
@@ -113,15 +114,20 @@ public class ByteUtilTest {
 
     public static void main(String[] args) throws IOException {
         TestEntity build = TestEntity.builder()
-                .id(Long.MAX_VALUE)
-                .name("张三")
-                .parentId(Long.MAX_VALUE)
+                .id(22L)
+                .name(LvBufferTypeUtil.maxString())
+                .parentId(33L)
+                .parentName(LvBufferTypeUtil.maxString())
+                .test5(55L)
+                .test6(66L)
+                .test7(LvBufferTypeUtil.maxString())
+                .test8(88L)
+                .test9(99L)
+                .test10("aa")
                 .build();
         byte[] jsonBytes = JSON.toJSONBytes(build);
         System.out.println("转成json："+jsonBytes.length);
 
-        System.out.println("张三 lenght:"+"张三".getBytes().length);
-        System.out.println(Arrays.toString("张三".getBytes()));
 
         long l2 = System.currentTimeMillis();
         System.out.println("----------------------自己实现的压缩---------------------start");
@@ -137,12 +143,14 @@ public class ByteUtilTest {
                 .test9(99L)
                 .test10("aa")
                 .build();
-        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
+//        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
+        byte[] bytes2 = LLvBufferUtil.serialize(TestEntity.class, build2);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
         System.out.println(Arrays.toString(bytes2));
 
 
-        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
+//        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
+        TestEntity testEntity = LLvBufferUtil.deserialize(TestEntity.class, bytes2);
         System.out.println(testEntity.toString());
 
         System.out.println(System.currentTimeMillis()-l2+"毫秒");

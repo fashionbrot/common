@@ -196,7 +196,7 @@ public class LvBufferTypeUtil {
     }
 
     public static String maxString(){
-        int maxLength = 2; // 近似最大长度，减去一些以避免OutOfMemoryError
+        int maxLength = 20; // 近似最大长度，减去一些以避免OutOfMemoryError
         StringBuilder sb = new StringBuilder(maxLength);
         for (int i = 0; i < maxLength; i++) {
             sb.append('a');
@@ -211,5 +211,6 @@ public class LvBufferTypeUtil {
         int ii = decodeVarInteger(bytes);
         System.out.println(ii);
 
+        System.out.println(encodeVarLong(Long.MAX_VALUE).length);
     }
 }
