@@ -29,5 +29,6 @@ public class LvEntity {
     private LocalTime b9;
     private LocalDate b10;
     private LocalDateTime b11;
+    private Boolean b12;
 
 }

@@ -49,14 +49,15 @@ public class LLvBufferUtilTest {
                 .b9(LocalTimeUtil.toLocalTime(new Date()))
                 .b10(LocalDateUtil.toLocalDate(new Date()))
                 .b11(LocalDateTimeUtil.toLocalDateTime(new Date()))
+                .b12(null)
                 .build();
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = LLvBufferUtil.serialize(LvEntity.class, build);
+        byte[] serialize = LLvBufferUtil.serializeNew(LvEntity.class, build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
 
-        LvEntity deserialize = LLvBufferUtil.deserialize(LvEntity.class, serialize);
+        LvEntity deserialize = LLvBufferUtil.deserializeNew(LvEntity.class, serialize);
         System.out.println(deserialize);
     }
 

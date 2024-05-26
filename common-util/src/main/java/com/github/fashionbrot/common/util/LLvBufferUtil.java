@@ -121,6 +121,43 @@ public class LLvBufferUtil {
         return Object.class; // Default to Object type if unable to determine generic type
     }
 
+    public static <T> T deserializeNew(Class<T> clazz,byte[] data)throws IOException{
+        T t = MethodUtil.newInstance(clazz);
+        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        if (ObjectUtil.isEmpty(fieldList)){
+            return t;
+        }
+        if (ObjectUtil.isEmpty(data)){
+            return t;
+        }
+
+        int readIndex=0;
+        for (Field field : fieldList) {
+            byte firstByte = data[readIndex];
+            //第一位byte(前5个bit 是value数量类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
+            String binaryString = ByteUtil.byteToBinaryString(firstByte);
+            BinaryType valueType = BinaryType.fromBinaryCode(binaryString.substring(0, 5));
+            int valueByteLengthLength = BinaryCodeLength.getLength(binaryString.substring(5, 8));//LvBufferTypeUtil.encodeVarInteger().length;
+
+            int valueByteLength = LvBufferTypeUtil.decodeVarInteger(Arrays.copyOfRange(data, readIndex + 1, readIndex + 1 + valueByteLengthLength));
+            if (valueByteLength==0){
+                readIndex+=2;
+                continue;
+            }
+
+            byte[] bytes = Arrays.copyOfRange(data, readIndex +1+ valueByteLengthLength, readIndex +1 + valueByteLengthLength+ valueByteLength);
+
+            readIndex = readIndex +1 + valueByteLengthLength+ valueByteLength;
+
+            Class<?> type = field.getType();
+
+            Object value = decodeByteToPrimitive(bytes, type);
+
+            MethodUtil.setFieldValue(field,t,value);
+        }
+        return t;
+    }
+
     public static <T> T deserialize(Class<T> clazz,byte[] data) throws IOException {
         List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)) {
@@ -164,6 +201,46 @@ public class LLvBufferUtil {
         return null;
     }
 
+    public static byte[] serializeNew(Class clazz,Object input){
+        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        if (ObjectUtil.isEmpty(fieldList)){
+            return new byte[]{};
+        }
+        List<byte[]> list=new ArrayList<>();
+        for (Field field : fieldList) {
+            Object fieldValue = MethodUtil.getFieldValue(field, input);
+            encodeField(field,fieldValue,list);
+        }
+        if (ObjectUtil.isEmpty(list)){
+            return new byte[]{};
+        }
+        return mergeByteArrayList(list);
+    }
+
+
+    private static void encodeField(Field field, Object fieldValue,List<byte[]> list) {
+
+        if (fieldValue==null){
+            list.add(LvBufferTypeUtil.encodeVarInteger(0));
+            list.add(new byte[]{0x00});
+        }else{
+            byte[] valueBytes = encodeValue(field,fieldValue);
+
+            BinaryType binaryType = fieldTypeToBinaryType(field.getType());
+
+            String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(LvBufferTypeUtil.encodeVarInteger(valueBytes.length).length);
+
+            byte b = ByteUtil.binaryStringToByte(binaryType.getBinaryCode() + valueByteLengthBinary);
+            //第一个是 valueType + valueByteLengthLength
+            list.add(new byte[]{b});
+
+            byte[] valueByteLength = LvBufferTypeUtil.encodeVarInteger(valueBytes.length);
+            //第二个是 valueByteLength
+            list.add(valueByteLength);
+            //第三个是value byte
+            list.add(valueBytes);
+        }
+    }
 
     public static byte[] serialize(Class clazz,Object inputValue){
         List<byte[]> list=new ArrayList<>();
@@ -269,6 +346,45 @@ public class LLvBufferUtil {
     }
 
 
+    public static byte[] encodeValue(Field field,Object value){
+        Class<?> type = field.getType();
+        if (type== byte.class || type == Byte.class){
+            return new byte[]{(byte) value};
+        }else if (type == boolean.class || type==Boolean.class){
+            return new byte[]{(byte) (ObjectUtil.isBoolean((Boolean) value)?1:0)};
+        }else if (type == char.class || type== Character.class){
+            return new byte[]{(byte) ((char) value)};
+        }else if (type== short.class || type == Short.class){
+            return LvBufferTypeUtil.encodeVarShort((Short)value);
+        }else if (type == int.class || type == Integer.class) {
+            return LvBufferTypeUtil.encodeVarInteger((Integer) value);
+        }else if (type == float.class || type == Float.class){
+            return LvBufferTypeUtil.encodeVarFloat((Float)value);
+        }else if (type == long.class || type == Long.class){
+            return LvBufferTypeUtil.encodeVarLong((Long)value);
+        }else if (type == double.class || type == Double.class){
+            return LvBufferTypeUtil.encodeVarDouble((Double)value);
+        }else if (type == String.class) {
+            return ((String) value).getBytes(StandardCharsets.UTF_8);
+        }else if ( type == BigDecimal.class){
+            return LvBufferTypeUtil.encodeVarBigDecimal((BigDecimal) value);
+        }else if (type == Date.class){
+            return LvBufferTypeUtil.encodeVarDate((Date) value);
+        }else if (type == LocalTime.class){
+            return LvBufferTypeUtil.encodeVarLocalTime((LocalTime) value);
+        }else if (type == LocalDate.class){
+            return LvBufferTypeUtil.encodeVarLocalDate((LocalDate) value);
+        }else if (type == LocalDateTime.class) {
+            return LvBufferTypeUtil.encodeVarLocalDateTime((LocalDateTime) value);
+        }else if (List.class.isAssignableFrom(field.getType())) {
+            return null;
+        }else if (field.getType().isArray()) {
+            return null;
+        }else {
+            throw new IllegalArgumentException("Unsupported type: " + field.getType());
+        }
+    }
+
     public static byte[] encodePrimitiveToByteArray(Object obj) {
         if (obj instanceof Byte) {
             return new byte[]{(byte) obj};
@@ -303,7 +419,9 @@ public class LLvBufferUtil {
 
 
     public static BinaryType fieldTypeToBinaryType(Class type) {
-        if (type==Long.class || type==long.class){
+        if (type == boolean.class || type==Boolean.class) {
+            return BinaryType.BOOLEAN;
+        }else if (type==Long.class || type==long.class){
             return BinaryType.LONG;
         }else if (String.class == type){
             return BinaryType.STRING;
@@ -333,7 +451,9 @@ public class LLvBufferUtil {
     }
 
     public static Object decodeByteToPrimitive(byte[] bytes,Class<?> type) throws IOException {
-        if (type==Long.class || type==long.class){
+        if (type == boolean.class || type == Boolean.class){
+            return bytes[0]==1?true:false;
+        }else if (type==Long.class || type==long.class){
             return LvBufferTypeUtil.decodeVarLong(bytes);
         }else if (String.class == type){
             return new String(bytes);

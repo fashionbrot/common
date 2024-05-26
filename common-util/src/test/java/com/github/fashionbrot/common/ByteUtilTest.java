@@ -144,14 +144,14 @@ public class ByteUtilTest {
                 .test10("aa")
                 .build();
 //        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
-        byte[] bytes2 = LLvBufferUtil.serialize(TestEntity.class, build2);
+        byte[] bytes2 = LLvBufferUtil.serializeNew(TestEntity.class, build2);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
-        System.out.println(Arrays.toString(bytes2));
+//        System.out.println(Arrays.toString(bytes2));
 
 
 //        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
-        TestEntity testEntity = LLvBufferUtil.deserialize(TestEntity.class, bytes2);
-        System.out.println(testEntity.toString());
+        TestEntity testEntity = LLvBufferUtil.deserializeNew(TestEntity.class, bytes2);
+//        System.out.println(testEntity.toString());
 
         System.out.println(System.currentTimeMillis()-l2+"毫秒");
         System.out.println("----------------------自己实现的压缩---------------------end");
@@ -175,7 +175,7 @@ public class ByteUtilTest {
 
         byte[] byteArray = test.toByteArray();
         System.out.println("protobuf："+byteArray.length+"byte");
-        System.out.println(Arrays.toString(byteArray));
+//        System.out.println(Arrays.toString(byteArray));
 
         TestEntityProto.TestEntity test1 = TestEntityProto.TestEntity.parseFrom(byteArray);
         TestEntity build1 = TestEntity.builder()
@@ -190,7 +190,7 @@ public class ByteUtilTest {
                 .test9(test1.getTest9())
                 .test10(test1.getTest10())
                 .build();
-        System.out.println(build1.toString());
+//        System.out.println(build1.toString());
         System.out.println(System.currentTimeMillis()-l1+"毫秒");
         System.out.println("----------------------protobuf---------------------end");
         System.out.println();
