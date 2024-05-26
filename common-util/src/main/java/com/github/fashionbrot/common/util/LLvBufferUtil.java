@@ -133,10 +133,10 @@ public class LLvBufferUtil {
                     break;
                 }
                 byte firstByte = data[readIndex];
-
+                //第一位byte(前5个bit 是value数量类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
                 String binaryString = ByteUtil.byteToBinaryString(firstByte);
-                BinaryType valueType = BinaryType.fromBinaryCode(binaryString.substring(0, 4));
-                int valueByteLengthLength = ByteUtil.binaryStringToDecimal(binaryString.substring(4, 8));
+                BinaryType valueType = BinaryType.fromBinaryCode(binaryString.substring(0, 5));
+                int valueByteLengthLength = BinaryCodeLength.getLength(binaryString.substring(5, 8));//LvBufferTypeUtil.encodeVarInteger().length;
 
                 short valueByteLength = LvBufferTypeUtil.decodeVarShort(Arrays.copyOfRange(data, readIndex + 1, readIndex + 1 + valueByteLengthLength));
 
@@ -176,7 +176,7 @@ public class LLvBufferUtil {
                     byte[] valueBytes = encodePrimitiveToByteArray(fieldValue);
 
                     BinaryType binaryType = fieldTypeToBinaryType(field.getType());
-                    String valueByteLengthBinary = ByteUtil.toBinaryString(LvBufferTypeUtil.encodeVarInteger(valueBytes.length).length, 4);
+                    String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(LvBufferTypeUtil.encodeVarInteger(valueBytes.length).length);
 
                     byte b = ByteUtil.binaryStringToByte(binaryType.getBinaryCode() + valueByteLengthBinary);
                     //第一个是 valueType + valueByteLengthLength
@@ -371,39 +371,56 @@ public class LLvBufferUtil {
     public  enum BinaryType{
 
         /**
-         * 0000 = 0
-         * 0001 = 1
-         * 0010 = 2
-         * 0011 = 3
-         * 0100 = 4
-         * 0101 = 5
-         * 0110 = 6
-         * 0111 = 7
-         * 1000 = 8
-         * 1001 = 9
-         * 1010 = 10
-         * 1011 = 11
-         * 1100 = 12
-         * 1101 = 13
-         * 1110 = 14
-         * 1111 = 15
+         * 00000 (0)
+         * 00001 (1)
+         * 00010 (2)
+         * 00011 (3)
+         * 00100 (4)
+         * 00101 (5)
+         * 00110 (6)
+         * 00111 (7)
+         * 01000 (8)
+         * 01001 (9)
+         * 01010 (10)
+         * 01011 (11)
+         * 01100 (12)
+         * 01101 (13)
+         * 01110 (14)
+         * 01111 (15)
+         *
+         * 10000 (16)
+         * 10001 (17)
+         * 10010 (18)
+         * 10011 (19)
+         * 10100 (20)
+         * 10101 (21)
+         * 10110 (22)
+         * 10111 (23)
+         * 11000 (24)
+         * 11001 (25)
+         * 11010 (26)
+         * 11011 (27)
+         * 11100 (28)
+         * 11101 (29)
+         * 11110 (30)
+         * 11111 (31)
          */
-        BOOLEAN("0000"),
-        BYTE("0001"),
-        CHAR("0010"),
-        SHORT("0011"),
-        INTEGER("0100"),
-        FLOAT("0101"),
-        LONG("0110"),
-        DOUBLE("0111"),
-        STRING("1000"),
-        DATE("1001"),
-        LOCAL_TIME("1010"),
-        LOCAL_DATE("1011"),
-        LOCAL_DATE_TIME("1100"),
-        BIG_DECIMAL("1101"),
-        ARRAY("1110"),
-        LIST("1111"),
+        BOOLEAN("00000"),
+        BYTE("00001"),
+        CHAR("00010"),
+        SHORT("00011"),
+        INTEGER("00100"),
+        FLOAT("00101"),
+        LONG("00110"),
+        DOUBLE("00111"),
+        STRING("01000"),
+        DATE("01001"),
+        LOCAL_TIME("01010"),
+        LOCAL_DATE("01011"),
+        LOCAL_DATE_TIME("01100"),
+        BIG_DECIMAL("01101"),
+        ARRAY("01110"),
+        LIST("01111"),
             ;
 
         private String binaryCode;
@@ -418,5 +435,42 @@ public class LLvBufferUtil {
         }
 
     }
+
+
+    @Getter
+    @AllArgsConstructor
+    public enum BinaryCodeLength {
+        B1("000", 1),
+        B2("001", 2),
+        B3("010", 3),
+        B4("011", 4),
+        B5("100", 5),
+        B6("101", 6),
+        B7("110", 7),
+        B8("111", 8);
+
+        private final String binaryCode;
+        private final int length;
+
+        public static int getLength(String binaryCode) {
+            for (BinaryCodeLength code : BinaryCodeLength.values()) {
+                if (code.getBinaryCode().equals(binaryCode)) {
+                    return code.getLength();
+                }
+            }
+            throw new IllegalArgumentException("Invalid binary code: " + binaryCode);
+        }
+
+        public static String getBinaryCode(int length){
+            for (BinaryCodeLength code : BinaryCodeLength.values()) {
+                if (code.getLength()==length) {
+                    return code.getBinaryCode();
+                }
+            }
+            throw new IllegalArgumentException("Invalid length: " + length);
+        }
+    }
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common;
 
 import com.github.fashionbrot.common.entity.TestEntity;
+import com.github.fashionbrot.common.util.LvBufferTypeUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +26,9 @@ public class Test {
 
         TestEntity deserialize = ProtobufDeserializer.deserialize(serialize);
         System.out.println(deserialize);
+
+        System.out.println(Integer.MAX_VALUE);
+        System.out.println(LvBufferTypeUtil.encodeVarLong(Integer.MAX_VALUE).length);
 
     }
 
