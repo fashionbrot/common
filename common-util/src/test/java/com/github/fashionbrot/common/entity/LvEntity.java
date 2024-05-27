@@ -30,5 +30,5 @@ public class LvEntity extends LvParent1Entity {
     private LocalDateTime b11;
     private Boolean b12;
 
-//    private List<LVVListEntity> list1;
+    private List<LVVListEntity> list1;
 }

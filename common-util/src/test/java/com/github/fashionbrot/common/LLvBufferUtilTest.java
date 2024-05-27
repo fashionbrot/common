@@ -60,7 +60,7 @@ public class LLvBufferUtilTest {
                 .b10(LocalDateUtil.toLocalDate(new Date()))
                 .b11(LocalDateTimeUtil.toLocalDateTime(new Date()))
                 .b12(null)
-//                .list1(Arrays.asList(lvvListEntity))
+                .list1(Arrays.asList(lvvListEntity))
                 .build();
         build.setC1("张三");
         build.setD1(2222L);

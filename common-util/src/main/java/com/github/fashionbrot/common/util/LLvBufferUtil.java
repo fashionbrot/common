@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,7 +37,7 @@ public class LLvBufferUtil {
                 }
                 byte[] fieldData = Arrays.copyOfRange(data, dataIndex, dataIndex + fieldLength);
                 dataIndex += fieldLength;
-                Object decodedValue = decodeByteToPrimitive(fieldData, field.getType());
+                Object decodedValue = decodeValue(field,fieldData);
                 MethodUtil.setFieldValue(field, instance, decodedValue);
             }
             return instance;
@@ -64,7 +65,7 @@ public class LLvBufferUtil {
                 } else if (field.getType().isArray()) {
                     decodedValue = decodeArray(fieldData, field);
                 } else {
-                    decodedValue = decodeByteToPrimitive(fieldData, field.getType());
+                    decodedValue = decodeValue(field,fieldData);
                 }
                 MethodUtil.setFieldValue(field, instance, decodedValue);
             }
@@ -86,7 +87,7 @@ public class LLvBufferUtil {
             } else {
                 byte[] elementData = Arrays.copyOfRange(data, index, index + elementLength);
                 index += elementLength;
-                list.add(decodeByteToPrimitive(elementData, elementType));
+                list.add(decodeValue(field, elementData));
             }
         }
         return list;
@@ -105,7 +106,7 @@ public class LLvBufferUtil {
             } else {
                 byte[] elementData = Arrays.copyOfRange(data, index, index + elementLength);
                 index += elementLength;
-                java.lang.reflect.Array.set(array, i, decodeByteToPrimitive(elementData, elementType));
+                java.lang.reflect.Array.set(array, i, decodeValue(field, elementData));
             }
         }
         return array;
@@ -154,7 +155,7 @@ public class LLvBufferUtil {
 
             Class<?> type = field.getType();
 
-            Object value = decodeByteToPrimitive(bytes, type);
+            Object value = decodeValue(field,bytes);
 
             MethodUtil.setFieldValue(field,t,value);
         }
@@ -193,7 +194,7 @@ public class LLvBufferUtil {
                 Field field = fieldList.get(index);
                 Class<?> type = field.getType();
 
-                Object value = decodeByteToPrimitive(bytes, type);
+                Object value = decodeValue(field,bytes);
 
                 MethodUtil.setFieldValue(field,t,value);
 
@@ -402,17 +403,23 @@ public class LLvBufferUtil {
         }else if (type == LocalDateTime.class) {
             return LvBufferTypeUtil.encodeVarLocalDateTime((LocalDateTime) value);
         }else if (List.class.isAssignableFrom(field.getType())) {
+            //List [00000=type 000=[valueByteLength]Length] [valueByteLength] [value]
             Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
             if (ObjectUtil.isNotEmpty(actualTypeArguments)){
                 Class<?> listGenericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
                 List<Object> listValue = (List<Object>) MethodUtil.getFieldValue(field, input);
                 if (ObjectUtil.isNotEmpty(listValue)){
-
+                    List<byte[]> listByteList=new ArrayList<>();
+                    for (Object list : listValue) {
+                        byte[] bytes = serializeNew(listGenericClass, list);
+                        listByteList.add(bytes);
+                    }
+                    return mergeByteArrayList(listByteList);
                 }else{
-
+                    return new byte[0x00];
                 }
             }
-            return null;
+            return new byte[0x00];
         }else if (field.getType().isArray()) {
             return null;
         }else {
@@ -479,14 +486,17 @@ public class LLvBufferUtil {
             return BinaryType.LOCAL_TIME;
         }else if (LocalDate.class == type){
             return BinaryType.LOCAL_DATE;
-        }else if (LocalDateTime.class == type){
+        }else if (LocalDateTime.class == type) {
             return BinaryType.LOCAL_DATE_TIME;
+        }else  if (List.class.isAssignableFrom(field.getType())){
+            return BinaryType.LIST;
         } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
 
-    public static Object decodeByteToPrimitive(byte[] bytes,Class<?> type) throws IOException {
+    public static Object decodeValue(Field field,byte[] bytes) throws IOException {
+        Class<?> type = field.getType();
         if (type == boolean.class || type == Boolean.class){
             return bytes[0]==1?true:false;
         }else if (type==Long.class || type==long.class){
@@ -514,8 +524,22 @@ public class LLvBufferUtil {
             return LvBufferTypeUtil.decodeVarLocalTime(bytes);
         }else if (LocalDate.class == type){
             return LvBufferTypeUtil.decodeVarLocalDate(bytes);
-        }else if (LocalDateTime.class == type){
+        }else if (LocalDateTime.class == type) {
             return LvBufferTypeUtil.decodeVarLocalDateTime(bytes);
+        }else if (List.class.isAssignableFrom(field.getType())){
+            Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
+            if (ObjectUtil.isNotEmpty(actualTypeArguments)) {
+                Class<?> listGenericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+                List list=new ArrayList();
+                if (ObjectUtil.isNotEmpty(bytes)){
+                    for (;;){
+                        list.add(deserializeNew(listGenericClass,bytes));
+                        break;
+                    }
+                }
+                return list;
+            }
+            return null;
         } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }
