@@ -8,19 +8,22 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LLvBufferUtil {
 
 
     public static <T> T deserialize2(Class<T> clazz, byte[] data) throws IOException {
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)) {
             T instance = MethodUtil.newInstance(clazz);
 
@@ -43,7 +46,7 @@ public class LLvBufferUtil {
     }
 
     public static <T> T deserialize3(Class<T> clazz, byte[] data) throws IOException {
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (fieldList != null && !fieldList.isEmpty()) {
             T instance = MethodUtil.newInstance(clazz);
             int dataIndex = 0;
@@ -123,7 +126,7 @@ public class LLvBufferUtil {
 
     public static <T> T deserializeNew(Class<T> clazz,byte[] data)throws IOException{
         T t = MethodUtil.newInstance(clazz);
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isEmpty(fieldList)){
             return t;
         }
@@ -159,7 +162,7 @@ public class LLvBufferUtil {
     }
 
     public static <T> T deserialize(Class<T> clazz,byte[] data) throws IOException {
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)) {
             T t = MethodUtil.newInstance(clazz);
 
@@ -202,14 +205,14 @@ public class LLvBufferUtil {
     }
 
     public static byte[] serializeNew(Class clazz,Object input){
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isEmpty(fieldList)){
             return new byte[]{};
         }
         List<byte[]> list=new ArrayList<>();
         for (Field field : fieldList) {
             Object fieldValue = MethodUtil.getFieldValue(field, input);
-            encodeField(field,fieldValue,list);
+            encodeField(input,field,fieldValue,list);
         }
         if (ObjectUtil.isEmpty(list)){
             return new byte[]{};
@@ -218,15 +221,15 @@ public class LLvBufferUtil {
     }
 
 
-    private static void encodeField(Field field, Object fieldValue,List<byte[]> list) {
+    private static void encodeField(Object input,Field field, Object fieldValue,List<byte[]> list) {
 
         if (fieldValue==null){
             list.add(LvBufferTypeUtil.encodeVarInteger(0));
             list.add(new byte[]{0x00});
         }else{
-            byte[] valueBytes = encodeValue(field,fieldValue);
+            byte[] valueBytes = encodeValue(input,field,fieldValue);
 
-            BinaryType binaryType = fieldTypeToBinaryType(field.getType());
+            BinaryType binaryType = getFieldBinaryType(field);
 
             String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(LvBufferTypeUtil.encodeVarInteger(valueBytes.length).length);
 
@@ -244,7 +247,7 @@ public class LLvBufferUtil {
 
     public static byte[] serialize(Class clazz,Object inputValue){
         List<byte[]> list=new ArrayList<>();
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)){
             for (int i = 0; i < fieldList.size(); i++) {
                 Field field = fieldList.get(i);
@@ -252,7 +255,8 @@ public class LLvBufferUtil {
                 if (fieldValue!=null){
                     byte[] valueBytes = encodePrimitiveToByteArray(fieldValue);
 
-                    BinaryType binaryType = fieldTypeToBinaryType(field.getType());
+                    BinaryType binaryType = getFieldBinaryType(field);
+
                     String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(LvBufferTypeUtil.encodeVarInteger(valueBytes.length).length);
 
                     byte b = ByteUtil.binaryStringToByte(binaryType.getBinaryCode() + valueByteLengthBinary);
@@ -278,7 +282,7 @@ public class LLvBufferUtil {
 
     public static byte[] serialize2(Class clazz, Object inputValue) {
         List<byte[]> byteArrayList = new ArrayList<>();
-        List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)) {
             for (Field field : fieldList) {
                 Object fieldValue = MethodUtil.getFieldValue(field, inputValue);
@@ -331,22 +335,43 @@ public class LLvBufferUtil {
         return result;
     }
 
-
-    public static <T> List<Field> getSortedNonStaticNonFinalFields(Class<T> clazz) {
-        Field[] declaredFields = clazz.getDeclaredFields();
-        return Arrays.stream(declaredFields)
-                .filter(m -> !isStaticOrFinal(m))
-                .sorted(Comparator.comparing(Field::getName))
-                .collect(Collectors.toList());
+    public static List<Field> getSortedClassField(Class clazz){
+        List<Field> classFieldList = getNonStaticNonFinalFields(clazz);
+        List<Field> superClassField = getSuperClassField(clazz);
+        if (ObjectUtil.isNotEmpty(superClassField)){
+            classFieldList.addAll(superClassField);
+        }
+        classFieldList.sort(Comparator.comparing(Field::getName));
+        return classFieldList;
     }
+
+    public static List<Field> getNonStaticNonFinalFields(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields()).filter(m-> !isStaticOrFinal(m)).collect(Collectors.toList());
+    }
+
+    public static List<Field> getSuperClassField(Class clazz){
+        Class superclass = clazz.getSuperclass();
+        if (superclass != null && JavaUtil.isNotObject(superclass)) {
+            List<Field> classFieldList = getNonStaticNonFinalFields(superclass);
+
+            List<Field> superClassFieldList = getSuperClassField(superclass);
+            if (ObjectUtil.isNotEmpty(superClassFieldList)){
+                classFieldList.addAll(superClassFieldList);
+            }
+            return classFieldList;
+        }
+        return null;
+    }
+
 
     private static boolean isStaticOrFinal(Field field) {
         int modifiers = field.getModifiers();
-        return java.lang.reflect.Modifier.isStatic(modifiers) || java.lang.reflect.Modifier.isFinal(modifiers);
+        return Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers);
     }
 
 
-    public static byte[] encodeValue(Field field,Object value){
+
+    public static byte[] encodeValue(Object input,Field field,Object value){
         Class<?> type = field.getType();
         if (type== byte.class || type == Byte.class){
             return new byte[]{(byte) value};
@@ -377,6 +402,16 @@ public class LLvBufferUtil {
         }else if (type == LocalDateTime.class) {
             return LvBufferTypeUtil.encodeVarLocalDateTime((LocalDateTime) value);
         }else if (List.class.isAssignableFrom(field.getType())) {
+            Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
+            if (ObjectUtil.isNotEmpty(actualTypeArguments)){
+                Class<?> listGenericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+                List<Object> listValue = (List<Object>) MethodUtil.getFieldValue(field, input);
+                if (ObjectUtil.isNotEmpty(listValue)){
+
+                }else{
+
+                }
+            }
             return null;
         }else if (field.getType().isArray()) {
             return null;
@@ -418,7 +453,8 @@ public class LLvBufferUtil {
     }
 
 
-    public static BinaryType fieldTypeToBinaryType(Class type) {
+    public static BinaryType getFieldBinaryType(Field field) {
+        Class type = field.getType();
         if (type == boolean.class || type==Boolean.class) {
             return BinaryType.BOOLEAN;
         }else if (type==Long.class || type==long.class){

@@ -1,21 +1,20 @@
 package com.github.fashionbrot.common.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LvEntity {
+@EqualsAndHashCode(callSuper=false)
+public class LvEntity extends LvParent1Entity {
 
     private String b;
     private Byte b1;
@@ -31,4 +30,5 @@ public class LvEntity {
     private LocalDateTime b11;
     private Boolean b12;
 
+//    private List<LVVListEntity> list1;
 }
