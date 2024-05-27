@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -125,7 +126,44 @@ public class LLvBufferUtil {
         return Object.class; // Default to Object type if unable to determine generic type
     }
 
-    public static <T> T deserializeNew(Class<T> clazz,byte[] data)throws IOException{
+    public static <T> T deserializeNew(Class<T> clazz,byte[] data) throws IOException {
+        return deserializeNew(clazz,new ByteArrayReader(data));
+    }
+
+    public static <T> T deserializeNew(Class<T> clazz,ByteArrayReader reader)throws IOException{
+        T t = MethodUtil.newInstance(clazz);
+        List<Field> fieldList = getSortedClassField(clazz);
+        if (ObjectUtil.isEmpty(fieldList)){
+            return t;
+        }
+
+        int readIndex=reader.getLastReadIndex();
+        for (Field field : fieldList) {
+
+            byte firstByte = reader.readFrom(readIndex);
+            //第一位byte(前5个bit 是value数量类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
+            String binaryString = ByteUtil.byteToBinaryString(firstByte);
+            BinaryType valueType = BinaryType.fromBinaryCode(binaryString.substring(0, 5));
+            int valueByteLengthLength = BinaryCodeLength.getLength(binaryString.substring(5, 8));//LvBufferTypeUtil.encodeVarInteger().length;
+
+            int valueByteLength = LvBufferTypeUtil.decodeVarInteger(reader.readFromTo(readIndex + 1, readIndex + 1 + valueByteLengthLength));
+            if (valueByteLength==0){
+                readIndex+=2;
+                continue;
+            }
+
+            byte[] bytes = reader.readFromTo(readIndex +1+ valueByteLengthLength, readIndex +1 + valueByteLengthLength+ valueByteLength);
+
+            readIndex = readIndex +1 + valueByteLengthLength+ valueByteLength;
+
+            Object value = decodeValue(field,bytes);
+
+            MethodUtil.setFieldValue(field,t,value);
+        }
+        return t;
+    }
+
+    public static <T> T deserializeNew1(Class<T> clazz,byte[] data)throws IOException{
         T t = MethodUtil.newInstance(clazz);
         List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isEmpty(fieldList)){
@@ -137,6 +175,7 @@ public class LLvBufferUtil {
 
         int readIndex=0;
         for (Field field : fieldList) {
+
             byte firstByte = data[readIndex];
             //第一位byte(前5个bit 是value数量类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
             String binaryString = ByteUtil.byteToBinaryString(firstByte);
@@ -421,6 +460,19 @@ public class LLvBufferUtil {
             }
             return new byte[0x00];
         }else if (field.getType().isArray()) {
+            Class<?> componentType = field.getType().getComponentType();
+            if (JavaUtil.isPrimitive(componentType)){
+
+            }else{
+                Object[] fieldValue = (Object[]) MethodUtil.getFieldValue(field, input);
+                if (ObjectUtil.isNotEmpty(fieldValue)){
+                    List<byte[]> arrayList=new ArrayList<>();
+                    for (Object o : fieldValue) {
+                        arrayList.add(serializeNew(componentType,o));
+                    }
+                    return mergeByteArrayList(arrayList);
+                }
+            }
             return null;
         }else {
             throw new IllegalArgumentException("Unsupported type: " + field.getType());
@@ -488,8 +540,10 @@ public class LLvBufferUtil {
             return BinaryType.LOCAL_DATE;
         }else if (LocalDateTime.class == type) {
             return BinaryType.LOCAL_DATE_TIME;
-        }else  if (List.class.isAssignableFrom(field.getType())){
+        }else  if (List.class.isAssignableFrom(field.getType())) {
             return BinaryType.LIST;
+        }else if (field.getType().isArray()){
+            return BinaryType.ARRAY;
         } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }
@@ -526,20 +580,30 @@ public class LLvBufferUtil {
             return LvBufferTypeUtil.decodeVarLocalDate(bytes);
         }else if (LocalDateTime.class == type) {
             return LvBufferTypeUtil.decodeVarLocalDateTime(bytes);
-        }else if (List.class.isAssignableFrom(field.getType())){
+        }else if (List.class.isAssignableFrom(field.getType())) {
             Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
             if (ObjectUtil.isNotEmpty(actualTypeArguments)) {
-                Class<?> listGenericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
-                List list=new ArrayList();
-                if (ObjectUtil.isNotEmpty(bytes)){
-                    for (;;){
-                        list.add(deserializeNew(listGenericClass,bytes));
-                        break;
+                Class<?> genericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+                List list = new ArrayList();
+                if (ObjectUtil.isNotEmpty(bytes)) {
+                    ByteArrayReader reader = new ByteArrayReader(bytes);
+                    while (!reader.isReadComplete()){
+                        list.add(deserializeNew(genericClass, reader));
                     }
                 }
                 return list;
             }
             return null;
+        }else if (field.getType().isArray()){
+            Class genericClass = field.getType().getComponentType();
+            List<Object> list=new ArrayList<>();
+            if (ObjectUtil.isNotEmpty(bytes)){
+                ByteArrayReader reader = new ByteArrayReader(bytes);
+                while (!reader.isReadComplete()){
+                    list.add(deserializeNew(genericClass, reader));
+                }
+            }
+            return list.toArray((Object[]) Array.newInstance(genericClass, list.size()));
         } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }
@@ -651,6 +715,53 @@ public class LLvBufferUtil {
         }
     }
 
+
+    public static class ByteArrayReader {
+        private final byte[] data;
+        private int lastReadIndex; // 最后读取的下标
+
+        public ByteArrayReader(byte[] data) {
+            this.data = data;
+            this.lastReadIndex = 0; // 初始化为0
+        }
+
+        public byte readFrom(int end){
+            if ( end > data.length) {
+                throw new IndexOutOfBoundsException("Start or end index out of bounds");
+            }
+            lastReadIndex = end;
+            return data[end];
+        }
+
+        /**
+         * 从给定的起始下标开始读取到结束下标（不包含结束下标位置的元素），并返回子数组。
+         *
+         * @param start 开始下标（包含）
+         * @param end 结束下标（不包含）
+         * @return 子数组
+         * @throws IndexOutOfBoundsException 如果起始下标或结束下标超出数组范围
+         */
+        public byte[] readFromTo(int start, int end) {
+            if (start < 0 || start > end || end > data.length) {
+                throw new IndexOutOfBoundsException("Start or end index out of bounds");
+            }
+            lastReadIndex =  end;
+            return Arrays.copyOfRange(data, start, end);
+        }
+
+        public int getLastReadIndex() {
+            return lastReadIndex;
+        }
+
+        /**
+         * 检查是否已读取完所有数据
+         *
+         * @return 如果已读取完所有数据则返回true，否则返回false
+         */
+        public boolean isReadComplete() {
+            return lastReadIndex == data.length;
+        }
+    }
 
 
 }

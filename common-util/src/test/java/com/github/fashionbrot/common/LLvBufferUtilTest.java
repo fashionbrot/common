@@ -13,6 +13,7 @@ import com.github.fashionbrot.common.util.LLvBufferUtil;
 import com.github.fashionbrot.common.util.LvBufferUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +42,10 @@ public class LLvBufferUtilTest {
         for (int i = 0; i < maxLength; i++) {
             sb.append('a');
         }
-        LVVListEntity lvvListEntity=LVVListEntity.builder()
-                .id(2222)
-                .name("李四")
-                .build();
+        LVVListEntity lvvListEntity=new LVVListEntity();
+        lvvListEntity.setId(3333);
+        lvvListEntity.setName("李四");
+        lvvListEntity.setParentName("李老板");
 
         LvEntity build = LvEntity.builder()
                 .b(sb.toString())
@@ -60,7 +61,8 @@ public class LLvBufferUtilTest {
                 .b10(LocalDateUtil.toLocalDate(new Date()))
                 .b11(LocalDateTimeUtil.toLocalDateTime(new Date()))
                 .b12(null)
-                .list1(Arrays.asList(lvvListEntity))
+                .list1(Arrays.asList(lvvListEntity,lvvListEntity))
+                .array1(new LVVListEntity[]{lvvListEntity})
                 .build();
         build.setC1("张三");
         build.setD1(2222L);
@@ -70,13 +72,20 @@ public class LLvBufferUtilTest {
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
+//        LLvBufferUtil.ByteArrayReader inputStream=new LLvBufferUtil.ByteArrayReader(serialize);
+//        byte[] bytes = inputStream.readFromTo(0, 123);
+//
+//        System.out.println(Arrays.toString(bytes));
+//        System.out.println("111:"+inputStream.getLastReadIndex());
+//        System.out.println(inputStream.isReadComplete());
+
 
         LvEntity deserialize = LLvBufferUtil.deserializeNew(LvEntity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
-
-        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));
-        System.out.println("gizp压缩后长度："+compress.length);
-        System.out.println("gizp:"+JSONObject.parseObject(GzipUtil.decompress(compress)).toString());
+//
+//        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));
+//        System.out.println("gizp压缩后长度："+compress.length);
+//        System.out.println("gizp:"+JSONObject.parseObject(GzipUtil.decompress(compress)).toString());
     }
 
 }

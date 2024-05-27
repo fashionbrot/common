@@ -31,4 +31,7 @@ public class LvEntity extends LvParent1Entity {
     private Boolean b12;
 
     private List<LVVListEntity> list1;
+
+    private LVVListEntity[] array1;
+
 }
