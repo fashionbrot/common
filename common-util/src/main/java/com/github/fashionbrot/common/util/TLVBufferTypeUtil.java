@@ -1,16 +1,50 @@
 package com.github.fashionbrot.common.util;
 
+import com.github.fashionbrot.common.date.LocalDateTimeUtil;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Date;
 
-public class LvBufferTypeUtil {
+public class TLVBufferTypeUtil {
+
+    public static byte[] encodeVarChar(char value) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        int intValue = value; // 将char转换为int以便处理
+        while ((intValue & 0xFFFFFF80) != 0) {
+            output.write((intValue & 0x7F) | 0x80);
+            intValue >>>= 7;
+        }
+        output.write(intValue & 0x7F);
+        return output.toByteArray();
+    }
+
+
+    public static char decodeVarChar(byte[] data) {
+        int result = 0;
+        int shift = 0;
+        int index = 0;
+        byte b;
+        do {
+            if (index >= data.length) {
+                throw new RuntimeException("decodeVarChar decoding error: Insufficient data");
+            }
+            b = data[index++];
+            result |= (b & 0x7F) << shift;
+            shift += 7;
+        } while ((b & 0x80) != 0);
+        return (char) result;
+    }
+
+
+
+
 
     public static byte[] encodeVarInteger(int value)  {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -124,22 +158,19 @@ public class LvBufferTypeUtil {
     }
 
     public static byte[] encodeVarLocalDateTime(LocalDateTime datetime) {
-        byte[] dateBytes = encodeVarLocalDate(datetime.toLocalDate()); // 编码 LocalDate 部分
-        byte[] timeBytes = encodeVarLocalTime(datetime.toLocalTime()); // 编码 LocalTime 部分
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        output.write(dateBytes, 0, dateBytes.length); // 将 LocalDate 字节表示写入输出流
-        output.write(timeBytes, 0, timeBytes.length); // 将 LocalTime 字节表示写入输出流
-        return output.toByteArray(); // 返回整个 LocalDateTime 的字节表示
+        Date date = LocalDateTimeUtil.toDate(datetime);
+        if (date==null){
+            return null;
+        }
+        return encodeVarDate(date);
     }
 
     public static LocalDateTime decodeVarLocalDateTime(byte[] data) throws IOException {
-        byte[] dateBytes = new byte[4]; // LocalDate 部分的字节长度为 4
-        byte[] timeBytes = new byte[data.length - 4]; // 剩余部分为 LocalTime 字节表示
-        System.arraycopy(data, 0, dateBytes, 0, dateBytes.length); // 复制 LocalDate 字节表示
-        System.arraycopy(data, dateBytes.length, timeBytes, 0, timeBytes.length); // 复制 LocalTime 字节表示
-        LocalDate date = decodeVarLocalDate(dateBytes); // 解码 LocalDate 部分
-        LocalTime time = decodeVarLocalTime(timeBytes); // 解码 LocalTime 部分
-        return LocalDateTime.of(date, time); // 使用解码后的 LocalDate 和 LocalTime 创建 LocalDateTime 对象
+        Date date = decodeVarDate(data);
+        if (date==null){
+            return null;
+        }
+        return LocalDateTimeUtil.toLocalDateTime(date);
     }
 
     public static LocalTime decodeVarLocalTime(byte[] data) throws IOException {
@@ -206,11 +237,12 @@ public class LvBufferTypeUtil {
 
 
     public static void main(String[] args) throws IOException {
-        byte[] bytes = encodeVarInteger(128);
-        System.out.println(bytes.length);
-        int ii = decodeVarInteger(bytes);
-        System.out.println(ii);
+        char originalChar = Character.MIN_VALUE; // 测试 Character.MAX_VALUE
+        byte[] encodedChar = encodeVarChar(originalChar);
+        char decodedChar = decodeVarChar(encodedChar);
 
-        System.out.println(encodeVarLong(Long.MAX_VALUE).length);
+        System.out.println("Original Char: " + (int)originalChar);
+        System.out.println("Encoded Bytes: " + Arrays.toString(encodedChar));
+        System.out.println("Decoded Char: " + (int)decodedChar);
     }
 }

@@ -1,21 +1,16 @@
 package com.github.fashionbrot.common;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.github.fashionbrot.common.compress.GzipUtil;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
 import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.entity.LVVListEntity;
 import com.github.fashionbrot.common.entity.LvEntity;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
-import com.github.fashionbrot.common.util.LLvBufferUtil;
-import com.github.fashionbrot.common.util.LvBufferUtil;
+import com.github.fashionbrot.common.util.TLVBufferUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.zip.DataFormatException;
@@ -63,12 +58,13 @@ public class LLvBufferUtilTest {
                 .b12(null)
                 .list1(Arrays.asList(lvvListEntity,lvvListEntity))
                 .array1(new LVVListEntity[]{lvvListEntity})
+//                .list2(Arrays.asList("张三","李四"))
                 .build();
         build.setC1("张三");
         build.setD1(2222L);
 
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = LLvBufferUtil.serializeNew(LvEntity.class, build);
+        byte[] serialize = TLVBufferUtil.serializeNew(LvEntity.class, build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
@@ -80,7 +76,7 @@ public class LLvBufferUtilTest {
 //        System.out.println(inputStream.isReadComplete());
 
 
-        LvEntity deserialize = LLvBufferUtil.deserializeNew(LvEntity.class, serialize);
+        LvEntity deserialize = TLVBufferUtil.deserializeNew(LvEntity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
 //
 //        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));

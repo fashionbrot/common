@@ -1,7 +1,6 @@
 package com.github.fashionbrot.common;
 
 import com.github.fashionbrot.common.compress.GzipUtil;
-import com.github.fashionbrot.common.util.LvBufferTypeUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

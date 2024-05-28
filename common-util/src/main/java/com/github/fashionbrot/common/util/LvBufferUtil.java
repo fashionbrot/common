@@ -129,7 +129,7 @@ public class LvBufferUtil {
                     break;
                 }
                 byte byteLength = data[readIndex];
-                int length = LvBufferTypeUtil.decodeVarInteger(new byte[]{byteLength});
+                int length = TLVBufferTypeUtil.decodeVarInteger(new byte[]{byteLength});
                 if (length==0){
                     readIndex+=1;
                     index++;
@@ -163,10 +163,10 @@ public class LvBufferUtil {
                 Object fieldValue = MethodUtil.getFieldValue(fieldList.get(i), inputValue);
                 if (fieldValue!=null){
                     byte[] valueBytes = encodePrimitiveToByteArray(fieldValue);
-                    list.add(LvBufferTypeUtil.encodeVarInteger(valueBytes.length));
+                    list.add(TLVBufferTypeUtil.encodeVarInteger(valueBytes.length));
                     list.add(valueBytes);
                 }else{
-                    list.add(LvBufferTypeUtil.encodeVarInteger(0));
+                    list.add(TLVBufferTypeUtil.encodeVarInteger(0));
                     list.add(new byte[]{0x00});
                 }
             }
@@ -200,7 +200,7 @@ public class LvBufferUtil {
     }
 
     private static byte[] encodeFieldLength(int length) {
-        return LvBufferTypeUtil.encodeVarInteger(length);
+        return TLVBufferTypeUtil.encodeVarInteger(length);
     }
 
 
@@ -251,29 +251,29 @@ public class LvBufferUtil {
         if (obj instanceof Byte) {
             return new byte[]{(byte) obj};
         } else if (obj instanceof Short) {
-            return LvBufferTypeUtil.encodeVarShort((Short)obj);
+            return TLVBufferTypeUtil.encodeVarShort((Short)obj);
         } else if (obj instanceof Integer) {
-            return LvBufferTypeUtil.encodeVarInteger((Integer) obj);
+            return TLVBufferTypeUtil.encodeVarInteger((Integer) obj);
         } else if (obj instanceof Long) {
-            return LvBufferTypeUtil.encodeVarLong((Long)obj);
+            return TLVBufferTypeUtil.encodeVarLong((Long)obj);
         } else if (obj instanceof Float) {
-            return LvBufferTypeUtil.encodeVarFloat((Float)obj);
+            return TLVBufferTypeUtil.encodeVarFloat((Float)obj);
         } else if (obj instanceof Double) {
-            return LvBufferTypeUtil.encodeVarDouble((Double)obj);
+            return TLVBufferTypeUtil.encodeVarDouble((Double)obj);
         } else if (obj instanceof Character) {
             return new byte[]{(byte) ((char) obj)};
         } else if (obj instanceof String ) {
             return ((String) obj).getBytes(StandardCharsets.UTF_8);
         } else if (obj instanceof Date) {
-            return LvBufferTypeUtil.encodeVarDate((Date) obj);
+            return TLVBufferTypeUtil.encodeVarDate((Date) obj);
         } else if (obj instanceof LocalTime) {
-            return LvBufferTypeUtil.encodeVarLocalTime((LocalTime) obj);
+            return TLVBufferTypeUtil.encodeVarLocalTime((LocalTime) obj);
         }else if (obj instanceof LocalDate) {
-            return LvBufferTypeUtil.encodeVarLocalDate((LocalDate) obj);
+            return TLVBufferTypeUtil.encodeVarLocalDate((LocalDate) obj);
         }else if (obj instanceof LocalDateTime) {
-            return LvBufferTypeUtil.encodeVarLocalDateTime((LocalDateTime) obj);
+            return TLVBufferTypeUtil.encodeVarLocalDateTime((LocalDateTime) obj);
         }else if (obj instanceof BigDecimal){
-            return LvBufferTypeUtil.encodeVarBigDecimal((BigDecimal) obj);
+            return TLVBufferTypeUtil.encodeVarBigDecimal((BigDecimal) obj);
         } else {
             throw new IllegalArgumentException("Unsupported type: " + obj.getClass().getName());
         }
@@ -281,32 +281,32 @@ public class LvBufferUtil {
 
     public static Object decodeByteToPrimitive(byte[] bytes,Class<?> type) throws IOException {
         if (type==Long.class || type==long.class){
-            return LvBufferTypeUtil.decodeVarLong(bytes);
+            return TLVBufferTypeUtil.decodeVarLong(bytes);
         }else if (String.class == type){
             return new String(bytes);
         }else if (short.class == type || Short.class==type){
-            return LvBufferTypeUtil.decodeVarShort(bytes);
+            return TLVBufferTypeUtil.decodeVarShort(bytes);
         }else if (int.class == type || Integer.class==type){
-            return LvBufferTypeUtil.decodeVarInteger(bytes);
+            return TLVBufferTypeUtil.decodeVarInteger(bytes);
         }else if (byte.class ==type || Byte.class==type){
             if (bytes.length>0) {
                 return bytes[0];
             }
             return null;
         }else if (Float.class== type || float.class== type){
-            return LvBufferTypeUtil.decodeVarFloat(bytes);
+            return TLVBufferTypeUtil.decodeVarFloat(bytes);
         }else if (Double.class== type || double.class==type){
-            return LvBufferTypeUtil.decodeVarDouble(bytes);
+            return TLVBufferTypeUtil.decodeVarDouble(bytes);
         }else if (BigDecimal.class ==type){
-            return LvBufferTypeUtil.decodeVarBigDecimal(bytes);
+            return TLVBufferTypeUtil.decodeVarBigDecimal(bytes);
         }else if (Date.class == type){
-            return LvBufferTypeUtil.decodeVarDate(bytes);
+            return TLVBufferTypeUtil.decodeVarDate(bytes);
         }else if (LocalTime.class == type){
-            return LvBufferTypeUtil.decodeVarLocalTime(bytes);
+            return TLVBufferTypeUtil.decodeVarLocalTime(bytes);
         }else if (LocalDate.class == type){
-            return LvBufferTypeUtil.decodeVarLocalDate(bytes);
+            return TLVBufferTypeUtil.decodeVarLocalDate(bytes);
         }else if (LocalDateTime.class == type){
-            return LvBufferTypeUtil.decodeVarLocalDateTime(bytes);
+            return TLVBufferTypeUtil.decodeVarLocalDateTime(bytes);
         } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }

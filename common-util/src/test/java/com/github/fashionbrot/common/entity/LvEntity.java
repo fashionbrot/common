@@ -32,6 +32,8 @@ public class LvEntity extends LvParent1Entity {
 
     private List<LVVListEntity> list1;
 
+    private List<String> list2;
+
     private LVVListEntity[] array1;
 
 }

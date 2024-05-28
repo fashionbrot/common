@@ -119,6 +119,13 @@ public class LocalDateTimeUtil {
      * @return 转换后的 java.util.Date 对象，转换失败时返回 null
      */
     public static Date toDate(LocalDateTime localDateTime) {
+        if (localDateTime!=null && localDateTime.getYear()>9999){
+            LocalDateTime max = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+            return toDate(max,DateConst.DEFAULT_ZONE_ID);
+        }else if (localDateTime!=null && localDateTime.getYear()<=0){
+            LocalDateTime min = LocalDateTime.of(0, 1, 1, 0, 0);
+            return toDate(min,DateConst.DEFAULT_ZONE_ID);
+        }
         return toDate(localDateTime,DateConst.DEFAULT_ZONE_ID);
     }
 

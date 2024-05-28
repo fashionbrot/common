@@ -97,4 +97,28 @@ public class ByteUtil {
     }
 
 
+    /**
+     * 将字符转换为字节数组
+     * @param c 要转换的字符
+     * @return 转换后的字节数组
+     */
+    public static byte[] charToByte(char c) {
+        byte[] b = new byte[2];
+        b[0] = (byte) ((c & 0xFF00) >> 8);
+        b[1] = (byte) (c & 0xFF);
+        return b;
+    }
+
+    /**
+     * 将字节数组转换为字符
+     * @param b 要转换的字节数组
+     * @return 转换后的字符
+     */
+    public static char byteToChar(byte[] b) {
+        int hi = (b[0] & 0xFF) << 8;
+        int lo = b[1] & 0xFF;
+        return (char) (hi | lo);
+    }
+
+
 }

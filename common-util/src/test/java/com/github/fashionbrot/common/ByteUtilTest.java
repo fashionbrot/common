@@ -3,10 +3,10 @@ package com.github.fashionbrot.common;
 import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.entity.TestEntity;
 import com.github.fashionbrot.common.entity.TestEntityProto;
-import com.github.fashionbrot.common.util.LLvBufferUtil;
+import com.github.fashionbrot.common.util.TLVBufferUtil;
 import com.github.fashionbrot.common.util.MethodUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
-import com.github.fashionbrot.common.util.LvBufferTypeUtil;
+import com.github.fashionbrot.common.util.TLVBufferTypeUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,12 +115,12 @@ public class ByteUtilTest {
     public static void main(String[] args) throws IOException {
         TestEntity build = TestEntity.builder()
                 .id(22L)
-                .name(LvBufferTypeUtil.maxString())
+                .name(TLVBufferTypeUtil.maxString())
                 .parentId(33L)
-                .parentName(LvBufferTypeUtil.maxString())
+                .parentName(TLVBufferTypeUtil.maxString())
                 .test5(55L)
                 .test6(66L)
-                .test7(LvBufferTypeUtil.maxString())
+                .test7(TLVBufferTypeUtil.maxString())
                 .test8(88L)
                 .test9(99L)
                 .test10("aa")
@@ -133,24 +133,24 @@ public class ByteUtilTest {
         System.out.println("----------------------自己实现的压缩---------------------start");
         TestEntity build2 = TestEntity.builder()
                 .id(22L)
-                .name(LvBufferTypeUtil.maxString())
+                .name(TLVBufferTypeUtil.maxString())
                 .parentId(33L)
-                .parentName(LvBufferTypeUtil.maxString())
+                .parentName(TLVBufferTypeUtil.maxString())
                 .test5(55L)
                 .test6(66L)
-                .test7(LvBufferTypeUtil.maxString())
+                .test7(TLVBufferTypeUtil.maxString())
                 .test8(88L)
                 .test9(99L)
                 .test10("aa")
                 .build();
 //        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
-        byte[] bytes2 = LLvBufferUtil.serializeNew(TestEntity.class, build2);
+        byte[] bytes2 = TLVBufferUtil.serializeNew(TestEntity.class, build2);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
 //        System.out.println(Arrays.toString(bytes2));
 
 
 //        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
-        TestEntity testEntity = LLvBufferUtil.deserializeNew(TestEntity.class, bytes2);
+        TestEntity testEntity = TLVBufferUtil.deserializeNew(TestEntity.class, bytes2);
 //        System.out.println(testEntity.toString());
 
         System.out.println(System.currentTimeMillis()-l2+"毫秒");
@@ -163,11 +163,11 @@ public class ByteUtilTest {
         TestEntityProto.TestEntity test= TestEntityProto.TestEntity.newBuilder()
                 .setId(22L)
                 .setParentId(33L)
-                .setName(LvBufferTypeUtil.maxString())
-                .setParentName(LvBufferTypeUtil.maxString())
+                .setName(TLVBufferTypeUtil.maxString())
+                .setParentName(TLVBufferTypeUtil.maxString())
                 .setTest5(55L)
                 .setTest6(66L)
-                .setTest7(LvBufferTypeUtil.maxString())
+                .setTest7(TLVBufferTypeUtil.maxString())
                 .setTest8(88L)
                 .setTest9(99L)
                 .setTest10("aa")
@@ -243,7 +243,7 @@ public class ByteUtilTest {
                     break;
                 }
                 byte byteLength = data[readIndex];
-                int length = LvBufferTypeUtil.decodeVarInteger(new byte[]{byteLength});
+                int length = TLVBufferTypeUtil.decodeVarInteger(new byte[]{byteLength});
                 if (length==0){
                     readIndex+=1;
                     index++;
@@ -293,7 +293,7 @@ public class ByteUtilTest {
                     Object value = declaredField.get(object);
                     if (value!=null){
                         byte[] valueBytes = compressPrimitiveToByteArray(value);
-                        list.add(LvBufferTypeUtil.encodeVarInteger(valueBytes.length));
+                        list.add(TLVBufferTypeUtil.encodeVarInteger(valueBytes.length));
                         list.add(valueBytes);
                     }
                 } catch (IllegalAccessException e) {
@@ -351,7 +351,7 @@ public class ByteUtilTest {
     public static Object decode(byte[] bytes,Class<?> type){
         if (type==Long.class || type==long.class){
             try {
-                return LvBufferTypeUtil.decodeVarLong(bytes);
+                return TLVBufferTypeUtil.decodeVarLong(bytes);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -390,9 +390,9 @@ public class ByteUtilTest {
         } else if (obj instanceof Short) {
             return ByteBuffer.allocate(2).putShort((short) obj).array();
         } else if (obj instanceof Integer) {
-            return LvBufferTypeUtil.encodeVarInteger((Integer) obj);
+            return TLVBufferTypeUtil.encodeVarInteger((Integer) obj);
         } else if (obj instanceof Long) {
-            return LvBufferTypeUtil.encodeVarLong((Long)obj);
+            return TLVBufferTypeUtil.encodeVarLong((Long)obj);
         } else if (obj instanceof Float) {
             return ByteBuffer.allocate(4).putFloat((float) obj).array();
         } else if (obj instanceof Double) {
