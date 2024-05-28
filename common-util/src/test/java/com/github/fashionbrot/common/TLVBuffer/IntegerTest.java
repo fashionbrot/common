@@ -20,7 +20,7 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(Integer.MAX_VALUE);
         entity.setB1(Integer.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(IntegerEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         IntegerEntity deserialized = TLVBufferUtil.deserializeNew(IntegerEntity.class, bytes);
         System.out.println(deserialized);
@@ -33,7 +33,7 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(0);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(IntegerEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
 
         IntegerEntity deserialized = TLVBufferUtil.deserializeNew(IntegerEntity.class, bytes);
         System.out.println(deserialized);

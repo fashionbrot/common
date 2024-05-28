@@ -20,7 +20,7 @@ public class CharTest {
         CharEntity entity=new CharEntity();
         entity.setA1(Character.MAX_VALUE);
         entity.setB1(Character.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(CharEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         CharEntity deserialized = TLVBufferUtil.deserializeNew(CharEntity.class, bytes);
         System.out.println(deserialized);
@@ -33,7 +33,7 @@ public class CharTest {
         CharEntity entity=new CharEntity();
         entity.setA1('A');
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(CharEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         CharEntity deserialized = TLVBufferUtil.deserializeNew(CharEntity.class, bytes);
         System.out.println(deserialized);

@@ -23,46 +23,6 @@ public class TLVBufferUtil {
 
 
 
-
-
-
-    private static Object decodeList(byte[] data, Field field) throws IOException {
-        Class<?> elementType = getGenericType(field);
-        List<Object> list = new ArrayList<>();
-        int index = 0;
-        while (index < data.length) {
-            int elementLength = data[index];
-            index++;
-            if (elementLength == 0) {
-                list.add(null); // Add null element to the list
-            } else {
-                byte[] elementData = Arrays.copyOfRange(data, index, index + elementLength);
-                index += elementLength;
-                list.add(decodePrimitiveValue(field.getType(), elementData));
-            }
-        }
-        return list;
-    }
-
-    private static Object decodeArray(byte[] data, Field field) throws IOException {
-        Class<?> elementType = field.getType().getComponentType();
-        int arrayLength = data.length;
-        Object array = java.lang.reflect.Array.newInstance(elementType, arrayLength);
-        int index = 0;
-        for (int i = 0; i < arrayLength; i++) {
-            int elementLength = data[index];
-            index++;
-            if (elementLength == 0) {
-                java.lang.reflect.Array.set(array, i, null); // Set null element in the array
-            } else {
-                byte[] elementData = Arrays.copyOfRange(data, index, index + elementLength);
-                index += elementLength;
-                java.lang.reflect.Array.set(array, i, decodePrimitiveValue(field.getType(), elementData));
-            }
-        }
-        return array;
-    }
-
     // Utility method to get generic type of a field (for List<>)
     private static Class<?> getGenericType(Field field) {
         java.lang.reflect.Type genericType = field.getGenericType();
@@ -73,7 +33,7 @@ public class TLVBufferUtil {
                 return (Class<?>) fieldArgTypes[0];
             }
         }
-        return Object.class; // Default to Object type if unable to determine generic type
+        return Object.class;
     }
 
     public static <T> T deserializeNew(Class<T> clazz,byte[] data) throws IOException {
@@ -81,13 +41,34 @@ public class TLVBufferUtil {
     }
 
     public static <T> T deserializeNew(Class<T> clazz,ByteArrayReader reader)throws IOException{
+
         if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)){
             byte[] valueBytes = getNextBytes(reader);
 
             Object objectValue = decodePrimitiveValue(reader.getLastBinaryType().getType(),valueBytes);
             return (T) objectValue;
+        }else {
+            return deserializeEntity(clazz,reader);
         }
+    }
 
+    public static <T> T[] deserializeArray(Class<T> clazz,ByteArrayReader reader) throws IOException {
+        List<Object> list=new ArrayList<>();
+        while (!reader.isReadComplete()){
+            list.add(deserializeNew(clazz, reader));
+        }
+        return (T[]) list.toArray((Object[]) Array.newInstance(clazz, list.size()));
+    }
+
+    public static <T> List<T> deserializeList(Class<T> clazz,ByteArrayReader reader) throws IOException {
+        List<T> list= new ArrayList<>();
+        while (!reader.isReadComplete()){
+            list.add(deserializeEntity(clazz, reader));
+        }
+        return list;
+    }
+
+    public static <T> T deserializeEntity(Class<T> clazz,ByteArrayReader reader)throws IOException{
         T instance = MethodUtil.newInstance(clazz);
         List<Field> fieldList = getSortedClassField(clazz);
         if (ObjectUtil.isEmpty(fieldList)){
@@ -98,9 +79,11 @@ public class TLVBufferUtil {
             Object objectValue;
             if (ObjectUtil.isNotEmpty(valueBytes)){
                 if (List.class.isAssignableFrom(field.getType())){
-                    objectValue = decodeListValue(field,valueBytes);
+                    Class listGenericClass = getListGenericClass(field);
+                    objectValue = decodeListValue(listGenericClass,valueBytes);
                 }else if (field.getType().isArray()){
-                    objectValue = decodeArrayValue(field,valueBytes);
+                    Class<?> componentType = field.getType().getComponentType();
+                    objectValue = decodeArrayValue(componentType,valueBytes);
                 }else{
                     objectValue = decodePrimitiveValue(field.getType(),valueBytes);
                 }
@@ -212,12 +195,15 @@ public class TLVBufferUtil {
         return null;
     }
 
-    public static byte[] serializeNew(Class clazz,Object input){
+
+    public static byte[] serializeNew(Object input){
+
+        Class<?> clazz = input.getClass();
         List<byte[]> byteList=new ArrayList<>();
         if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
-            Class<?> inputClass = input.getClass();
-            byte[] valueBytes = encodePrimitiveValue(inputClass, input);
-            byte tag = generateTag(inputClass, valueBytes);
+
+            byte[] valueBytes = encodePrimitiveValue(clazz, input);
+            byte tag = generateTag(clazz, valueBytes);
             byteList.add(new byte[]{tag});
             byteList.add(TLVBufferTypeUtil.encodeVarInteger(valueBytes.length));
             byteList.add(valueBytes);
@@ -493,13 +479,22 @@ public class TLVBufferUtil {
             if (ObjectUtil.isNotEmpty(objectList)){
                 List<byte[]> listByteList=new ArrayList<>();
                 for (Object obj : objectList) {
-                    listByteList.add(serializeNew(genericClass, obj));
+                    listByteList.add(serializeNew( obj));
                 }
                 return mergeByteArrayList(listByteList);
             }else{
                 return new byte[1];
             }
     }
+
+//    public static void test(){
+//        Class<?> inputClass = input.getClass();
+//        byte[] valueBytes = encodePrimitiveValue(inputClass, input);
+//        byte tag = generateTag(inputClass, valueBytes);
+//        byteList.add(new byte[]{tag});
+//        byteList.add(TLVBufferTypeUtil.encodeVarInteger(valueBytes.length));
+//        byteList.add(valueBytes);
+//    }
 
 
     public static byte[] encodeListValue2(Object input,Field field,Object fieldValue){
@@ -529,7 +524,7 @@ public class TLVBufferUtil {
                 if (ObjectUtil.isNotEmpty(objectList)){
                     List<byte[]> listByteList=new ArrayList<>();
                     for (Object obj : objectList) {
-                        listByteList.add(serializeNew(genericClass, obj));
+                        listByteList.add(serializeNew( obj));
                     }
                     return mergeByteArrayList(listByteList);
                 }else{
@@ -551,7 +546,7 @@ public class TLVBufferUtil {
             if (ObjectUtil.isNotEmpty(arrayValue)){
                 List<byte[]> arrayList=new ArrayList<>();
                 for (Object o : arrayValue) {
-                    arrayList.add(serializeNew(type,o));
+                    arrayList.add(serializeNew(o));
                 }
                 return mergeByteArrayList(arrayList);
             }
@@ -571,7 +566,7 @@ public class TLVBufferUtil {
             if (ObjectUtil.isNotEmpty(arrayValue)){
                 List<byte[]> arrayList=new ArrayList<>();
                 for (Object o : arrayValue) {
-                    arrayList.add(serializeNew(componentType,o));
+                    arrayList.add(serializeNew(o));
                 }
                 return mergeByteArrayList(arrayList);
             }
@@ -687,48 +682,32 @@ public class TLVBufferUtil {
         }
     }
 
-    public static Object decodeListValue(Field field,byte[] bytes) throws IOException {
-        Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
-        if (ObjectUtil.isNotEmpty(actualTypeArguments)) {
-            Class<?> genericClass = TypeUtil.convertTypeToClass(actualTypeArguments[0]);
-            List list = new ArrayList();
-            if (bytes!=null && bytes.length==1 && bytes[0]==0x00){
-                return list;
-            }
-            if (JavaUtil.isPrimitive(genericClass) || JavaUtil.isObject(genericClass)){
-                if (ObjectUtil.isNotEmpty(bytes)) {
-                    ByteArrayReader reader = new ByteArrayReader(bytes);
-                    while (!reader.isReadComplete()){
-                        list.add(deserializeNew(genericClass, reader));
-                    }
-                }
-            }else{
-                if (ObjectUtil.isNotEmpty(bytes)) {
-                    ByteArrayReader reader = new ByteArrayReader(bytes);
-                    while (!reader.isReadComplete()){
-                        list.add(deserializeNew(genericClass, reader));
-                    }
-                }
-            }
+    public static Object decodeListValue(Class<?> genericClass ,byte[] bytes) throws IOException {
+        if (ObjectUtil.isEmpty(bytes)){
+            return null;
+        }
+        List list = new ArrayList();
+        if (bytes!=null && bytes.length==1 && bytes[0]==0x00){
             return list;
         }
-        return null;
+        if (ObjectUtil.isNotEmpty(bytes)) {
+            ByteArrayReader reader = new ByteArrayReader(bytes);
+            while (!reader.isReadComplete()){
+                list.add(deserializeNew(genericClass, reader));
+            }
+        }
+        return list;
     }
 
-    public static Object decodeArrayValue(Field field,byte[] bytes) throws IOException {
-        Class genericClass = field.getType().getComponentType();
+    public static Object decodeArrayValue(Class genericClass,byte[] bytes) throws IOException {
+        if (bytes!=null && bytes.length==1 && bytes[0]==0x00){
+            return Array.newInstance(genericClass, 0);
+        }
         List<Object> list=new ArrayList<>();
-        if (JavaUtil.isPrimitive(genericClass)){
-
-        }else{
-            if (bytes!=null && bytes.length==1 && bytes[0]==0x00){
-                return Array.newInstance(genericClass, 0);
-            }
-            if (ObjectUtil.isNotEmpty(bytes)){
-                ByteArrayReader reader = new ByteArrayReader(bytes);
-                while (!reader.isReadComplete()){
-                    list.add(deserializeNew(genericClass, reader));
-                }
+        if (ObjectUtil.isNotEmpty(bytes)){
+            ByteArrayReader reader = new ByteArrayReader(bytes);
+            while (!reader.isReadComplete()){
+                list.add(deserializeNew(genericClass, reader));
             }
         }
         return list.toArray((Object[]) Array.newInstance(genericClass, list.size()));

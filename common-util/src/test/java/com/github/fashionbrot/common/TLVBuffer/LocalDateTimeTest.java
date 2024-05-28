@@ -24,7 +24,7 @@ public class LocalDateTimeTest {
         LocalDateTimeEntity entity=new LocalDateTimeEntity();
         entity.setA1(LocalDateTime.MIN);
         entity.setB1(LocalDateTime.MAX);
-        byte[] bytes = TLVBufferUtil.serializeNew(LocalDateTimeEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
 
         LocalDateTime max = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
         LocalDateTime min = LocalDateTime.of(0, 1, 1, 0, 0);
@@ -40,7 +40,7 @@ public class LocalDateTimeTest {
         LocalDateTimeEntity entity=new LocalDateTimeEntity();
         entity.setA1(LocalDateTimeUtil.toLocalDateTime("2024-05-05 23:59:59"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(LocalDateTimeEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
         System.out.println(Arrays.toString(bytes));
         LocalDateTimeEntity deserialized = TLVBufferUtil.deserializeNew(LocalDateTimeEntity.class, bytes);
         System.out.println(deserialized.toString());

@@ -58,13 +58,13 @@ public class LLvBufferUtilTest {
                 .b12(null)
                 .list1(Arrays.asList(lvvListEntity,lvvListEntity))
                 .array1(new LVVListEntity[]{lvvListEntity})
-//                .list2(Arrays.asList("张三","李四"))
+                .list2(Arrays.asList("张三","李四"))
                 .build();
         build.setC1("张三");
         build.setD1(2222L);
 
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = TLVBufferUtil.serializeNew(LvEntity.class, build);
+        byte[] serialize = TLVBufferUtil.serializeNew( build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 

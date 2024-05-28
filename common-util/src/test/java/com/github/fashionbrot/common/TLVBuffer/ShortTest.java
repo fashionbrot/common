@@ -20,7 +20,7 @@ public class ShortTest {
         ShortEntity entity=new ShortEntity();
         entity.setA1(Short.MAX_VALUE);
         entity.setB1(Short.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(ShortEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
 
         ShortEntity deserialized = TLVBufferUtil.deserializeNew(ShortEntity.class, bytes);
         System.out.println(deserialized);
@@ -33,7 +33,7 @@ public class ShortTest {
         ShortEntity entity=new ShortEntity();
         entity.setA1((short) 0);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(ShortEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         ShortEntity deserialized = TLVBufferUtil.deserializeNew(ShortEntity.class, bytes);
         System.out.println(deserialized);

@@ -20,7 +20,7 @@ public class BooleanTest {
         BooleanEntity entity=new BooleanEntity();
         entity.setA1(Boolean.TRUE);
         entity.setB1(Boolean.FALSE);
-        byte[] bytes = TLVBufferUtil.serializeNew(BooleanEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         BooleanEntity deserialized = TLVBufferUtil.deserializeNew(BooleanEntity.class, bytes);
         System.out.println(deserialized);
@@ -33,7 +33,7 @@ public class BooleanTest {
         BooleanEntity entity=new BooleanEntity();
         entity.setA1(true);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(BooleanEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         BooleanEntity deserialized = TLVBufferUtil.deserializeNew(BooleanEntity.class, bytes);
         System.out.println(deserialized);

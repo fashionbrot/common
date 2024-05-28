@@ -35,7 +35,7 @@ public class ListBeanTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVBufferUtil.serializeNew(ListBeanEntity.class, beanEntity);
+        byte[] bytes = TLVBufferUtil.serializeNew( beanEntity);
 
         ListBeanEntity deserialized = TLVBufferUtil.deserializeNew(ListBeanEntity.class, bytes);
         System.out.println(deserialized);

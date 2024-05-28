@@ -23,7 +23,7 @@ public class LocalDateTest {
         LocalDateEntity entity=new LocalDateEntity();
         entity.setA1(LocalDate.MIN);
         entity.setB1(LocalDate.MAX);
-        byte[] bytes = TLVBufferUtil.serializeNew(LocalDateEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
 
         LocalDateEntity deserialized = TLVBufferUtil.deserializeNew(LocalDateEntity.class, bytes);
         System.out.println(deserialized);
@@ -36,7 +36,7 @@ public class LocalDateTest {
         LocalDateEntity entity=new LocalDateEntity();
         entity.setA1(LocalDateUtil.toLocalDate("2024-05-05"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(LocalDateEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
         System.out.println(Arrays.toString(bytes));
         LocalDateEntity deserialized = TLVBufferUtil.deserializeNew(LocalDateEntity.class, bytes);
         System.out.println(deserialized.toString());

@@ -23,7 +23,7 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(BigDecimal.ZERO);
         entity.setB1(BigDecimalUtil.format("0.00000000001"));
-        byte[] bytes = TLVBufferUtil.serializeNew(BigDecimalEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         BigDecimalEntity deserialized = TLVBufferUtil.deserializeNew(BigDecimalEntity.class, bytes);
         System.out.println(deserialized);
@@ -36,7 +36,7 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(BigDecimalUtil.format("0"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(BigDecimalEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
         System.out.println(Arrays.toString(bytes));
         BigDecimalEntity deserialized = TLVBufferUtil.deserializeNew(BigDecimalEntity.class, bytes);
         System.out.println(deserialized.toString());

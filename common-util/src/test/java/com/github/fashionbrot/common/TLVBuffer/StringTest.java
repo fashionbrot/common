@@ -22,7 +22,7 @@ public class StringTest {
         StringEntity entity=new StringEntity();
         entity.setA1("张三");
         entity.setB1("李四");
-        byte[] bytes = TLVBufferUtil.serializeNew(StringEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         StringEntity deserialized = TLVBufferUtil.deserializeNew(StringEntity.class, bytes);
         System.out.println(deserialized);
@@ -35,7 +35,7 @@ public class StringTest {
         StringEntity entity=new StringEntity();
         entity.setA1("");
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(StringEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
         System.out.println(Arrays.toString(bytes));
         StringEntity deserialized = TLVBufferUtil.deserializeNew(StringEntity.class, bytes);
         System.out.println(deserialized.toString());

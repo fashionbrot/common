@@ -21,7 +21,7 @@ public class FloatTest {
         FloatEntity entity=new FloatEntity();
         entity.setA1(Float.MAX_VALUE);
         entity.setB1(Float.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(FloatEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         FloatEntity deserialized = TLVBufferUtil.deserializeNew(FloatEntity.class, bytes);
         System.out.println(deserialized);
@@ -34,7 +34,7 @@ public class FloatTest {
         FloatEntity entity=new FloatEntity();
         entity.setA1(0.10f);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(FloatEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         FloatEntity deserialized = TLVBufferUtil.deserializeNew(FloatEntity.class, bytes);
         System.out.println(deserialized);

@@ -25,7 +25,7 @@ public class DateTest {
         DateEntity entity=new DateEntity();
         entity.setA1(new Date());
         entity.setB1(DateUtil.parseDateTime("2024-05-28 12:00:00"));
-        byte[] bytes = TLVBufferUtil.serializeNew(DateEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         DateEntity deserialized = TLVBufferUtil.deserializeNew(DateEntity.class, bytes);
         System.out.println(deserialized);
@@ -38,7 +38,7 @@ public class DateTest {
         DateEntity entity=new DateEntity();
         entity.setA1(DateUtil.parseDate("2024-05-28"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(DateEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
         System.out.println(Arrays.toString(bytes));
         DateEntity deserialized = TLVBufferUtil.deserializeNew(DateEntity.class, bytes);
         System.out.println(deserialized.toString());

@@ -21,7 +21,7 @@ public class DoubleTest {
         DoubleEntity entity=new DoubleEntity();
         entity.setA1(Double.MAX_VALUE);
         entity.setB1(Double.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(DoubleEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew( entity);
 
         DoubleEntity deserialized = TLVBufferUtil.deserializeNew(DoubleEntity.class, bytes);
         System.out.println(deserialized);
@@ -34,7 +34,7 @@ public class DoubleTest {
         DoubleEntity entity=new DoubleEntity();
         entity.setA1(0.10D);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(DoubleEntity.class, entity);
+        byte[] bytes = TLVBufferUtil.serializeNew(entity);
 
         DoubleEntity deserialized = TLVBufferUtil.deserializeNew(DoubleEntity.class, bytes);
         System.out.println(deserialized);

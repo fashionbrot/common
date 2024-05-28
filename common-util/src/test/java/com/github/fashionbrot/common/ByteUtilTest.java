@@ -144,7 +144,7 @@ public class ByteUtilTest {
                 .test10("aa")
                 .build();
 //        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
-        byte[] bytes2 = TLVBufferUtil.serializeNew(TestEntity.class, build2);
+        byte[] bytes2 = TLVBufferUtil.serializeNew( build2);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
 //        System.out.println(Arrays.toString(bytes2));
 
