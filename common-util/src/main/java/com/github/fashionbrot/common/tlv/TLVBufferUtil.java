@@ -26,7 +26,7 @@ public class TLVBufferUtil {
         return Object.class;
     }
 
-    public static <T> T deserializeNew(Class<T> clazz,byte[] data) throws IOException {
+    public static <T> T deserializeNew(Class<T> clazz,byte[] data)  {
         return deserializeNew(clazz,new ByteArrayReader(data));
     }
 

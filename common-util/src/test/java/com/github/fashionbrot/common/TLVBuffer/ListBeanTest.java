@@ -1,5 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
+import com.github.fashionbrot.common.tlv.ByteArrayReader;
 import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import lombok.Data;
 import org.junit.Assert;
@@ -42,6 +43,32 @@ public class ListBeanTest {
         System.out.println(deserialized);
         Assert.assertEquals(beanEntity.getA1().get(0).getAbc(),childEntity.getAbc());
     }
+
+
+    @Data
+    public static class ListBeanEntity2{
+        private List<ListChildEntity> a1;
+    }
+
+
+    @Test
+    public void test2()  {
+
+        ListChildEntity childEntity=new ListChildEntity();
+        childEntity.setAbc("111111");
+        ListChildEntity childEntity2=new ListChildEntity();
+        childEntity2.setAbc("222222");
+
+
+        byte[] bytes = TLVBufferUtil.serializeNew(Arrays.asList(childEntity,childEntity2));
+        System.out.println(Arrays.toString(bytes));
+
+        List<ListChildEntity> deserialized = TLVBufferUtil.deserializeList(ListChildEntity.class, new ByteArrayReader(bytes));
+        System.out.println(deserialized);
+        Assert.assertEquals(childEntity.getAbc(),deserialized.get(0).getAbc());
+        Assert.assertEquals(childEntity2.getAbc(),deserialized.get(1).getAbc());
+    }
+
 
 
 
