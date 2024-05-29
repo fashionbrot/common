@@ -41,12 +41,23 @@ public class TLVBufferUtil {
     }
 
     public static <T> T deserializeNew(Class<T> clazz,ByteArrayReader reader)throws IOException{
-
-        if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)){
+        if (clazz== Void.class){
+            return null;
+        }else if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)) {
             byte[] valueBytes = getNextBytes(reader);
+            BinaryType lastBinaryType = reader.getLastBinaryType();
 
-            Object objectValue = decodePrimitiveValue(reader.getLastBinaryType().getType(),valueBytes);
-            return (T) objectValue;
+            if (lastBinaryType == BinaryType.LIST) {
+                return (T) decodeListValue(clazz, valueBytes);
+            } else if (lastBinaryType == BinaryType.ARRAY) {
+                return (T) decodeArrayValue(clazz, valueBytes);
+            } else {
+                return (T) decodePrimitiveValue(reader.getLastBinaryType().getType(), valueBytes);
+            }
+        }else if (List.class.isAssignableFrom(clazz)) {
+            return (T) deserializeList(clazz, reader);
+        }else if (clazz.isArray()){
+            return (T) deserializeArray(clazz,reader);
         }else {
             return deserializeEntity(clazz,reader);
         }
@@ -828,8 +839,8 @@ public class TLVBufferUtil {
         LOCAL_DATE("01011",LocalDate.class),
         LOCAL_DATE_TIME("01100",LocalDateTime.class),
         BIG_DECIMAL("01101",BigDecimal.class),
-        ARRAY("01110",List.class),
-        LIST("01111",Array.class),
+        ARRAY("01110",Array.class),
+        LIST("01111",List.class),
             ;
 
         private final String binaryCode;

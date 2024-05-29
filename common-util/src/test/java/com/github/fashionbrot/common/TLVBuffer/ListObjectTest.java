@@ -1,5 +1,7 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.github.fashionbrot.common.util.TLVBufferUtil;
 import lombok.Data;
 import org.junit.Assert;
@@ -22,15 +24,6 @@ public class ListObjectTest {
         private List c1;
     }
 
-    @Data
-    public static class ListObjectEntity2{
-        private List<Object> aa;
-    }
-
-    @Data
-    public static class ListObjectEntity3{
-        private List<Object> bb;
-    }
 
 
     @Test
@@ -59,8 +52,18 @@ public class ListObjectTest {
         Assert.assertEquals(b1.get(0),deserialized.getB1().get(0));
     }
 
+    @Data
+    public static class ListObjectEntity2{
+        private List<ListObjectEntity3> aa;
+    }
 
-//    @Test TODO
+    @Data
+    public static class ListObjectEntity3{
+        private List<Object> bb;
+    }
+
+
+    @Test
     public void test2() throws IOException {
 
         ListObjectEntity3 entity3=new ListObjectEntity3();
@@ -69,13 +72,18 @@ public class ListObjectTest {
         ListObjectEntity2 entity2=new ListObjectEntity2();
         entity2.setAa(Arrays.asList(entity3));
 
+//        System.out.println(JSON.toJSONString(entity2));
+        ListObjectEntity2 listObjectEntity2 = JSONObject.parseObject("{\"aa\":[{\"bb\":[\"entity3\"]}]}", ListObjectEntity2.class);
+        System.out.println(listObjectEntity2.toString());
+
         byte[] bytes = TLVBufferUtil.serializeNew(entity2);
         System.out.println(bytes.length);
         System.out.println(Arrays.toString(bytes));
 
         ListObjectEntity2 deserialized = TLVBufferUtil.deserializeNew(ListObjectEntity2.class, bytes);
         System.out.println(deserialized);
-
+        Assert.assertEquals(entity2.getAa(),deserialized.getAa());
+//        Assert.assertEquals(entity2.getAa().get(0).getBb(),deserialized.getAa().get(0).getBb());
     }
 
 

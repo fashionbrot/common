@@ -70,4 +70,33 @@ public class ArrayBeanTest {
     }
 
 
+    @Data
+    public static class ListBeanEntity3{
+        private ListBeanEntity4[] a1;
+
+    }
+
+    @Data
+    public static class ListBeanEntity4{
+        private Object[] a1;
+    }
+
+    @Test
+    public void test3() throws IOException {
+        ListBeanEntity4 listBeanEntity4=new ListBeanEntity4();
+        listBeanEntity4.setA1(new Object[]{1,2,'A'});
+
+        ListBeanEntity3 listBeanEntity3= new ListBeanEntity3();
+        listBeanEntity3.setA1(new ListBeanEntity4[]{listBeanEntity4});
+
+        byte[] bytes = TLVBufferUtil.serializeNew(listBeanEntity3);
+        System.out.println(Arrays.toString(bytes));
+
+        ListBeanEntity3 deserialized = TLVBufferUtil.deserializeNew(ListBeanEntity3.class, bytes);
+        System.out.println(deserialized);
+        Assert.assertArrayEquals(listBeanEntity3.getA1(),deserialized.getA1());
+        Assert.assertArrayEquals(listBeanEntity3.getA1()[0].getA1(),deserialized.getA1()[0].getA1());
+    }
+
+
 }
