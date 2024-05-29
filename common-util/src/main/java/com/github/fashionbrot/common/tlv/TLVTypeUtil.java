@@ -1,6 +1,7 @@
-package com.github.fashionbrot.common.util;
+package com.github.fashionbrot.common.tlv;
 
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
+import com.github.fashionbrot.common.util.BigDecimalUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 
-public class TLVBufferTypeUtil {
+public class TLVTypeUtil {
 
     public static byte[] encodeVarChar(char value) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -94,14 +95,14 @@ public class TLVBufferTypeUtil {
         return output.toByteArray();
     }
 
-    public static long decodeVarLong(byte[] data) throws IOException {
+    public static long decodeVarLong(byte[] data)  {
         long result = 0L;
         int shift = 0;
         int index = 0;
         byte b;
         do {
             if (index >= data.length) {
-                throw new IOException("Varint decoding error: Insufficient data");
+                throw new RuntimeException("Varint decoding error: Insufficient data");
             }
             b = data[index++];
             result |= (b & 0x7FL) << shift;
@@ -126,7 +127,7 @@ public class TLVBufferTypeUtil {
         return encodeVarLong(longValue);
     }
 
-    public static double decodeVarDouble(byte[] data) throws IOException {
+    public static double decodeVarDouble(byte[] data)  {
         long longValue = decodeVarLong(data);
         return Double.longBitsToDouble(longValue);
     }
@@ -137,7 +138,7 @@ public class TLVBufferTypeUtil {
         return encodeVarLong(longValue); // 调用通用的长整型编码方法
     }
 
-    public static Date decodeVarDate(byte[] data) throws IOException {
+    public static Date decodeVarDate(byte[] data) {
         long longValue = decodeVarLong(data); // 调用通用的长整型解码方法
         return new Date(longValue); // 使用时间戳创建 Date 对象
     }
@@ -152,7 +153,7 @@ public class TLVBufferTypeUtil {
         return encodeVarLong(daysSinceEpoch); // 调用通用的长整型编码方法
     }
 
-    public static LocalDate decodeVarLocalDate(byte[] data) throws IOException {
+    public static LocalDate decodeVarLocalDate(byte[] data)  {
         long daysSinceEpoch = decodeVarLong(data); // 调用通用的长整型解码方法
         return LocalDate.ofEpochDay(daysSinceEpoch); // 使用天数创建 LocalDate 对象
     }
@@ -165,7 +166,7 @@ public class TLVBufferTypeUtil {
         return encodeVarDate(date);
     }
 
-    public static LocalDateTime decodeVarLocalDateTime(byte[] data) throws IOException {
+    public static LocalDateTime decodeVarLocalDateTime(byte[] data)  {
         Date date = decodeVarDate(data);
         if (date==null){
             return null;
@@ -173,7 +174,7 @@ public class TLVBufferTypeUtil {
         return LocalDateTimeUtil.toLocalDateTime(date);
     }
 
-    public static LocalTime decodeVarLocalTime(byte[] data) throws IOException {
+    public static LocalTime decodeVarLocalTime(byte[] data) {
         long nanoOfDay = decodeVarLong(data); // 调用通用的长整型解码方法
         return LocalTime.ofNanoOfDay(nanoOfDay); // 使用纳秒数创建 LocalTime 对象
     }

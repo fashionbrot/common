@@ -3,10 +3,10 @@ package com.github.fashionbrot.common;
 import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.entity.TestEntity;
 import com.github.fashionbrot.common.entity.TestEntityProto;
-import com.github.fashionbrot.common.util.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import com.github.fashionbrot.common.util.MethodUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
-import com.github.fashionbrot.common.util.TLVBufferTypeUtil;
+import com.github.fashionbrot.common.tlv.TLVTypeUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,12 +115,12 @@ public class ByteUtilTest {
     public static void main(String[] args) throws IOException {
         TestEntity build = TestEntity.builder()
                 .id(22L)
-                .name(TLVBufferTypeUtil.maxString())
+                .name(TLVTypeUtil.maxString())
                 .parentId(33L)
-                .parentName(TLVBufferTypeUtil.maxString())
+                .parentName(TLVTypeUtil.maxString())
                 .test5(55L)
                 .test6(66L)
-                .test7(TLVBufferTypeUtil.maxString())
+                .test7(TLVTypeUtil.maxString())
                 .test8(88L)
                 .test9(99L)
                 .test10("aa")
@@ -133,12 +133,12 @@ public class ByteUtilTest {
         System.out.println("----------------------自己实现的压缩---------------------start");
         TestEntity build2 = TestEntity.builder()
                 .id(22L)
-                .name(TLVBufferTypeUtil.maxString())
+                .name(TLVTypeUtil.maxString())
                 .parentId(33L)
-                .parentName(TLVBufferTypeUtil.maxString())
+                .parentName(TLVTypeUtil.maxString())
                 .test5(55L)
                 .test6(66L)
-                .test7(TLVBufferTypeUtil.maxString())
+                .test7(TLVTypeUtil.maxString())
                 .test8(88L)
                 .test9(99L)
                 .test10("aa")
@@ -163,11 +163,11 @@ public class ByteUtilTest {
         TestEntityProto.TestEntity test= TestEntityProto.TestEntity.newBuilder()
                 .setId(22L)
                 .setParentId(33L)
-                .setName(TLVBufferTypeUtil.maxString())
-                .setParentName(TLVBufferTypeUtil.maxString())
+                .setName(TLVTypeUtil.maxString())
+                .setParentName(TLVTypeUtil.maxString())
                 .setTest5(55L)
                 .setTest6(66L)
-                .setTest7(TLVBufferTypeUtil.maxString())
+                .setTest7(TLVTypeUtil.maxString())
                 .setTest8(88L)
                 .setTest9(99L)
                 .setTest10("aa")
@@ -243,7 +243,7 @@ public class ByteUtilTest {
                     break;
                 }
                 byte byteLength = data[readIndex];
-                int length = TLVBufferTypeUtil.decodeVarInteger(new byte[]{byteLength});
+                int length = TLVTypeUtil.decodeVarInteger(new byte[]{byteLength});
                 if (length==0){
                     readIndex+=1;
                     index++;
@@ -293,7 +293,7 @@ public class ByteUtilTest {
                     Object value = declaredField.get(object);
                     if (value!=null){
                         byte[] valueBytes = compressPrimitiveToByteArray(value);
-                        list.add(TLVBufferTypeUtil.encodeVarInteger(valueBytes.length));
+                        list.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
                         list.add(valueBytes);
                     }
                 } catch (IllegalAccessException e) {
@@ -350,11 +350,7 @@ public class ByteUtilTest {
 
     public static Object decode(byte[] bytes,Class<?> type){
         if (type==Long.class || type==long.class){
-            try {
-                return TLVBufferTypeUtil.decodeVarLong(bytes);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return TLVTypeUtil.decodeVarLong(bytes);
         }else if (String.class == type){
             return new String(bytes);
         }
@@ -390,9 +386,9 @@ public class ByteUtilTest {
         } else if (obj instanceof Short) {
             return ByteBuffer.allocate(2).putShort((short) obj).array();
         } else if (obj instanceof Integer) {
-            return TLVBufferTypeUtil.encodeVarInteger((Integer) obj);
+            return TLVTypeUtil.encodeVarInteger((Integer) obj);
         } else if (obj instanceof Long) {
-            return TLVBufferTypeUtil.encodeVarLong((Long)obj);
+            return TLVTypeUtil.encodeVarLong((Long)obj);
         } else if (obj instanceof Float) {
             return ByteBuffer.allocate(4).putFloat((float) obj).array();
         } else if (obj instanceof Double) {

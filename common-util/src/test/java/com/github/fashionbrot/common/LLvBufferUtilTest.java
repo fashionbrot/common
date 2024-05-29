@@ -7,7 +7,7 @@ import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.entity.LLVEntity;
 import com.github.fashionbrot.common.entity.LVVListEntity;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
-import com.github.fashionbrot.common.util.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
 import java.io.IOException;

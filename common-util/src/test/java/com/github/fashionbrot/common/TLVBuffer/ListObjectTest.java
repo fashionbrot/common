@@ -1,14 +1,12 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.github.fashionbrot.common.util.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
