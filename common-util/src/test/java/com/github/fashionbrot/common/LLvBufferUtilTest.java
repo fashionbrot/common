@@ -4,8 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
 import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.date.LocalTimeUtil;
+import com.github.fashionbrot.common.entity.LLVEntity;
 import com.github.fashionbrot.common.entity.LVVListEntity;
-import com.github.fashionbrot.common.entity.LvEntity;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
 import com.github.fashionbrot.common.util.TLVBufferUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
@@ -42,7 +42,7 @@ public class LLvBufferUtilTest {
         lvvListEntity.setName("李四");
         lvvListEntity.setParentName("李老板");
 
-        LvEntity build = LvEntity.builder()
+        LLVEntity build = LLVEntity.builder()
                 .b(sb.toString())
                 .b1((byte) 0x01)
                 .b2(ObjectUtil.formatShort("12346"))
@@ -76,7 +76,7 @@ public class LLvBufferUtilTest {
 //        System.out.println(inputStream.isReadComplete());
 
 
-        LvEntity deserialize = TLVBufferUtil.deserializeNew(LvEntity.class, serialize);
+        LLVEntity deserialize = TLVBufferUtil.deserializeNew(LLVEntity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
 //
 //        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));

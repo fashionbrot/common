@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class LvEntity extends LvParent1Entity {
+public class LLVEntity extends LvParent1Entity {
 
     private String b;
     private Byte b1;
@@ -28,6 +28,12 @@ public class LvEntity extends LvParent1Entity {
     private LocalTime b9;
     private LocalDate b10;
     private LocalDateTime b11;
-//    private Boolean b12;
+    private Boolean b12;
+
+    private List<LVVListEntity> list1;
+
+    private List<String> list2;
+
+    private LVVListEntity[] array1;
 
 }
