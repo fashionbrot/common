@@ -20,9 +20,9 @@ public class CharTest {
         CharEntity entity=new CharEntity();
         entity.setA1(Character.MAX_VALUE);
         entity.setB1(Character.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        CharEntity deserialized = TLVBufferUtil.deserializeNew(CharEntity.class, bytes);
+        CharEntity deserialized = TLVBufferUtil.deserialize(CharEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -33,9 +33,9 @@ public class CharTest {
         CharEntity entity=new CharEntity();
         entity.setA1('A');
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        CharEntity deserialized = TLVBufferUtil.deserializeNew(CharEntity.class, bytes);
+        CharEntity deserialized = TLVBufferUtil.deserialize(CharEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

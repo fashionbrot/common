@@ -20,9 +20,9 @@ public class ShortTest {
         ShortEntity entity=new ShortEntity();
         entity.setA1(Short.MAX_VALUE);
         entity.setB1(Short.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew(entity);
+        byte[] bytes = TLVBufferUtil.serialize(entity);
 
-        ShortEntity deserialized = TLVBufferUtil.deserializeNew(ShortEntity.class, bytes);
+        ShortEntity deserialized = TLVBufferUtil.deserialize(ShortEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -33,9 +33,9 @@ public class ShortTest {
         ShortEntity entity=new ShortEntity();
         entity.setA1((short) 0);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        ShortEntity deserialized = TLVBufferUtil.deserializeNew(ShortEntity.class, bytes);
+        ShortEntity deserialized = TLVBufferUtil.deserialize(ShortEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

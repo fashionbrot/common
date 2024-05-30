@@ -23,9 +23,9 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(BigDecimal.ZERO);
         entity.setB1(BigDecimalUtil.format("0.00000000001"));
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        BigDecimalEntity deserialized = TLVBufferUtil.deserializeNew(BigDecimalEntity.class, bytes);
+        BigDecimalEntity deserialized = TLVBufferUtil.deserialize(BigDecimalEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -36,9 +36,9 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(BigDecimalUtil.format("0"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
         System.out.println(Arrays.toString(bytes));
-        BigDecimalEntity deserialized = TLVBufferUtil.deserializeNew(BigDecimalEntity.class, bytes);
+        BigDecimalEntity deserialized = TLVBufferUtil.deserialize(BigDecimalEntity.class, bytes);
         System.out.println(deserialized.toString());
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

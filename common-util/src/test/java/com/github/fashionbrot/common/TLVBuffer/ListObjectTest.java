@@ -37,11 +37,11 @@ public class ListObjectTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVBufferUtil.serializeNew( beanEntity);
+        byte[] bytes = TLVBufferUtil.serialize( beanEntity);
         System.out.println(bytes.length);
         System.out.println(Arrays.toString(bytes));
 
-        ListObjectEntity deserialized = TLVBufferUtil.deserializeNew(ListObjectEntity.class, bytes);
+        ListObjectEntity deserialized = TLVBufferUtil.deserialize(ListObjectEntity.class, bytes);
         System.out.println(deserialized);
 //        System.out.println(a1.get(0));
         Assert.assertEquals(a1.get(0),deserialized.getA1().get(0));
@@ -74,14 +74,14 @@ public class ListObjectTest {
         ListObjectEntity2 listObjectEntity2 = JSONObject.parseObject("{\"aa\":[{\"bb\":[\"entity3\"]}]}", ListObjectEntity2.class);
         System.out.println(listObjectEntity2.toString());
 
-        byte[] bytes = TLVBufferUtil.serializeNew(entity2);
+        byte[] bytes = TLVBufferUtil.serialize(entity2);
         System.out.println(bytes.length);
         System.out.println(Arrays.toString(bytes));
 
-        ListObjectEntity2 deserialized = TLVBufferUtil.deserializeNew(ListObjectEntity2.class, bytes);
+        ListObjectEntity2 deserialized = TLVBufferUtil.deserialize(ListObjectEntity2.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity2.getAa(),deserialized.getAa());
-//        Assert.assertEquals(entity2.getAa().get(0).getBb(),deserialized.getAa().get(0).getBb());
+        Assert.assertEquals(entity2.getAa().get(0).getBb(),deserialized.getAa().get(0).getBb());
     }
 
 

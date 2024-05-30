@@ -21,9 +21,9 @@ public class DoubleTest {
         DoubleEntity entity=new DoubleEntity();
         entity.setA1(Double.MAX_VALUE);
         entity.setB1(Double.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        DoubleEntity deserialized = TLVBufferUtil.deserializeNew(DoubleEntity.class, bytes);
+        DoubleEntity deserialized = TLVBufferUtil.deserialize(DoubleEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertTrue(ObjectUtil.equals(entity.getA1(),deserialized.getA1()));
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -34,9 +34,9 @@ public class DoubleTest {
         DoubleEntity entity=new DoubleEntity();
         entity.setA1(0.10D);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(entity);
+        byte[] bytes = TLVBufferUtil.serialize(entity);
 
-        DoubleEntity deserialized = TLVBufferUtil.deserializeNew(DoubleEntity.class, bytes);
+        DoubleEntity deserialized = TLVBufferUtil.deserialize(DoubleEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertTrue(ObjectUtil.equals(entity.getA1(),deserialized.getA1()));
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

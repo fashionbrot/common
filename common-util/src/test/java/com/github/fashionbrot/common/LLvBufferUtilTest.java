@@ -64,7 +64,7 @@ public class LLvBufferUtilTest {
         build.setD1(2222L);
 
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = TLVBufferUtil.serializeNew( build);
+        byte[] serialize = TLVBufferUtil.serialize( build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
@@ -76,7 +76,7 @@ public class LLvBufferUtilTest {
 //        System.out.println(inputStream.isReadComplete());
 
 
-        LLVEntity deserialize = TLVBufferUtil.deserializeNew(LLVEntity.class, serialize);
+        LLVEntity deserialize = TLVBufferUtil.deserialize(LLVEntity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
 //
 //        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));

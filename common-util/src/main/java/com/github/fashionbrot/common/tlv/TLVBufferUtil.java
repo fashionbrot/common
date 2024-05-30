@@ -2,7 +2,6 @@ package com.github.fashionbrot.common.tlv;
 
 import com.github.fashionbrot.common.tlv.parser.TypeHandle;
 import com.github.fashionbrot.common.util.*;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,24 +12,13 @@ import java.util.stream.Collectors;
 public class TLVBufferUtil {
 
 
-    // Utility method to get generic type of a field (for List<>)
-    private static Class<?> getGenericType(Field field) {
-        java.lang.reflect.Type genericType = field.getGenericType();
-        if (genericType instanceof java.lang.reflect.ParameterizedType) {
-            java.lang.reflect.ParameterizedType pt = (java.lang.reflect.ParameterizedType) genericType;
-            java.lang.reflect.Type[] fieldArgTypes = pt.getActualTypeArguments();
-            if (fieldArgTypes.length > 0 && fieldArgTypes[0] instanceof Class) {
-                return (Class<?>) fieldArgTypes[0];
-            }
-        }
-        return Object.class;
+
+
+    public static <T> T deserialize(Class<T> clazz,byte[] data)  {
+        return deserialize(clazz,new ByteArrayReader(data));
     }
 
-    public static <T> T deserializeNew(Class<T> clazz,byte[] data)  {
-        return deserializeNew(clazz,new ByteArrayReader(data));
-    }
-
-    public static <T> T deserializeNew(Class<T> clazz,ByteArrayReader reader){
+    public static <T> T deserialize(Class<T> clazz,ByteArrayReader reader){
         if (clazz== Void.class){
             return null;
         }else if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)) {
@@ -53,12 +41,20 @@ public class TLVBufferUtil {
         }
     }
 
+    public static <T> T[] deserializeArray(Class<T> clazz,byte[] bytes) {
+        return deserializeArray(clazz,new ByteArrayReader(bytes));
+    }
+
     public static <T> T[] deserializeArray(Class<T> clazz,ByteArrayReader reader) {
         List<Object> list=new ArrayList<>();
         while (!reader.isReadComplete()){
-            list.add(deserializeNew(clazz, reader));
+            list.add(deserialize(clazz, reader));
         }
         return (T[]) list.toArray((Object[]) Array.newInstance(clazz, list.size()));
+    }
+
+    public static <T> List<T> deserializeList(Class<T> clazz,byte[] bytes)  {
+        return deserializeList(clazz,new ByteArrayReader(bytes));
     }
 
     public static <T> List<T> deserializeList(Class<T> clazz,ByteArrayReader reader)  {
@@ -116,14 +112,19 @@ public class TLVBufferUtil {
 
 
 
-    public static byte[] serializeNew(Object input){
-
+    public static byte[] serialize(Object input){
+        if (input==null){
+            return null;
+        }
         Class<?> clazz = input.getClass();
+        if (clazz == Void.class){
+            return null;
+        }
+
         List<byte[]> byteList=new ArrayList<>();
         if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
 
-            byte[] valueBytes = encodePrimitiveValue(clazz, input);
-
+            byte[] valueBytes = TypeHandleFactory.toByte(clazz,input);
             byte tag = generateTag(clazz, valueBytes);
             byteList.add(new byte[]{tag});
             byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
@@ -156,13 +157,11 @@ public class TLVBufferUtil {
                     //第三个是value byte
                     byteList.add(valueBytes);
                 }
-
             }
         }
 
         return mergeByteArrayList(byteList);
     }
-
 
 
     private static byte[] encodeFieldValue(Field field,Object value) {
@@ -175,15 +174,17 @@ public class TLVBufferUtil {
             Class<?> componentType = field.getType().getComponentType();
             valueBytes = encodeArrayValue(componentType,value);
         }else{
-            valueBytes = encodePrimitiveValue(fieldType,value);
-
+            valueBytes = TypeHandleFactory.toByte(fieldType,value);
         }
         return valueBytes;
     }
 
     public static Class getListGenericClass(Field field){
         Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
-        return TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+        if (ObjectUtil.isNotEmpty(actualTypeArguments)) {
+            return TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+        }
+        return Object.class;
     }
 
 
@@ -196,30 +197,25 @@ public class TLVBufferUtil {
 
 
 
+    // 将 List 中的 byte[] 数组合并为一个单独的字节数组
     public static byte[] mergeByteArrayList(List<byte[]> list) {
-        // 将 List 中的 byte[] 数组转换为数组
-        byte[][] arrays = new byte[list.size()][];
-        for (int i = 0; i < list.size(); i++) {
-            arrays[i] = list.get(i);
-        }
-
-        // 调用 mergeByteArrays 方法进行合并
-        return mergeByteArrays(arrays);
-    }
-
-
-    public static byte[] mergeByteArrays(byte[]... arrays) {
+        // 计算总长度
         int totalLength = 0;
-        for (byte[] array : arrays) {
-            totalLength += array.length;
+        for (byte[] array : list) {
+            if (array != null && array.length > 0) {
+                totalLength += array.length;
+            }
         }
+        // 创建结果数组
         byte[] result = new byte[totalLength];
+        // 合并字节数组
         int currentIndex = 0;
-        for (byte[] array : arrays) {
-            System.arraycopy(array, 0, result, currentIndex, array.length);
-            currentIndex += array.length;
+        for (byte[] array : list) {
+            if (array != null && array.length > 0) {
+                System.arraycopy(array, 0, result, currentIndex, array.length);
+                currentIndex += array.length;
+            }
         }
-
         return result;
     }
 
@@ -258,19 +254,17 @@ public class TLVBufferUtil {
     }
 
     public static byte[] encodeListValue(Class genericClass, Object value) {
-        //List [00000=type 000=[valueByteLength]Length] [valueByteLength] [value]
         List<Object> objectList = (List<Object>) value;
         if (objectList != null && objectList.size() == 0) {
             return new byte[1];
         }
-
         if (objectList == null) {
             return null;
         }
         if (ObjectUtil.isNotEmpty(objectList)) {
             List<byte[]> listByteList = new ArrayList<>();
             for (Object obj : objectList) {
-                listByteList.add(serializeNew(obj));
+                listByteList.add(serialize(obj));
             }
             return mergeByteArrayList(listByteList);
         } else {
@@ -287,7 +281,7 @@ public class TLVBufferUtil {
         if (ObjectUtil.isNotEmpty(arrayValue)){
             List<byte[]> arrayList=new ArrayList<>();
             for (Object o : arrayValue) {
-                arrayList.add(serializeNew(o));
+                arrayList.add(serialize(o));
             }
             return mergeByteArrayList(arrayList);
         }
@@ -295,10 +289,7 @@ public class TLVBufferUtil {
     }
 
 
-    public static byte[] encodePrimitiveValue(Class<?> type,Object value){
-        TypeHandle typeHandle = TypeHandleFactory.getTypeHandle(type);
-        return typeHandle.toByte(value);
-    }
+
 
     public static Object decodeListValue(Class<?> genericClass ,byte[] bytes) {
         if (ObjectUtil.isEmpty(bytes)){
@@ -311,7 +302,7 @@ public class TLVBufferUtil {
         if (ObjectUtil.isNotEmpty(bytes)) {
             ByteArrayReader reader = new ByteArrayReader(bytes);
             while (!reader.isReadComplete()){
-                list.add(deserializeNew(genericClass, reader));
+                list.add(deserialize(genericClass, reader));
             }
         }
         return list;
@@ -325,13 +316,11 @@ public class TLVBufferUtil {
         if (ObjectUtil.isNotEmpty(bytes)){
             ByteArrayReader reader = new ByteArrayReader(bytes);
             while (!reader.isReadComplete()){
-                list.add(deserializeNew(genericClass, reader));
+                list.add(deserialize(genericClass, reader));
             }
         }
         return list.toArray((Object[]) Array.newInstance(genericClass, list.size()));
     }
-
-
 
 
 }

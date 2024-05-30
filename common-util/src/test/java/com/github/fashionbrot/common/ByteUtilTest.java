@@ -144,13 +144,13 @@ public class ByteUtilTest {
                 .test10("aa")
                 .build();
 //        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
-        byte[] bytes2 = TLVBufferUtil.serializeNew( build2);
+        byte[] bytes2 = TLVBufferUtil.serialize( build2);
         System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
 //        System.out.println(Arrays.toString(bytes2));
 
 
 //        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
-        TestEntity testEntity = TLVBufferUtil.deserializeNew(TestEntity.class, bytes2);
+        TestEntity testEntity = TLVBufferUtil.deserialize(TestEntity.class, bytes2);
 //        System.out.println(testEntity.toString());
 
         System.out.println(System.currentTimeMillis()-l2+"毫秒");
