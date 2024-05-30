@@ -1,6 +1,5 @@
 package com.github.fashionbrot.common.tlv;
 
-import com.github.fashionbrot.common.tlv.parser.TypeHandle;
 import com.github.fashionbrot.common.util.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
