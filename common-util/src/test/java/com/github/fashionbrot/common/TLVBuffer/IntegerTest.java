@@ -22,9 +22,9 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(Integer.MAX_VALUE);
         entity.setB1(Integer.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serializeNew( entity);
+        byte[] bytes = TLVBufferUtil.serialize( entity);
 
-        IntegerEntity deserialized = TLVBufferUtil.deserializeNew(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -35,9 +35,9 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(0);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(entity);
+        byte[] bytes = TLVBufferUtil.serialize(entity);
 
-        IntegerEntity deserialized = TLVBufferUtil.deserializeNew(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

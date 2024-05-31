@@ -36,10 +36,10 @@ public class ListBeanTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVBufferUtil.serializeNew( beanEntity);
+        byte[] bytes = TLVBufferUtil.serialize( beanEntity);
         System.out.println(Arrays.toString(bytes));
 
-        ListBeanEntity deserialized = TLVBufferUtil.deserializeNew(ListBeanEntity.class, bytes);
+        ListBeanEntity deserialized = TLVBufferUtil.deserialize(ListBeanEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(beanEntity.getA1().get(0).getAbc(),childEntity.getAbc());
     }
@@ -60,10 +60,10 @@ public class ListBeanTest {
         childEntity2.setAbc("222222");
 
 
-        byte[] bytes = TLVBufferUtil.serializeNew(Arrays.asList(childEntity,childEntity2));
+        byte[] bytes = TLVBufferUtil.serialize(Arrays.asList(childEntity,childEntity2));
         System.out.println(Arrays.toString(bytes));
 
-        List<ListChildEntity> deserialized = TLVBufferUtil.deserializeList(ListChildEntity.class, new ByteArrayReader(bytes));
+        List<ListChildEntity> deserialized = TLVBufferUtil.deserializeList(ListChildEntity.class, (bytes));
         System.out.println(deserialized);
         Assert.assertEquals(childEntity.getAbc(),deserialized.get(0).getAbc());
         Assert.assertEquals(childEntity2.getAbc(),deserialized.get(1).getAbc());

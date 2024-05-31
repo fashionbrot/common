@@ -23,9 +23,9 @@ public class LocalDateTest {
         LocalDateEntity entity=new LocalDateEntity();
         entity.setA1(LocalDate.MIN);
         entity.setB1(LocalDate.MAX);
-        byte[] bytes = TLVBufferUtil.serializeNew(entity);
+        byte[] bytes = TLVBufferUtil.serialize(entity);
 
-        LocalDateEntity deserialized = TLVBufferUtil.deserializeNew(LocalDateEntity.class, bytes);
+        LocalDateEntity deserialized = TLVBufferUtil.deserialize(LocalDateEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -36,9 +36,9 @@ public class LocalDateTest {
         LocalDateEntity entity=new LocalDateEntity();
         entity.setA1(LocalDateUtil.toLocalDate("2024-05-05"));
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serializeNew(entity);
+        byte[] bytes = TLVBufferUtil.serialize(entity);
         System.out.println(Arrays.toString(bytes));
-        LocalDateEntity deserialized = TLVBufferUtil.deserializeNew(LocalDateEntity.class, bytes);
+        LocalDateEntity deserialized = TLVBufferUtil.deserialize(LocalDateEntity.class, bytes);
         System.out.println(deserialized.toString());
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

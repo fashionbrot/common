@@ -1,8 +1,10 @@
-package com.github.fashionbrot.common.util;
+package com.github.fashionbrot.common.TLVBuffer;
 
 
 
 import com.github.fashionbrot.common.tlv.TLVTypeUtil;
+import com.github.fashionbrot.common.util.MethodUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 public class LvBufferUtil {
 
 
-    public static <T> T deserialize(Class<T> clazz, byte[] data) throws IOException {
+    public static <T> T deserialize3(Class<T> clazz, byte[] data)  {
         List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
         if (ObjectUtil.isNotEmpty(fieldList)) {
             T instance = MethodUtil.newInstance(clazz);
@@ -40,7 +42,7 @@ public class LvBufferUtil {
         return null;
     }
 
-    public static <T> T deserializeNew(Class<T> clazz, byte[] data) throws IOException {
+    public static <T> T deserialize(Class<T> clazz, byte[] data)  {
         List<Field> fieldList = getSortedNonStaticNonFinalFields(clazz);
         if (fieldList != null && !fieldList.isEmpty()) {
             T instance = MethodUtil.newInstance(clazz);
@@ -69,7 +71,7 @@ public class LvBufferUtil {
     }
 
 
-    private static Object decodeList(byte[] data, Field field) throws IOException {
+    private static Object decodeList(byte[] data, Field field)  {
         Class<?> elementType = getGenericType(field);
         List<Object> list = new ArrayList<>();
         int index = 0;
@@ -87,7 +89,7 @@ public class LvBufferUtil {
         return list;
     }
 
-    private static Object decodeArray(byte[] data, Field field) throws IOException {
+    private static Object decodeArray(byte[] data, Field field) {
         Class<?> elementType = field.getType().getComponentType();
         int arrayLength = data.length;
         Object array = java.lang.reflect.Array.newInstance(elementType, arrayLength);
@@ -281,7 +283,7 @@ public class LvBufferUtil {
         }
     }
 
-    public static Object decodeByteToPrimitive(byte[] bytes,Class<?> type) throws IOException {
+    public static Object decodeByteToPrimitive(byte[] bytes,Class<?> type)  {
         if (type==Long.class || type==long.class){
             return TLVTypeUtil.decodeVarLong(bytes);
         }else if (String.class == type){
