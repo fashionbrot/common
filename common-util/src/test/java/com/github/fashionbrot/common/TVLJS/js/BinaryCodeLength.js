@@ -12,6 +12,7 @@ const BinaryCodeLength = {
 
 // 获取长度
 function getLengthFromBinaryCode(binaryCode) {
+    binaryCode = binaryCode.substring(5,8);
     for (const key in BinaryCodeLength) {
         if (BinaryCodeLength[key].binaryCode === binaryCode) {
             return BinaryCodeLength[key].length;
@@ -31,5 +32,5 @@ function getBinaryCodeFromLength(length) {
 }
 
 // 测试
-console.log(getLengthFromBinaryCode("010")); // 输出: 3
-console.log(getBinaryCodeFromLength(5)); // 输出: 100
+// console.log(getLengthFromBinaryCode("010")); // 输出: 3
+// console.log(getBinaryCodeFromLength(5)); // 输出: 100

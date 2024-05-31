@@ -20,6 +20,7 @@ const BinaryType = {
 
 // 从二进制代码获取类型
 function getTypeFromBinaryCode(binaryCode) {
+    binaryCode = binaryCode.substring(0,5);
     for (const key in BinaryType) {
         if (BinaryType[key].binaryCode === binaryCode) {
             return BinaryType[key].type;
@@ -39,5 +40,5 @@ function getBinaryCodeFromType(type) {
 }
 
 // 测试
-console.log(getTypeFromBinaryCode("01001")); // 输出: Date
-console.log(getBinaryCodeFromType("String")); // 输出: 01000
+// console.log(getTypeFromBinaryCode("01001")); // 输出: Date
+// console.log(getBinaryCodeFromType("String")); // 输出: 01000

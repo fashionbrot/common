@@ -39,8 +39,8 @@ class ByteArrayReader {
 }
 
 // 测试
-const byteArray = new ByteArrayReader([1, 2, 3, 4, 5]);
-console.log(byteArray.readFrom(2)); // 输出: 3
-console.log(byteArray.readFromTo(1, 4)); // 输出: [2, 3, 4]
-console.log(byteArray.getLastReadIndex()); // 输出: 4
-console.log(byteArray.isReadComplete()); // 输出: false
+// const byteArray = new ByteArrayReader([1, 2, 3, 4, 5]);
+// console.log(byteArray.readFrom(2)); // 输出: 3
+// console.log(byteArray.readFromTo(1, 4)); // 输出: [2, 3, 4]
+// console.log(byteArray.getLastReadIndex()); // 输出: 4
+// console.log(byteArray.isReadComplete()); // 输出: false

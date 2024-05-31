@@ -25,6 +25,6 @@ function decodeVarInteger(data) {
 }
 
 // 测试
-const encoded = encodeVarInteger(300);
-console.log(encoded); // 输出: [172, 2]
-console.log(decodeVarInteger(encoded)); // 输出: 300
+// const encoded = encodeVarInteger(300);
+// console.log(encoded); // 输出: [172, 2]
+// console.log(decodeVarInteger(encoded)); // 输出: 300
