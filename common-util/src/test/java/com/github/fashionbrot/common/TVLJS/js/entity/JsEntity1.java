@@ -5,6 +5,21 @@ import lombok.Data;
 @Data
 public class JsEntity1 {
 
-    private Integer abc;
+    private short shortMin;
+    private short shortMax;
+    private Short shortNull;
+
+    private int intMin;
+    private int intMax;
+    private Integer intNull;
+
+
+    private long longMin;
+    private long longMax;
+    private Long longNull;
+
+    private float floatMin;
+    private float floatMax;
+    private Float floatNull;
 
 }

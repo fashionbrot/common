@@ -15,6 +15,10 @@ function deserialize(object,buffer){
     let objectType = determineType(object);
     if ('object' == objectType){
         const keys = Object.keys(object).sort();
+        for (const key of keys) {
+            const value = object[key];
+            // 使用 value
+        }
         keys.flatMap(key => {
             let readIndex = reader.getLastReadIndex();
             let TAG = reader.readFrom(readIndex);

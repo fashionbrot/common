@@ -3,24 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script type="text/javascript" src="BinaryCodeLength.js"></script>
-    <script type="text/javascript" src="BinaryType.js"></script>
-    <script type="text/javascript" src="ByteArrayReader.js"></script>
-    <script type="text/javascript" src="TypeUtil.js"></script>
-    <script type="text/javascript" src="TypeHandleFactory.js"></script>
-    <script type="text/javascript" src="TLV.js"></script>
+    <script type="text/javascript" src="TLVBuffer.js"></script>
+
 </head>
 <body>
 
 </body>
 <script type="text/javascript">
 
-    const JsEntity1 = {
-        abc: 0
-    };
+    function test(){
+        const JsEntity = {
+            shortMin: 0,
+            shortMax: 0,
+            shortNull: null,
+            intMin: 0,
+            intMax: 0,
+            intNull: null,
+            longMin: BigInt(0),
+            longMax: BigInt(0),
+            longNull: null,
+            floatMin: 0.0,
+            floatMax: 0.0,
+            floatNull: null
+        };
 
-    console.log(deserialize(JsEntity1,[32, 1, 123]));
+        let buffer = [40, 5, -2, -56, -125, -78, 4, 40, 5, -88, -29, -48, -70, 12, 0, 0, 32, 5, -1, -1, -1, -1, 7, 32, 5, -128, -128, -128, -128, 8, 0, 0, 48, 9, -1, -1, -1, -1, -1, -1, -1, -1, 127, 48, 10, -128, -128, -128, -128, -128, -128, -128, -128, -128, 1, 0, 0, 24, 3, -1, -1, 1, 24, 5, -128, -128, -2, -1, 15, 0, 0];
+        let tlv = new TLVBuffer();
+        console.log(tlv.deserialize(JsEntity,buffer));
+    }
 
-
+    function longTest(){
+        let buffer = [48, 9, -1, -1, -1, -1, -1, -1, -1, -1, 127, 48, 10, -128, -128, -128, -128, -128, -128, -128, -128, -128, 1];
+        const LongTest={
+            min:0,
+            max:0,
+        }
+        let tlv = new TLVBuffer();
+        var object = tlv.deserialize(LongTest,buffer);
+        console.table(object);
+        console.log(object.min.toString());
+        console.log(object.max.toString());
+    }
+    test();
 </script>
 </html>
