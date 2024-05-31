@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class IntegerTest {
 
@@ -39,6 +41,17 @@ public class IntegerTest {
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
+    }
+
+    @Test
+    public void test3(){
+        Integer abc = 12;
+        byte[] bytes = TLVBufferUtil.serializeNew(abc);
+        System.out.println(Arrays.toString(bytes));
+
+        Integer deserialized = TLVBufferUtil.deserializeNew(Integer.class, bytes);
+        System.out.println(deserialized);
+        Assert.assertEquals(abc,deserialized);
     }
 
 }
