@@ -46,10 +46,10 @@ public class IntegerTest {
     @Test
     public void test3(){
         Integer abc = 12;
-        byte[] bytes = TLVBufferUtil.serializeNew(abc);
+        byte[] bytes = TLVBufferUtil.serialize(abc);
         System.out.println(Arrays.toString(bytes));
 
-        Integer deserialized = TLVBufferUtil.deserializeNew(Integer.class, bytes);
+        Integer deserialized = TLVBufferUtil.deserialize(Integer.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(abc,deserialized);
     }
