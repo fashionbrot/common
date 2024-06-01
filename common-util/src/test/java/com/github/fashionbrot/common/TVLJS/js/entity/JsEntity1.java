@@ -22,4 +22,11 @@ public class JsEntity1 {
     private float floatMax;
     private Float floatNull;
 
+    private double doubleMin;
+    private double doubleMax;
+    private Double doubleNull;
+
+    private boolean booleanTrue;
+    private boolean booleanFalse;
+    private Boolean booleanNull;
 }

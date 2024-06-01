@@ -140,22 +140,24 @@ public class TLVBufferUtil {
                 Class<?> fieldType = field.getType();
 
                 Object fieldValue = MethodUtil.getFieldValue(field, input);
-                if (fieldValue==null){
-                    byteList.add(TLVTypeUtil.encodeVarInteger(0));
-                    byteList.add(new byte[]{0x00});
+
+                byte[] valueBytes ;
+                if (fieldValue!=null){
+                    valueBytes = encodeFieldValue(field,fieldValue);
                 }else{
-                    byte[] valueBytes = encodeFieldValue(field,fieldValue);
-
-                    byte tag = generateTag(fieldType, valueBytes);
-                    //第一个是 valueType + valueByteLengthLength
-                    byteList.add(new byte[]{tag});
-
-                    byte[] valueByteLength = TLVTypeUtil.encodeVarInteger(valueBytes.length);
-                    //第二个是 valueByteLength
-                    byteList.add(valueByteLength);
-                    //第三个是value byte
-                    byteList.add(valueBytes);
+                    valueBytes = new byte[]{};
                 }
+
+                byte tag = generateTag(fieldType, valueBytes);
+                //第一个是 valueType + valueByteLengthLength
+                byteList.add(new byte[]{tag});
+
+                byte[] valueByteLength = TLVTypeUtil.encodeVarInteger(valueBytes.length);
+                //第二个是 valueByteLength
+                byteList.add(valueByteLength);
+                //第三个是value byte
+                byteList.add(valueBytes);
+
             }
         }
 
@@ -190,7 +192,7 @@ public class TLVBufferUtil {
 
     public static byte generateTag(Class classType,byte[] valueBytes){
         BinaryType binaryType = BinaryType.getBinaryType(classType);
-        String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(TLVTypeUtil.encodeVarInteger(valueBytes.length).length);
+        String valueByteLengthBinary = BinaryCodeLength.getBinaryCode(TLVTypeUtil.encodeVarInteger(ObjectUtil.isNotEmpty(valueBytes)?valueBytes.length:0).length);
         return ByteUtil.binaryStringToByte(binaryType.getBinaryCode() + valueByteLengthBinary);
     }
 

@@ -66,7 +66,6 @@
                     let readIndex = reader.getLastReadIndex();
                     let TAG = reader.readFrom(readIndex);
                     let TAGBit = Util.byteToBits(TAG);
-                    console.log(TAGBit);
 
                     let TAGType = BinaryTypeUtil.getTypeFromBinaryCode(TAGBit);
                     let TAGValueLengthLength =BinaryCodeLengthUtil.getLengthFromBinaryCode(TAGBit);
@@ -161,14 +160,20 @@
                 return result;
             },
             encodeVarFloat:function (value) {
-                let intValue = Float32Array.from([value])[0];
+                let intValue = Util.floatToIntBits(value);
                 return this.encodeVarInteger(intValue);
             },decodeVarFloat:function (data) {
                 let intValue = this.decodeVarInteger(data);
-                let floatArray = new Float32Array([intValue]); // Convert 32-bit integer to float
-                return floatArray[0];
+                return Util.intBitsToFloat(intValue);
+            },
+            decodeVarDouble:function (buffer){
+                let longBits =this.decodeVarLong(buffer);
+                return Util.longBitsToDouble(longBits);
+            },
+            encodeVarDouble:function (value){
+                let longBits = Util.doubleToLongBits(value);
+                return this.encodeVarLong(longBits);
             }
-
         };
 
 
@@ -226,22 +231,67 @@
                 // 将字节转换为二进制字符串，并补齐到8位
                 let bits = byte.toString(2).padStart(8, '0');
                 return bits;
-            },
-            floatToIntBits:function (value) {
-                let floatArray = new Float32Array(1);
-                floatArray[0] = value;
-                let intArray = new Int32Array(floatArray.buffer);
-                return intArray[0];
-            },
-            // 将 32 位整数转换为浮点数
-            intBitsToFloat:function (value) {
-                let intArray = new Int32Array(1);
-                intArray[0] = value;
-                let floatArray = new Float32Array(intArray.buffer);
-                return floatArray[0];
-            }
+            },floatToIntBits:function (value) {
+                const EXP_BIT_MASK = 0x7F800000;   // 8 位指数部分的掩码
+                const SIGNIF_BIT_MASK = 0x007FFFFF; // 23 位有效数部分的掩码
+                let result = Util.floatToRawIntBits(value);
+                // 检查是否为 NaN（指数部分全为1且有效数部分不为0）
+                if ((result & EXP_BIT_MASK) === EXP_BIT_MASK && (result & SIGNIF_BIT_MASK) !== 0) {
+                    result = 0x7FC00000; // Java 使用的 NaN 表示法
+                }
+                return result;
+            },floatToRawIntBits:function(value){
+                // 创建一个包含 4 个字节（32 位）的 ArrayBuffer
+                let buffer = new ArrayBuffer(4);
+                // 创建一个 DataView 来操作 ArrayBuffer
+                let view = new DataView(buffer);
+                // 将浮点数写入 DataView 中（使用大端字节序）
+                view.setFloat32(0, value, false);
+                // 从 DataView 中读取整数
+                return view.getUint32(0, false);
 
-    };
+            },intBitsToFloat:function (bits) {
+                // 创建一个包含 4 个字节（32 位）的 ArrayBuffer
+                let buffer = new ArrayBuffer(4);
+                // 创建一个 DataView 来操作 ArrayBuffer
+                let view = new DataView(buffer);
+                // 将整数写入 DataView 中（使用大端字节序）
+                view.setUint32(0, bits, false);
+                // 从 DataView 中读取浮点数
+                return view.getFloat32(0, false);
+            },
+            doubleToRawLongBits:function (value) {
+                // 创建一个包含 8 个字节（64 位）的 ArrayBuffer
+                let buffer = new ArrayBuffer(8);
+                // 创建一个 DataView 来操作 ArrayBuffer
+                let view = new DataView(buffer);
+                // 将双精度浮点数写入 DataView 中（使用大端字节序）
+                view.setFloat64(0, value, false);
+                // 从 DataView 中读取 64 位无符号整数
+                return view.getBigUint64(0, false);
+            },
+            doubleToLongBits:function (value) {
+                const EXP_BIT_MASK = 0x7FF0000000000000n;   // 11 位指数部分的掩码
+                const SIGNIF_BIT_MASK = 0x000FFFFFFFFFFFFFn; // 52 位有效数部分的掩码
+                let result = this.doubleToRawLongBits(value);
+                // 检查是否为 NaN（指数部分全为1且有效数部分不为0）
+                if ((result & EXP_BIT_MASK) === EXP_BIT_MASK && (result & SIGNIF_BIT_MASK) !== 0n) {
+                    result = 0x7FF8000000000000n; // Java 使用的 NaN 表示法
+                }
+                return result;
+            },
+            longBitsToDouble:function (bits) {
+                // 创建一个包含 8 个字节（64 位）的 ArrayBuffer
+                let buffer = new ArrayBuffer(8);
+                // 创建一个 DataView 来操作 ArrayBuffer
+                let view = new DataView(buffer);
+                // 将 64 位整数写入 DataView 中（使用大端字节序）
+                view.setBigUint64(0, bits, false);
+                // 从 DataView 中读取双精度浮点数
+                return view.getFloat64(0, false);
+            },
+
+        };
 
 
         class TypeHandle {
@@ -286,6 +336,26 @@
             }
         }
 
+        class DoubleTypeHandle extends TypeHandle {
+            toByte(value) {
+                return TypeUtil.encodeVarDouble(value);
+            }
+            toJava(bytes) {
+                return TypeUtil.decodeVarDouble(bytes);
+            }
+        }
+        class BooleanTypeHandle extends TypeHandle {
+            toByte(value) {
+                if (value){
+                    return new Uint8Array([1]);
+                }
+                return new Uint8Array([0]);
+            }
+            toJava(bytes) {
+                return (bytes && bytes[0] === 1);
+            }
+        }
+
         class TypeHandleFactory {
             static TYPE_HANDLE_MAP = new Map();
 
@@ -294,6 +364,8 @@
                 TypeHandleFactory.addTypeHandle(new ShortTypeHandle(),['short']);
                 TypeHandleFactory.addTypeHandle(new LongTypeHandle(),['long']);
                 TypeHandleFactory.addTypeHandle(new FloatTypeHandle(),['float']);
+                TypeHandleFactory.addTypeHandle(new DoubleTypeHandle(),['double']);
+                TypeHandleFactory.addTypeHandle(new BooleanTypeHandle(), ['boolean'])
                 // Add other type handles similarly if needed.
             }
 

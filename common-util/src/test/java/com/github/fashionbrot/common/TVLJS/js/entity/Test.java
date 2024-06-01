@@ -26,6 +26,14 @@ public class Test {
         entity.setFloatMin(-54321.6543f);
         entity.setFloatNull(null);
 
+        entity.setDoubleMax(Double.MAX_VALUE);
+        entity.setDoubleMin(Double.MIN_VALUE);
+        entity.setDoubleNull(null);
+
+        entity.setBooleanTrue(true);
+        entity.setBooleanFalse(false);
+        entity.setBooleanNull(null);
+
         System.out.println(JSON.toJSONString(entity));
 
         byte[] serialize = TLVBufferUtil.serialize(entity);

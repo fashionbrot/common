@@ -11,6 +11,7 @@
 </body>
 <script type="text/javascript">
 
+    test();
     function test(){
         const JsEntity = {
             shortMin: 0,
@@ -19,17 +20,24 @@
             intMin: 0,
             intMax: 0,
             intNull: null,
-            longMin: BigInt(0),
-            longMax: BigInt(0),
+            longMin: 0,
+            longMax: 0,
             longNull: null,
             floatMin: 0.0,
             floatMax: 0.0,
-            floatNull: null
+            floatNull: null,
+            doubleMin:0.0,
+            doubleMax:0.0,
+            doubleNull:null,
+            booleanTrue:false,
+            booleanFalse:false,
+            booleanNull:null
         };
 
-        let buffer = [40, 5, -2, -56, -125, -78, 4, 40, 5, -88, -29, -48, -70, 12, 0, 0, 32, 5, -1, -1, -1, -1, 7, 32, 5, -128, -128, -128, -128, 8, 0, 0, 48, 9, -1, -1, -1, -1, -1, -1, -1, -1, 127, 48, 10, -128, -128, -128, -128, -128, -128, -128, -128, -128, 1, 0, 0, 24, 3, -1, -1, 1, 24, 5, -128, -128, -2, -1, 15, 0, 0];
+        let buffer = new Uint8Array([0, 1, 0, 0, 0, 0, 1, 1, 56, 9, -1, -1, -1, -1, -1, -1, -1, -9, 127, 56, 1, 1, 56, 0, 40, 5, -2, -56, -125, -78, 4, 40, 5, -88, -29, -48, -70, 12, 40, 0, 32, 5, -1, -1, -1, -1, 7, 32, 5, -128, -128, -128, -128, 8, 32, 0, 48, 9, -1, -1, -1, -1, -1, -1, -1, -1, 127, 48, 10, -128, -128, -128, -128, -128, -128, -128, -128, -128, 1, 48, 0, 24, 3, -1, -1, 1, 24, 5, -128, -128, -2, -1, 15, 24, 0]);
+
         let tlv = new TLVBuffer();
-        console.log(tlv.deserialize(JsEntity,buffer));
+        console.table(tlv.deserialize(JsEntity,buffer));
     }
 
     function longTest(){
@@ -44,6 +52,28 @@
         console.log(object.min.toString());
         console.log(object.max.toString());
     }
-    test();
+    // test();
+
+
+
+
+    floatTest();
+    function floatTest(){
+        // let  buffer = new Uint8Array([40, 5, -1, -1, -1, -5, 7, 40, 1, 1]);
+        let buffer = new Uint8Array([40, 5, -113, -64, -60, -65, 4, 40, 0]);
+        const FloatTest={
+            max:0,
+            min:0,
+        }
+        let tlv = new TLVBuffer();
+        var object = tlv.deserialize(FloatTest,buffer);
+        console.table(object);
+        console.log(object.max.toFixed(2) == 123456.12)
+    }
+
+
+
+
+
 </script>
 </html>
