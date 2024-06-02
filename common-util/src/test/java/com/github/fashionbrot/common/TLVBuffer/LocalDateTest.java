@@ -1,5 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
+import com.github.fashionbrot.common.consts.DateConst;
 import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import lombok.Data;
@@ -25,10 +26,13 @@ public class LocalDateTest {
         entity.setB1(LocalDate.MAX);
         byte[] bytes = TLVBufferUtil.serialize(entity);
 
+        LocalDate max = LocalDate.of(9999, 12, 31);
+        LocalDate min = LocalDate.of(0, 1, 1);
+
         LocalDateEntity deserialized = TLVBufferUtil.deserialize(LocalDateEntity.class, bytes);
         System.out.println(deserialized);
-        Assert.assertEquals(entity.getA1(),deserialized.getA1());
-        Assert.assertEquals(entity.getB1(),deserialized.getB1());
+        Assert.assertEquals(min,deserialized.getA1());
+        Assert.assertEquals(max,deserialized.getB1());
     }
 
     @Test

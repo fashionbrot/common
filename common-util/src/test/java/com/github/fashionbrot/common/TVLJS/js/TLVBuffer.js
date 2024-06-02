@@ -52,6 +52,8 @@
             let objectType = Util.determineType(object);
             if ('object' == objectType){
                 return deserialize.deserializeEntity(object,buffer);
+            }else if ('array' == objectType){
+                return null;
             }
 
         };
@@ -60,8 +62,16 @@
             deserializeEntity:function (object,buffer){
                 let reader = new ByteArrayReader(buffer);
                 const entity = Object.keys(object).sort();
-                let returnObject = new Object();
+
+                let instance = Object.create(object);
                 for (const key of entity) {
+
+                    let fieldType = Util.determineType(object[key])
+                    if ('object' === fieldType){
+
+                    }else if ('array' === fieldType){
+
+                    }
 
                     let readIndex = reader.getLastReadIndex();
                     let TAG = reader.readFrom(readIndex);
@@ -75,12 +85,16 @@
 
                     let valueBuffer = reader.readFromTo(readIndex +1+ TAGValueLengthLength, readIndex +1 + TAGValueLengthLength+ valueByteLength)
 
-                    let value = TypeHandleFactory.toJava(TAGType,valueBuffer);
+                    let value = TypeHandleFactory.toValue(TAGType,valueBuffer);
 
-                    returnObject[key] = value;
+                    instance[key] = value;
                     console.log("TAGType:"+TAGType+" TAGValueLengthLength:"+TAGValueLengthLength+" valueByteLength:"+valueByteLength +" value:"+value)
                 }
-                return returnObject;
+                return instance;
+            },
+            deserializeArray:function (array,buffer){
+
+                return null;
             }
         };
 
@@ -173,7 +187,64 @@
             encodeVarDouble:function (value){
                 let longBits = Util.doubleToLongBits(value);
                 return this.encodeVarLong(longBits);
+            },
+            encodeVarChar:function (value) {
+                let output = [];
+                let intValue = value.charCodeAt(0); // 将char转换为int以便处理
+                while ((intValue & 0xFFFFFF80) !== 0) {
+                    output.push((intValue & 0x7F) | 0x80);
+                    intValue >>>= 7;
+                }
+                output.push(intValue & 0x7F);
+                return Uint8Array.from(output);
+            },
+            decodeVarChar:function(data) {
+                let result = 0;
+                let shift = 0;
+                let index = 0;
+                let b;
+                do {
+                    if (index >= data.length) {
+                        throw new Error("decodeVarChar decoding error: Insufficient data");
+                    }
+                    b = data[index++];
+                    result |= (b & 0x7F) << shift;
+                    shift += 7;
+                } while ((b & 0x80) !== 0);
+                return String.fromCharCode(result);
+            },
+            decodeVarString:function (byteArray) {
+                if (byteArray){
+                    if (byteArray.length ===1 && byteArray[0]==0x00){
+                        return "";
+                    }
+                    const decoder = new TextDecoder('UTF-8');
+                    return decoder.decode(new Uint8Array(byteArray));
+                }
+                return null;
+            },
+            encodeVarString:function (str) {
+                if (str) {
+                    const encoder = new TextEncoder('UTF-8');
+                    return new Uint8Array(encoder.encode(str));
+                }
+                return new Uint8Array([]);
+            },
+            encodeVarDate:function (date){
+                if (date){
+                    let time = date.getTime();
+                    return this.decodeVarLong(time);
+                }
+                return new Uint8Array([]);
+            },
+            decodeVarDate:function (buffer){
+                if (buffer){
+                    let time = this.decodeVarLong(buffer);
+                    return new Date(Number(time));
+                }
+                return null;
             }
+
         };
 
 
@@ -299,15 +370,15 @@
                 throw new Error("Method 'toByte()' must be implemented.");
             }
 
-            toJava(bytes) {
-                throw new Error("Method 'toJava()' must be implemented.");
+            toValue(bytes) {
+                throw new Error("Method 'toValue()' must be implemented.");
             }
         }
         class IntegerTypeHandle extends TypeHandle {
             toByte(value) {
                 return TypeUtil.encodeVarInteger(value);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return TypeUtil.decodeVarInteger(bytes);
             }
         }
@@ -315,7 +386,7 @@
             toByte(value) {
                 return TypeUtil.encodeVarShort(value);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return TypeUtil.decodeVarShort(bytes);
             }
         }
@@ -323,7 +394,7 @@
             toByte(value) {
                 return TypeUtil.encodeVarLong(value);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return TypeUtil.decodeVarLong(bytes);
             }
         }
@@ -331,7 +402,7 @@
             toByte(value) {
                 return TypeUtil.encodeVarFloat(value);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return TypeUtil.decodeVarFloat(bytes);
             }
         }
@@ -340,7 +411,7 @@
             toByte(value) {
                 return TypeUtil.encodeVarDouble(value);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return TypeUtil.decodeVarDouble(bytes);
             }
         }
@@ -351,10 +422,53 @@
                 }
                 return new Uint8Array([0]);
             }
-            toJava(bytes) {
+            toValue(bytes) {
                 return (bytes && bytes[0] === 1);
             }
         }
+
+        class CharTypeHandle extends TypeHandle {
+            toByte(value) {
+                return TypeUtil.encodeVarChar(value);
+            }
+            toValue(bytes) {
+                return TypeUtil.decodeVarChar(bytes);
+            }
+        }
+        class ByteTypeHandle extends TypeHandle {
+            toByte(value) {
+                if (typeof value !== 'number' || !Number.isInteger(value) || value < -128 || value > 127) {
+                    throw new Error("Value must be an integer between -128 and 127.");
+                }
+                let int8Array = new Int8Array(1);
+                int8Array[0] = value;
+                return int8Array;
+            }
+            toValue(bytes) {
+                if (bytes && bytes.length > 0) {
+                    let int8Array = new Int8Array(bytes);
+                    return int8Array[0];
+                }
+                return null;
+            }
+        }
+        class StringTypeHandle extends TypeHandle {
+            toByte(value) {
+                return TypeUtil.encodeVarString(value);
+            }
+            toValue(bytes) {
+                return TypeUtil.decodeVarString(bytes);
+            }
+        }
+        class DateTypeHandle extends TypeHandle {
+            toByte(value) {
+                return TypeUtil.encodeVarDate(value);
+            }
+            toValue(bytes) {
+                return TypeUtil.decodeVarDate(bytes);
+            }
+        }
+
 
         class TypeHandleFactory {
             static TYPE_HANDLE_MAP = new Map();
@@ -365,7 +479,12 @@
                 TypeHandleFactory.addTypeHandle(new LongTypeHandle(),['long']);
                 TypeHandleFactory.addTypeHandle(new FloatTypeHandle(),['float']);
                 TypeHandleFactory.addTypeHandle(new DoubleTypeHandle(),['double']);
-                TypeHandleFactory.addTypeHandle(new BooleanTypeHandle(), ['boolean'])
+                TypeHandleFactory.addTypeHandle(new BooleanTypeHandle(), ['boolean']);
+                TypeHandleFactory.addTypeHandle(new CharTypeHandle(),['char']);
+                TypeHandleFactory.addTypeHandle(new ByteTypeHandle(), ['byte']);
+                TypeHandleFactory.addTypeHandle(new StringTypeHandle(),['BigDecimal','String']);
+                TypeHandleFactory.addTypeHandle(new DateTypeHandle(),['Date','LocalTime','LocalDate','LocalDateTime']);
+
                 // Add other type handles similarly if needed.
             }
 
@@ -387,12 +506,12 @@
                 throw new Error("Unsupported type: " + type);
             }
 
-            static toJava(type, bytes) {
+            static toValue(type, bytes) {
                 if (!bytes || bytes.length === 0) {
                     return TypeHandleFactory.getDefaultForType(type);
                 }
                 const typeHandle = TypeHandleFactory.getTypeHandle(type);
-                return typeHandle.toJava(bytes);
+                return typeHandle.toValue(bytes);
             }
 
             static toByte(type, value) {

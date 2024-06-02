@@ -18,9 +18,7 @@ public class TLVBufferUtil {
     }
 
     public static <T> T deserialize(Class<T> clazz,ByteArrayReader reader){
-        if (clazz== Void.class){
-            return null;
-        }else if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)) {
+        if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)) {
             byte[] valueBytes = getNextBytes(reader);
             BinaryType lastBinaryType = reader.getLastBinaryType();
 
@@ -115,55 +113,43 @@ public class TLVBufferUtil {
         if (input==null){
             return null;
         }
-        Class<?> clazz = input.getClass();
-        if (clazz == Void.class){
-            return null;
-        }
-
         List<byte[]> byteList=new ArrayList<>();
+        Class<?> clazz = input.getClass();
         if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
-
-            byte[] valueBytes = TypeHandleFactory.toByte(clazz,input);
-            byte tag = generateTag(clazz, valueBytes);
-            byteList.add(new byte[]{tag});
-            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
-            byteList.add(valueBytes);
-
+            addPrimitiveOrObject(byteList,clazz,input);
         }else if (List.class.isAssignableFrom(clazz)){
             byteList.add(encodeListValue(clazz, input));
         }else if (clazz.isArray()){
             byteList.add(encodeArrayValue(clazz,input));
         }else{
-            List<Field> fieldList = getSortedClassField(clazz);
-            for (Field field : fieldList) {
-
-                Class<?> fieldType = field.getType();
-
-                Object fieldValue = MethodUtil.getFieldValue(field, input);
-
-                byte[] valueBytes ;
-                if (fieldValue!=null){
-                    valueBytes = encodeFieldValue(field,fieldValue);
-                }else{
-                    valueBytes = new byte[]{};
-                }
-
-                byte tag = generateTag(fieldType, valueBytes);
-                //第一个是 valueType + valueByteLengthLength
-                byteList.add(new byte[]{tag});
-
-                byte[] valueByteLength = TLVTypeUtil.encodeVarInteger(valueBytes.length);
-                //第二个是 valueByteLength
-                byteList.add(valueByteLength);
-                //第三个是value byte
-                byteList.add(valueBytes);
-
-            }
+            addFields(byteList,clazz,input);
         }
-
         return mergeByteArrayList(byteList);
     }
 
+
+    private static void addPrimitiveOrObject(List<byte[]> byteList, Class<?> clazz, Object input) {
+        byte[] valueBytes = TypeHandleFactory.toByte(clazz, input);
+        byte tag = generateTag(clazz, valueBytes);
+        byteList.add(new byte[]{tag});
+        byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+        byteList.add(valueBytes);
+    }
+
+    private static void addFields(List<byte[]> byteList, Class<?> clazz, Object input) {
+        List<Field> fieldList = getSortedClassField(clazz);
+        for (Field field : fieldList) {
+            Class<?> fieldType = field.getType();
+            Object fieldValue = MethodUtil.getFieldValue(field, input);
+
+            byte[] valueBytes = (fieldValue != null) ? encodeFieldValue(field, fieldValue) : new byte[]{};
+
+            byte tag = generateTag(fieldType, valueBytes);
+            byteList.add(new byte[]{tag});
+            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+            byteList.add(valueBytes);
+        }
+    }
 
     private static byte[] encodeFieldValue(Field field,Object value) {
         Class<?> fieldType = field.getType();

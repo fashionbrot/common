@@ -1,7 +1,10 @@
 package com.github.fashionbrot.common.tlv;
 
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
+import com.github.fashionbrot.common.date.LocalDateUtil;
+import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -143,19 +146,16 @@ public class TLVTypeUtil {
         return new Date(longValue); // 使用时间戳创建 Date 对象
     }
 
-    public static byte[] encodeVarLocalTime(LocalTime time) {
-        long nanoOfDay = time.toNanoOfDay(); // 将 LocalTime 转换为纳秒数
-        return encodeVarLong(nanoOfDay); // 调用通用的长整型编码方法
+
+
+    public static byte[] encodeVarLocalDate(LocalDate localDate) {
+        Date date = LocalDateUtil.toDate(localDate);
+        return encodeVarLong(date.getTime());
     }
 
-    public static byte[] encodeVarLocalDate(LocalDate date) {
-        long daysSinceEpoch = date.toEpochDay(); // 将 LocalDate 转换为自公元前1年1月1日以来的天数
-        return encodeVarLong(daysSinceEpoch); // 调用通用的长整型编码方法
-    }
-
-    public static LocalDate decodeVarLocalDate(byte[] data)  {
-        long daysSinceEpoch = decodeVarLong(data); // 调用通用的长整型解码方法
-        return LocalDate.ofEpochDay(daysSinceEpoch); // 使用天数创建 LocalDate 对象
+    public static LocalDate decodeVarLocalDate(byte[] buffer)  {
+        long varLong = decodeVarLong(buffer);
+        return LocalDateUtil.toLocalDate(new Date(varLong));
     }
 
     public static byte[] encodeVarLocalDateTime(LocalDateTime datetime) {
@@ -174,58 +174,35 @@ public class TLVTypeUtil {
         return LocalDateTimeUtil.toLocalDateTime(date);
     }
 
+    public static byte[] encodeVarLocalTime(LocalTime localTime) {
+        if (localTime==null){
+            return null;
+        }
+        Date date = LocalTimeUtil.toDate(localTime);
+        return encodeVarLong(date.getTime());
+    }
+
     public static LocalTime decodeVarLocalTime(byte[] data) {
-        long nanoOfDay = decodeVarLong(data); // 调用通用的长整型解码方法
-        return LocalTime.ofNanoOfDay(nanoOfDay); // 使用纳秒数创建 LocalTime 对象
+        long varLong = decodeVarLong(data);
+        return LocalTimeUtil.toLocalTime(new Date(varLong));
     }
 
     public static byte[] encodeVarBigDecimal(BigDecimal bd) {
-        String strValue = bd.toString(); // 将 BigDecimal 转换为字符串
-        return strValue.getBytes(); // 将字符串转换为字节数组
+        if (bd==null){
+            return new byte[]{};
+        }
+        String value = BigDecimalUtil.toString(bd);
+        return value.getBytes(StandardCharsets.UTF_8);
     }
 
     public static BigDecimal decodeVarBigDecimal(byte[] data) {
-        String strValue = new String(data); // 将字节数组转换为字符串
-        return BigDecimalUtil.format(strValue); // 使用字符串创建 BigDecimal 对象
-    }
-
-    public static byte[] compressString(String str) throws IOException {
-        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        byte[] lengthBytes = encodeVarInteger(bytes.length);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(lengthBytes);
-        outputStream.write(bytes);
-
-        return outputStream.toByteArray();
-    }
-
-    public static String decompressString(byte[] data) throws IOException {
-        int length = decodeVarInteger(data);
-        byte[] stringBytes = new byte[length];
-        System.arraycopy(data, VarintLength(length), stringBytes, 0, length);
-        return new String(stringBytes, StandardCharsets.UTF_8);
-    }
-
-    // 计算 Varint 编码长度所需的字节数
-    public static int VarintLength(int value) {
-        int length = 0;
-        do {
-            value >>>= 7;
-            length++;
-        } while (value != 0);
-        return length;
-    }
-
-
-    // 将字节数组转换为十六进制字符串（辅助方法）
-    public static String byteArrayToHexString(byte[] array) {
-        StringBuilder builder = new StringBuilder();
-        for (byte b : array) {
-            builder.append(String.format("%02X ", b));
+        if (ObjectUtil.isEmpty(data)){
+            return null;
         }
-        return builder.toString();
+        String strValue = new String(data,StandardCharsets.UTF_8);
+        return BigDecimalUtil.format(strValue);
     }
+
 
     public static String maxString(){
         int maxLength = 65535; // 近似最大长度，减去一些以避免OutOfMemoryError
@@ -237,13 +214,4 @@ public class TLVTypeUtil {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        char originalChar = Character.MIN_VALUE; // 测试 Character.MAX_VALUE
-        byte[] encodedChar = encodeVarChar(originalChar);
-        char decodedChar = decodeVarChar(encodedChar);
-
-        System.out.println("Original Char: " + (int)originalChar);
-        System.out.println("Encoded Bytes: " + Arrays.toString(encodedChar));
-        System.out.println("Decoded Char: " + (int)decodedChar);
-    }
 }

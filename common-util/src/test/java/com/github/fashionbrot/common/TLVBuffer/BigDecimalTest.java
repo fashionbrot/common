@@ -29,6 +29,7 @@ public class BigDecimalTest {
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
+        System.out.println(BigDecimalUtil.toString(deserialized.getB1()));
     }
 
     @Test

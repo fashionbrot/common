@@ -3,10 +3,7 @@ package com.github.fashionbrot.common.date;
 import com.github.fashionbrot.common.consts.DateConst;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
@@ -112,6 +109,13 @@ public class LocalTimeUtil {
      * @return 转换后的 Date 对象，转换失败或输入为空时返回 null
      */
     public static Date toDate(LocalTime localTime) {
+        if (localTime!=null && localTime.getNano()>999){
+            LocalTime newLocalTime = LocalTime.of(23,59,59,0);
+            return toDate(newLocalTime,DateConst.DEFAULT_ZONE_ID);
+        }else if (localTime!=null && localTime.getNano()<0){
+            LocalTime newLocalTime = LocalTime.of(0,0,0,0);
+            return toDate(newLocalTime,DateConst.DEFAULT_ZONE_ID);
+        }
         return toDate(localTime,DateConst.DEFAULT_ZONE_ID);
     }
 

@@ -723,6 +723,18 @@ public class BigDecimalUtil {
     }
 
 
+    /**
+     * 将 BigDecimal 转换为其字符串表示形式。
+     *
+     * 此方法使用 BigDecimalUtil 格式化给定的 BigDecimal，然后返回其
+     * 不带科学计数法的普通字符串表示形式。
+     *
+     * @param bigDecimal 要转换为字符串的 BigDecimal
+     * @return BigDecimal 的普通字符串表示形式
+     */
+    public static String toString(BigDecimal bigDecimal){
+        return BigDecimalUtil.format(bigDecimal).toPlainString();
+    }
 
 
 }
