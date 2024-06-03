@@ -88,7 +88,7 @@
                     let value = TypeHandleFactory.toValue(TAGType,valueBuffer);
 
                     instance[key] = value;
-                    console.log("TAGType:"+TAGType+" TAGValueLengthLength:"+TAGValueLengthLength+" valueByteLength:"+valueByteLength +" value:"+value)
+                    // console.log("TAGType:"+TAGType+" TAGValueLengthLength:"+TAGValueLengthLength+" valueByteLength:"+valueByteLength +" value:"+value)
                 }
                 return instance;
             },

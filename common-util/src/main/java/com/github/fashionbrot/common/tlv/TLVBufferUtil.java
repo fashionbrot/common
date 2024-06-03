@@ -12,6 +12,23 @@ public class TLVBufferUtil {
 
 
 
+    public static byte[] serialize(Object input){
+        if (input==null){
+            return null;
+        }
+        List<byte[]> byteList=new ArrayList<>();
+        Class<?> clazz = input.getClass();
+        if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
+            addPrimitiveOrObject(byteList,clazz,input);
+        }else if (List.class.isAssignableFrom(clazz)){
+            byteList.add(encodeListValue(clazz, input));
+        }else if (clazz.isArray()){
+            byteList.add(encodeArrayValue(clazz,input));
+        }else{
+            addFields(byteList,clazz,input);
+        }
+        return mergeByteArrayList(byteList);
+    }
 
     public static <T> T deserialize(Class<T> clazz,byte[] data)  {
         return deserialize(clazz,new ByteArrayReader(data));
@@ -93,10 +110,10 @@ public class TLVBufferUtil {
     public static byte[] getNextBytes(ByteArrayReader reader){
         int readIndex = reader.getLastReadIndex();
         byte firstByte = reader.readFrom(readIndex);
-        //第一位byte(前5个bit 是value数量类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
+        //第一位byte(前5个bit 是value数据类型 后3个bit 是valueByte.length 经过 varInt 压缩后的长度)
         String binaryString = ByteUtil.byteToBinaryString(firstByte);
         BinaryType valueType = BinaryType.fromBinaryCode(binaryString.substring(0, 5));
-        int valueByteLengthLength = BinaryCodeLength.getLength(binaryString.substring(5, 8));//LvBufferTypeUtil.encodeVarInteger().length;
+        int valueByteLengthLength = BinaryCodeLength.getLength(binaryString.substring(5, 8));
 
         reader.setLastBinaryType(valueType);
 
@@ -109,23 +126,6 @@ public class TLVBufferUtil {
 
 
 
-    public static byte[] serialize(Object input){
-        if (input==null){
-            return null;
-        }
-        List<byte[]> byteList=new ArrayList<>();
-        Class<?> clazz = input.getClass();
-        if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
-            addPrimitiveOrObject(byteList,clazz,input);
-        }else if (List.class.isAssignableFrom(clazz)){
-            byteList.add(encodeListValue(clazz, input));
-        }else if (clazz.isArray()){
-            byteList.add(encodeArrayValue(clazz,input));
-        }else{
-            addFields(byteList,clazz,input);
-        }
-        return mergeByteArrayList(byteList);
-    }
 
 
     private static void addPrimitiveOrObject(List<byte[]> byteList, Class<?> clazz, Object input) {
@@ -217,7 +217,14 @@ public class TLVBufferUtil {
     }
 
     public static List<Field> getNonStaticNonFinalFields(Class<?> clazz) {
-        return Arrays.stream(clazz.getDeclaredFields()).filter(m-> !isStaticOrFinal(m)).collect(Collectors.toList());
+        List<Field> fieldList = new ArrayList<>();
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            if (!isStaticOrFinal(declaredField)){
+                fieldList.add(declaredField);
+            }
+        }
+        return fieldList;
     }
 
     public static List<Field> getSuperClassField(Class clazz){
@@ -241,12 +248,12 @@ public class TLVBufferUtil {
     }
 
     public static byte[] encodeListValue(Class genericClass, Object value) {
+        if (value == null) {
+            return null;
+        }
         List<Object> objectList = (List<Object>) value;
         if (objectList != null && objectList.size() == 0) {
             return new byte[1];
-        }
-        if (objectList == null) {
-            return null;
         }
         if (ObjectUtil.isNotEmpty(objectList)) {
             List<byte[]> listByteList = new ArrayList<>();
@@ -299,14 +306,15 @@ public class TLVBufferUtil {
         if (bytes!=null && bytes.length==1 && bytes[0]==0x00){
             return Array.newInstance(genericClass, 0);
         }
-        List<Object> list=new ArrayList<>();
         if (ObjectUtil.isNotEmpty(bytes)){
+            List<Object> list=new ArrayList<>();
             ByteArrayReader reader = new ByteArrayReader(bytes);
             while (!reader.isReadComplete()){
                 list.add(deserialize(genericClass, reader));
             }
+            return list.toArray((Object[]) Array.newInstance(genericClass, list.size()));
         }
-        return list.toArray((Object[]) Array.newInstance(genericClass, list.size()));
+        return  null;
     }
 
 
