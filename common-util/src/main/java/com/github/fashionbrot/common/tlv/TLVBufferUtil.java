@@ -1,5 +1,6 @@
 package com.github.fashionbrot.common.tlv;
 
+import com.github.fashionbrot.common.tlv.annotation.TLVField;
 import com.github.fashionbrot.common.util.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -36,6 +37,9 @@ public class TLVBufferUtil {
 
     public static <T> T deserialize(Class<T> clazz,ByteArrayReader reader){
         if (JavaUtil.isObject(clazz) || JavaUtil.isPrimitive(clazz)) {
+            if (reader.isReadComplete()){
+                return null;
+            }
             byte[] valueBytes = getNextBytes(reader);
             BinaryType lastBinaryType = reader.getLastBinaryType();
 
@@ -86,6 +90,13 @@ public class TLVBufferUtil {
             return instance;
         }
         for (Field field : fieldList) {
+            if (reader.isReadComplete()){
+                break;
+            }
+            TLVField annotation = field.getAnnotation(TLVField.class);
+            if (annotation!=null && !annotation.serialize()){
+                continue;
+            }
             byte[] valueBytes = getNextBytes(reader);
             Object objectValue;
             if (ObjectUtil.isNotEmpty(valueBytes)){
@@ -139,6 +150,10 @@ public class TLVBufferUtil {
     private static void addFields(List<byte[]> byteList, Class<?> clazz, Object input) {
         List<Field> fieldList = getSortedClassField(clazz);
         for (Field field : fieldList) {
+            TLVField annotation = field.getAnnotation(TLVField.class);
+            if (annotation!=null && !annotation.serialize()){
+                continue;
+            }
             Class<?> fieldType = field.getType();
             Object fieldValue = MethodUtil.getFieldValue(field, input);
 
@@ -207,32 +222,44 @@ public class TLVBufferUtil {
     }
 
     public static List<Field> getSortedClassField(Class clazz){
-        List<Field> classFieldList = getNonStaticNonFinalFields(clazz);
-        List<Field> superClassField = getSuperClassField(clazz);
+        List<FieldModel> classFieldList = getNonStaticNonFinalFieldModels(clazz);
+        List<FieldModel> superClassField = getSuperClassField(clazz);
         if (ObjectUtil.isNotEmpty(superClassField)){
             classFieldList.addAll(superClassField);
         }
-        classFieldList.sort(Comparator.comparing(Field::getName));
-        return classFieldList;
-    }
-
-    public static List<Field> getNonStaticNonFinalFields(Class<?> clazz) {
+        Collections.sort(classFieldList,Comparator.comparing(FieldModel::getIndex).thenComparing(f -> f.getField().getName()));
         List<Field> fieldList = new ArrayList<>();
-        Field[] declaredFields = clazz.getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            if (!isStaticOrFinal(declaredField)){
-                fieldList.add(declaredField);
+        if (ObjectUtil.isNotEmpty(classFieldList)){
+            for (FieldModel fieldModel : classFieldList) {
+                fieldList.add(fieldModel.getField());
             }
         }
         return fieldList;
     }
 
-    public static List<Field> getSuperClassField(Class clazz){
+
+    public static List<FieldModel> getNonStaticNonFinalFieldModels(Class<?> clazz) {
+        List<FieldModel> fieldList = new ArrayList<>();
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            if (!isStaticOrFinal(declaredField)){
+                TLVField annotation = declaredField.getAnnotation(TLVField.class);
+                if (annotation!=null && !annotation.serialize()){
+                    continue;
+                }
+                int index = annotation != null ? annotation.index() : Integer.MAX_VALUE;
+                fieldList.add(FieldModel.builder().index(index).field(declaredField).build());
+            }
+        }
+        return fieldList;
+    }
+
+    public static List<FieldModel> getSuperClassField(Class clazz){
         Class superclass = clazz.getSuperclass();
         if (superclass != null && JavaUtil.isNotObject(superclass)) {
-            List<Field> classFieldList = getNonStaticNonFinalFields(superclass);
+            List<FieldModel> classFieldList = getNonStaticNonFinalFieldModels(superclass);
 
-            List<Field> superClassFieldList = getSuperClassField(superclass);
+            List<FieldModel> superClassFieldList = getSuperClassField(superclass);
             if (ObjectUtil.isNotEmpty(superClassFieldList)){
                 classFieldList.addAll(superClassFieldList);
             }
