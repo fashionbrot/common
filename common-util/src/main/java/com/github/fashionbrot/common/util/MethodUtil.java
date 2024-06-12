@@ -1,9 +1,7 @@
 package com.github.fashionbrot.common.util;
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
 public class MethodUtil {
 
@@ -117,13 +115,19 @@ public class MethodUtil {
     }
 
 
-    public static  <T> T newInstance(Class<T> resultClass){
+    public static <T> T newInstance(Class<T> resultClass) {
         try {
-            return resultClass.newInstance();
+            Constructor<T> constructor = resultClass.getDeclaredConstructor();
+            constructor.setAccessible(true); // 确保可以访问私有构造函数
+            return constructor.newInstance();
         } catch (InstantiationException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to instantiate instance of " + resultClass.getName() + ". The class might be abstract or an interface.", e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to access the constructor of " + resultClass.getName(), e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Constructor threw an exception for " + resultClass.getName(), e.getCause());
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("No default constructor found for " + resultClass.getName(), e);
         }
     }
 

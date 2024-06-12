@@ -11,8 +11,8 @@ public class ShortTest {
 
     @Data
     public static class ShortEntity{
-        private short a1;
-        private Short b1;
+        private Short a1;
+        private short b1;
     }
 
     @Test
@@ -31,8 +31,8 @@ public class ShortTest {
     @Test
     public void test2() throws IOException {
         ShortEntity entity=new ShortEntity();
-        entity.setA1((short) 0);
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1((short) 0);
         byte[] bytes = TLVBufferUtil.serialize( entity);
 
         ShortEntity deserialized = TLVBufferUtil.deserialize(ShortEntity.class, bytes);

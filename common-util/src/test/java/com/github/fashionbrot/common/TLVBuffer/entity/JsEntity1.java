@@ -1,4 +1,4 @@
-package com.github.fashionbrot.common.TVLJS.js.entity;
+package com.github.fashionbrot.common.TLVBuffer.entity;
 
 import lombok.Data;
 

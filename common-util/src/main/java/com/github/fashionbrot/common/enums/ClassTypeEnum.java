@@ -31,6 +31,7 @@ public enum ClassTypeEnum {
     PACK_FLOAT("java.lang.Float"),
     PACK_DOUBLE("java.lang.Double"),
     STRING("java.lang.String"),
+    CHAR_SEQUENCE("java.lang.CharSequence"),
     BIG_DECIMAL("java.math.BigDecimal"),
     BIG_INTEGER("java.math.BigInteger"),
     DATE("java.util.Date"),

@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common.TVLJS.js.entity;
 
 import com.alibaba.fastjson2.JSON;
+import com.github.fashionbrot.common.TLVBuffer.entity.JsEntity1;
 import com.github.fashionbrot.common.TLVBuffer.entity.Test1;
 import com.github.fashionbrot.common.TLVBuffer.entity.Test1Child;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
@@ -16,7 +17,7 @@ import java.util.Date;
 public class Test {
 
     public static void main(String[] args) {
-        test1();
+        test0();
     }
 
     private static void test0(){

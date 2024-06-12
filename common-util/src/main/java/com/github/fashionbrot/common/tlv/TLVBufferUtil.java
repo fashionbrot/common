@@ -187,14 +187,35 @@ public class TLVBufferUtil {
             }
             Class<?> fieldType = field.getType();
             Object fieldValue = MethodUtil.getFieldValue(field, input);
+            if (fieldValue==null){
 
-            byte[] valueBytes = (fieldValue != null) ? encodeFieldValue(field, fieldValue) : new byte[]{};
+                byte tag = generateTag(fieldType, null);
+                byteList.add(new byte[]{tag});
+                byteList.add(TLVTypeUtil.encodeVarInteger(0));
+                byteList.add(new byte[]{});
 
-            byteList.add(valueBytes);
-//            byte tag = generateTag(fieldType, valueBytes);
-//            byteList.add(new byte[]{tag});
-//            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
-//            byteList.add(valueBytes);
+            }else{
+
+                byte[] valueBytes;
+                if (List.class.isAssignableFrom(fieldType)) {
+                    Class listGenericClass = getListGenericClass(field);
+                    valueBytes = encodeListValue(listGenericClass,fieldValue);
+                }else if (fieldType.isArray()){
+                    Class<?> componentType = field.getType().getComponentType();
+                    valueBytes = encodeArrayValue(componentType,fieldValue);
+                }else if (JavaUtil.isPrimitive(fieldType) || JavaUtil.isObject(fieldType)) {
+                    valueBytes = TypeHandleFactory.toByte(fieldType,fieldValue);
+                }else{
+                    valueBytes = serialize(fieldValue);
+                    byteList.add(valueBytes);
+                    continue;
+                }
+
+                byte tag = generateTag(fieldType, valueBytes);
+                byteList.add(new byte[]{tag});
+                byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+                byteList.add(valueBytes);
+            }
         }
     }
 
@@ -208,20 +229,20 @@ public class TLVBufferUtil {
         }else if (fieldType.isArray()){
             Class<?> componentType = field.getType().getComponentType();
             valueBytes = encodeArrayValue(componentType,value);
-        }else{
-            if (JavaUtil.isPrimitive(fieldType) || JavaUtil.isObject(fieldType)) {
-                List<byte[]> byteList = new ArrayList<>();
-                valueBytes = TypeHandleFactory.toByte(fieldType,value);
-                byte tag = generateTag(fieldType, valueBytes);
-                byteList.add(new byte[]{tag});
-                byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
-                byteList.add(valueBytes);
-                return mergeByteArrayList(byteList);
-            }else{
-                valueBytes = serialize(value);
-            }
+        }else if (JavaUtil.isPrimitive(fieldType) || JavaUtil.isObject(fieldType)) {
 
+            List<byte[]> byteList = new ArrayList<>();
+            valueBytes = TypeHandleFactory.toByte(fieldType,value);
+            byte tag = generateTag(fieldType, valueBytes);
+            byteList.add(new byte[]{tag});
+            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+            byteList.add(valueBytes);
+            return mergeByteArrayList(byteList);
+
+        }else{
+            valueBytes = serialize(value);
         }
+
         return valueBytes;
     }
 

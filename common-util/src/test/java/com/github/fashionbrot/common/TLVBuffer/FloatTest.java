@@ -14,8 +14,8 @@ public class FloatTest {
 
     @Data
     public static class FloatEntity{
-        private float a1;
-        private Float b1;
+        private Float a1;
+        private float b1;
     }
 
     @Test
@@ -28,21 +28,21 @@ public class FloatTest {
         FloatEntity deserialized = TLVBufferUtil.deserialize(FloatEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertTrue(ObjectUtil.equals(entity.getA1(),deserialized.getA1()));
-        Assert.assertEquals(entity.getB1(),deserialized.getB1());
+        Assert.assertTrue(ObjectUtil.equals(entity.getB1(),deserialized.getB1()));
     }
 
     @Test
     public void test2() throws IOException {
         FloatEntity entity=new FloatEntity();
-        entity.setA1(123456.12f);
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1(123456.12f);
         byte[] bytes = TLVBufferUtil.serialize( entity);
         System.out.println(Arrays.toString(bytes));
         FloatEntity deserialized = TLVBufferUtil.deserialize(FloatEntity.class, bytes);
         System.out.println(deserialized);
         System.out.println(JSON.toJSONString(entity));
         Assert.assertTrue(ObjectUtil.equals(entity.getA1(),deserialized.getA1()));
-        Assert.assertEquals(entity.getB1(),deserialized.getB1());
+        Assert.assertTrue(ObjectUtil.equals(entity.getB1(),deserialized.getB1()));
     }
 
 }

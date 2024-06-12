@@ -6,13 +6,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class ByteTest {
 
     @Data
     public static class ByteEntity{
-        private byte a1;
-        private Byte b1;
+        private Byte a1;
+        private byte b1;
     }
 
     @Test
@@ -31,10 +33,10 @@ public class ByteTest {
     @Test
     public void test2() throws IOException {
         ByteEntity entity=new ByteEntity();
-        entity.setA1((byte) 0x00);
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1((byte) 0xFF);
         byte[] bytes = TLVBufferUtil.serialize(entity);
-
+        System.out.println(Arrays.toString(bytes));
         ByteEntity deserialized = TLVBufferUtil.deserialize(ByteEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());

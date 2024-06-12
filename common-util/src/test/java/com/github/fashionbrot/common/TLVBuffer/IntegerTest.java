@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
 import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.annotation.TLVField;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +14,9 @@ public class IntegerTest {
 
     @Data
     public static class IntegerEntity{
+        @TLVField(index = 2)
         private int a1;
+        @TLVField(index = 1)
         private Integer b1;
     }
 
@@ -36,6 +39,7 @@ public class IntegerTest {
         entity.setA1(0);
         entity.setB1(null);
         byte[] bytes = TLVBufferUtil.serialize(entity);
+        System.out.println(Arrays.toString(bytes));
 
         IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);

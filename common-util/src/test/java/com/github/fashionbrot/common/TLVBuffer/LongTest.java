@@ -12,8 +12,8 @@ public class LongTest {
 
     @Data
     public static class IntegerEntity{
-        private long a1;
-        private Long b1;
+        private Long a1;
+        private long b1;
     }
 
     @Test
@@ -32,10 +32,10 @@ public class LongTest {
     @Test
     public void test2() throws IOException {
         IntegerEntity entity=new IntegerEntity();
-        entity.setA1(0);
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1(100L);
         byte[] bytes = TLVBufferUtil.serialize( entity);
-
+        System.out.println(Arrays.toString(bytes));
         IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());

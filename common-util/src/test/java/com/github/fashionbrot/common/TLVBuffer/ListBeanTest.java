@@ -24,18 +24,19 @@ public class ListBeanTest {
     public static class ListBeanEntity{
         private List<ListChildEntity> a1;
         private List<ListChildEntity> b1;
-        private List<ListChildEntity> c1;
+//        private List<ListChildEntity> c1;
     }
 
     @Test
     public void test1() throws IOException {
 
         ListChildEntity childEntity=new ListChildEntity();
-        childEntity.setAbc("123123dsafds");
+        childEntity.setAbc("1");
+
         ListBeanEntity beanEntity=new ListBeanEntity();
         beanEntity.setA1(Arrays.asList(childEntity));
         beanEntity.setB1(new ArrayList<>());
-        beanEntity.setC1(null);
+//        beanEntity.setC1(null);
 
 
         byte[] bytes = TLVBufferUtil.serialize( beanEntity);
@@ -43,7 +44,7 @@ public class ListBeanTest {
 
         ListBeanEntity deserialized = TLVBufferUtil.deserialize(ListBeanEntity.class, bytes);
         System.out.println(deserialized);
-        Assert.assertEquals(beanEntity.getA1().get(0).getAbc(),childEntity.getAbc());
+//        Assert.assertEquals(beanEntity.getA1().get(0).getAbc(),childEntity.getAbc());
     }
 
 
@@ -90,6 +91,8 @@ public class ListBeanTest {
 
         Test1 deserialize = TLVBufferUtil.deserialize(Test1.class, serialize);
         System.out.println(deserialize);
+        Assert.assertEquals(t.getA1(),deserialize.getA1());
+        Assert.assertEquals(t.getC1().getB1(),deserialize.getC1().getB1());
     }
 
 

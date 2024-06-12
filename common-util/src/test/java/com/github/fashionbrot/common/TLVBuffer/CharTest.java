@@ -11,8 +11,8 @@ public class CharTest {
 
     @Data
     public static class CharEntity{
-        private char a1;
-        private Character b1;
+        private Character a1;
+        private char b1;
     }
 
     @Test
@@ -31,8 +31,8 @@ public class CharTest {
     @Test
     public void test2() throws IOException {
         CharEntity entity=new CharEntity();
-        entity.setA1('A');
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1('A');
         byte[] bytes = TLVBufferUtil.serialize( entity);
 
         CharEntity deserialized = TLVBufferUtil.deserialize(CharEntity.class, bytes);

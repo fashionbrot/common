@@ -35,8 +35,8 @@ public class BigDecimalTest {
     @Test
     public void test2() throws IOException {
         BigDecimalEntity entity=new BigDecimalEntity();
-        entity.setA1(BigDecimalUtil.format("0"));
-        entity.setB1(null);
+        entity.setA1(null);
+        entity.setB1(BigDecimalUtil.format("1"));
         byte[] bytes = TLVBufferUtil.serialize( entity);
         System.out.println(Arrays.toString(bytes));
         BigDecimalEntity deserialized = TLVBufferUtil.deserialize(BigDecimalEntity.class, bytes);
