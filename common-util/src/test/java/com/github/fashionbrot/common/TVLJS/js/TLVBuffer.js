@@ -68,9 +68,11 @@
 
                     let fieldType = Util.determineType(object[key])
                     if ('object' === fieldType){
-
+                        let objectValue = this.deserializeEntity(entity[key],buffer);
+                        instance[key] = objectValue;
                     }else if ('array' === fieldType){
-
+                        let arrayValue = this.deserializeArray(entity[key],buffer);
+                        instance[key] = arrayValue;
                     }
 
                     let readIndex = reader.getLastReadIndex();
@@ -93,7 +95,17 @@
                 return instance;
             },
             deserializeArray:function (array,buffer){
-
+                if (array && array!=null ){
+                    let childEntity = Util.getFirstChildArrayProperties(array);
+                    let arrayValue = new Array();
+                    for (let i = 0; i < array.length; i++) {
+                        let value = this.deserializeEntity(childEntity,buffer)
+                        if (value){
+                            arrayValue.push(value);
+                        }
+                    }
+                    return arrayValue;
+                }
                 return null;
             }
         };
@@ -361,7 +373,12 @@
                 // 从 DataView 中读取双精度浮点数
                 return view.getFloat64(0, false);
             },
-
+            getFirstChildArrayProperties:function (arrayEntity) {
+                if (arrayEntity && arrayEntity.childArray && arrayEntity.childArray.length > 0) {
+                    return arrayEntity.childArray[0].child;
+                }
+                return null; // 或者你可以返回一个空对象 {}, 根据你的需求
+            }
         };
 
 

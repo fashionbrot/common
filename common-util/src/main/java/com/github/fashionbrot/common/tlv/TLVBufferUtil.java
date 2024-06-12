@@ -20,7 +20,7 @@ public class TLVBufferUtil {
         List<byte[]> byteList=new ArrayList<>();
         Class<?> clazz = input.getClass();
         if (JavaUtil.isPrimitive(clazz) || JavaUtil.isObject(clazz)){
-            addPrimitiveOrObject(byteList,clazz,input);
+            byteList.add(addPrimitiveOrObject(clazz,input));
         }else if (List.class.isAssignableFrom(clazz)){
             byteList.add(encodeListValue(clazz, input));
         }else if (clazz.isArray()){
@@ -83,6 +83,10 @@ public class TLVBufferUtil {
         return list;
     }
 
+    public static <T> T deserializeEntity(Class<T> clazz,byte[] bytes){
+        return deserializeEntity(clazz,new ByteArrayReader(bytes));
+    }
+
     public static <T> T deserializeEntity(Class<T> clazz,ByteArrayReader reader){
         T instance = MethodUtil.newInstance(clazz);
         List<Field> fieldList = getSortedClassField(clazz);
@@ -97,21 +101,27 @@ public class TLVBufferUtil {
             if (annotation!=null && !annotation.serialize()){
                 continue;
             }
-            byte[] valueBytes = getNextBytes(reader);
+
             Object objectValue;
-            if (ObjectUtil.isNotEmpty(valueBytes)){
-                if (List.class.isAssignableFrom(field.getType())){
+//            if (ObjectUtil.isNotEmpty(valueBytes)){
+                Class<?> type = field.getType();
+                if (List.class.isAssignableFrom(type)){
+                    byte[] valueBytes = getNextBytes(reader);
                     Class listGenericClass = getListGenericClass(field);
                     objectValue = decodeListValue(listGenericClass,valueBytes);
                 }else if (field.getType().isArray()){
-                    Class<?> componentType = field.getType().getComponentType();
+                    byte[] valueBytes = getNextBytes(reader);
+                    Class<?> componentType = type.getComponentType();
                     objectValue = decodeArrayValue(componentType,valueBytes);
+                }else  if (JavaUtil.isPrimitive(type) || JavaUtil.isObject(type)) {
+                    byte[] valueBytes = getNextBytes(reader);
+                    objectValue = TypeHandleFactory.toJava(field.getType(), valueBytes);
                 }else{
-                    objectValue = TypeHandleFactory.toJava(field.getType(),valueBytes);
+                    objectValue = deserializeEntity(type,reader);
                 }
-            }else{
-                objectValue = null;
-            }
+//            }else{
+//                objectValue = null;
+//            }
             MethodUtil.setFieldValue(field,instance,objectValue);
         }
         return instance;
@@ -139,13 +149,34 @@ public class TLVBufferUtil {
 
 
 
-    private static void addPrimitiveOrObject(List<byte[]> byteList, Class<?> clazz, Object input) {
+    private static byte[] addPrimitiveOrObject(Class<?> clazz, Object input) {
+        List<byte[]> byteList =new ArrayList<>();
         byte[] valueBytes = TypeHandleFactory.toByte(clazz, input);
         byte tag = generateTag(clazz, valueBytes);
         byteList.add(new byte[]{tag});
         byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
         byteList.add(valueBytes);
+        return mergeByteArrayList(byteList);
     }
+
+//    private static void addFields(List<byte[]> byteList, Class<?> clazz, Object input) {
+//        List<Field> fieldList = getSortedClassField(clazz);
+//        for (Field field : fieldList) {
+//            TLVField annotation = field.getAnnotation(TLVField.class);
+//            if (annotation!=null && !annotation.serialize()){
+//                continue;
+//            }
+//            Class<?> fieldType = field.getType();
+//            Object fieldValue = MethodUtil.getFieldValue(field, input);
+//
+//            byte[] valueBytes = (fieldValue != null) ? encodeFieldValue(field, fieldValue) : new byte[]{};
+//
+//            byte tag = generateTag(fieldType, valueBytes);
+//            byteList.add(new byte[]{tag});
+//            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+//            byteList.add(valueBytes);
+//        }
+//    }
 
     private static void addFields(List<byte[]> byteList, Class<?> clazz, Object input) {
         List<Field> fieldList = getSortedClassField(clazz);
@@ -159,12 +190,14 @@ public class TLVBufferUtil {
 
             byte[] valueBytes = (fieldValue != null) ? encodeFieldValue(field, fieldValue) : new byte[]{};
 
-            byte tag = generateTag(fieldType, valueBytes);
-            byteList.add(new byte[]{tag});
-            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
             byteList.add(valueBytes);
+//            byte tag = generateTag(fieldType, valueBytes);
+//            byteList.add(new byte[]{tag});
+//            byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+//            byteList.add(valueBytes);
         }
     }
+
 
     private static byte[] encodeFieldValue(Field field,Object value) {
         Class<?> fieldType = field.getType();
@@ -176,7 +209,18 @@ public class TLVBufferUtil {
             Class<?> componentType = field.getType().getComponentType();
             valueBytes = encodeArrayValue(componentType,value);
         }else{
-            valueBytes = TypeHandleFactory.toByte(fieldType,value);
+            if (JavaUtil.isPrimitive(fieldType) || JavaUtil.isObject(fieldType)) {
+                List<byte[]> byteList = new ArrayList<>();
+                valueBytes = TypeHandleFactory.toByte(fieldType,value);
+                byte tag = generateTag(fieldType, valueBytes);
+                byteList.add(new byte[]{tag});
+                byteList.add(TLVTypeUtil.encodeVarInteger(valueBytes.length));
+                byteList.add(valueBytes);
+                return mergeByteArrayList(byteList);
+            }else{
+                valueBytes = serialize(value);
+            }
+
         }
         return valueBytes;
     }

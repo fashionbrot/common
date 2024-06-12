@@ -1,23 +1,25 @@
 package com.github.fashionbrot.common.TVLJS.js.entity;
 
 import com.alibaba.fastjson2.JSON;
+import com.github.fashionbrot.common.TLVBuffer.entity.Test1;
+import com.github.fashionbrot.common.TLVBuffer.entity.Test1Child;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
 import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.tlv.TLVBufferUtil;
-import com.github.fashionbrot.common.tlv.TLVTypeUtil;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 
 public class Test {
 
     public static void main(String[] args) {
+        test1();
+    }
+
+    private static void test0(){
         JsEntity1 entity=new JsEntity1();
         entity.setShortMax(Short.MAX_VALUE);
         entity.setShortMin(Short.MIN_VALUE);
@@ -82,4 +84,24 @@ public class Test {
         System.out.println(deserialize);
     }
 
+
+
+    public static void test1(){
+
+        Test1 t=new Test1();
+        t.setA1("1");
+
+        Test1Child child=new Test1Child();
+        child.setB1("2");
+
+        t.setC1(child);
+//        t.setList1(Arrays.asList(child));
+
+        byte[] serialize = TLVBufferUtil.serialize(t);
+        System.out.println(Arrays.toString(serialize));
+        System.out.println(serialize.length);
+
+        Test1 deserialize = TLVBufferUtil.deserialize(Test1.class, serialize);
+        System.out.println(deserialize);
+    }
 }

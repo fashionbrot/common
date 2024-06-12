@@ -1,5 +1,7 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
+import com.github.fashionbrot.common.TLVBuffer.entity.Test1;
+import com.github.fashionbrot.common.TLVBuffer.entity.Test1Child;
 import com.github.fashionbrot.common.tlv.ByteArrayReader;
 import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import lombok.Data;
@@ -69,6 +71,26 @@ public class ListBeanTest {
         Assert.assertEquals(childEntity2.getAbc(),deserialized.get(1).getAbc());
     }
 
+
+
+    @Test
+    public void test3(){
+        Test1 t=new Test1();
+        t.setA1("1");
+
+        Test1Child child=new Test1Child();
+        child.setB1("2");
+
+        t.setC1(child);
+//        t.setList1(Arrays.asList(child));
+
+        byte[] serialize = TLVBufferUtil.serialize(t);
+        System.out.println(Arrays.toString(serialize));
+        System.out.println(serialize.length);
+
+        Test1 deserialize = TLVBufferUtil.deserialize(Test1.class, serialize);
+        System.out.println(deserialize);
+    }
 
 
 

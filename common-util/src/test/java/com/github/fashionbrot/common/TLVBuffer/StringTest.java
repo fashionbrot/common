@@ -40,6 +40,8 @@ public class StringTest {
         System.out.println(deserialized.toString());
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
+
+
     }
 
 }
