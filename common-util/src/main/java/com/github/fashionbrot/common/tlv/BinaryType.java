@@ -1,5 +1,6 @@
 package com.github.fashionbrot.common.tlv;
 
+import com.github.fashionbrot.common.tlv.parser.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -55,66 +56,38 @@ public  enum BinaryType{
      * 11110 (30)
      * 11111 (31)
      */
-    BOOLEAN("00000",boolean.class),
-    BYTE("00001",byte.class),
-    CHAR("00010",char.class),
-    SHORT("00011",short.class),
-    INTEGER("00100",int.class),
-    FLOAT("00101",float.class),
-    LONG("00110",long.class),
-    DOUBLE("00111",double.class),
-    STRING("01000",String.class),
-    DATE("01001", Date.class),
-    LOCAL_TIME("01010", LocalTime.class),
-    LOCAL_DATE("01011", LocalDate.class),
-    LOCAL_DATE_TIME("01100", LocalDateTime.class),
-    BIG_DECIMAL("01101", BigDecimal.class),
-    ARRAY("01110", Array.class),
-    LIST("01111", List.class),
+    BOOLEAN("00000",new Class[]{boolean.class,Boolean.class}),
+    BYTE("00001",new Class[]{byte.class,Byte.class}),
+    CHAR("00010",new Class[]{char.class,Character.class}),
+    SHORT("00011",new Class[]{short.class,Short.class}),
+    INTEGER("00100",new Class[]{int.class,Integer.class}),
+    FLOAT("00101",new Class[]{float.class,Float.class}),
+    LONG("00110",new Class[]{long.class,Long.class}),
+    DOUBLE("00111",new Class[]{double.class,Double.class}),
+    STRING("01000",new Class[]{String.class,CharSequence.class}),
+    DATE("01001", new Class[]{Date.class}),
+    LOCAL_TIME("01010",new Class[]{LocalTime.class}),
+    LOCAL_DATE("01011", new Class[]{LocalDate.class}),
+    LOCAL_DATE_TIME("01100", new Class[]{LocalDateTime.class}),
+    BIG_DECIMAL("01101",new Class[]{ BigDecimal.class}),
+    ARRAY("01110", new Class[]{Array.class}),
+    LIST("01111", new Class[]{List.class}),
     ;
 
+
+
     private final String binaryCode;
-    private final Class<?> type;
+    private final Class[] type;
     private static final Map<String, BinaryType> BINARY_CODE_MAP = new HashMap<>();
     private static final Map<Class<?>, BinaryType> TYPE_MAP = new HashMap<>();
 
     static {
         for (BinaryType binaryType : values()) {
             BINARY_CODE_MAP.put(binaryType.getBinaryCode(), binaryType);
-            TYPE_MAP.put(binaryType.getType(), binaryType);
+            for (int i = 0; i < binaryType.getType().length; i++) {
+                TYPE_MAP.put(binaryType.getType()[i], binaryType);
+            }
         }
-
-        // Add primitive types and their wrappers
-        addPrimitiveTypeMappings();
-    }
-
-    private static void addPrimitiveTypeMappings() {
-        TYPE_MAP.put(boolean.class, BOOLEAN);
-        TYPE_MAP.put(Boolean.class, BOOLEAN);
-
-        TYPE_MAP.put(byte.class, BYTE);
-        TYPE_MAP.put(Byte.class, BYTE);
-
-        TYPE_MAP.put(char.class, CHAR);
-        TYPE_MAP.put(Character.class, CHAR);
-
-        TYPE_MAP.put(short.class, SHORT);
-        TYPE_MAP.put(Short.class, SHORT);
-
-        TYPE_MAP.put(int.class, INTEGER);
-        TYPE_MAP.put(Integer.class, INTEGER);
-
-        TYPE_MAP.put(float.class, FLOAT);
-        TYPE_MAP.put(Float.class, FLOAT);
-
-        TYPE_MAP.put(long.class, LONG);
-        TYPE_MAP.put(Long.class, LONG);
-
-        TYPE_MAP.put(double.class, DOUBLE);
-        TYPE_MAP.put(Double.class, DOUBLE);
-
-        TYPE_MAP.put(String.class,STRING);
-        TYPE_MAP.put(CharSequence.class,STRING);
     }
 
     /**
@@ -144,15 +117,12 @@ public  enum BinaryType{
         if (binaryType != null) {
             return binaryType;
         }
-
         if (List.class.isAssignableFrom(type)) {
             return LIST;
         }
-
         if (type.isArray()) {
             return ARRAY;
         }
-
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 }

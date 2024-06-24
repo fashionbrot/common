@@ -48,7 +48,7 @@ public class TLVBufferUtil {
             } else if (lastBinaryType == BinaryType.ARRAY) {
                 return (T) decodeArrayValue(clazz, valueBytes);
             } else {
-                return (T) TypeHandleFactory.toJava(reader.getLastBinaryType().getType(), valueBytes);
+                return (T) TypeHandleFactory.toJava(reader.getLastBinaryType().getType()[0], valueBytes);
             }
         }else if (List.class.isAssignableFrom(clazz)) {
             return (T) deserializeList(clazz, reader);

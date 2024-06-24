@@ -65,7 +65,7 @@ public class TypeHandleFactory {
     }
 
     private static Object getDefaultForType(Class<?> type) {
-        if (type.isPrimitive()) {
+        if (isPrimitive(type)) {
             if (type == boolean.class) return false;
             if (type == char.class) return '\0';
             if (type == byte.class) return (byte) 0;
@@ -76,6 +76,10 @@ public class TypeHandleFactory {
             if (type == double.class) return 0d;
         }
         return null;
+    }
+
+    public static boolean isPrimitive(Class type){
+        return TYPE_HANDLE_MAP.containsKey(type);
     }
 
 }
