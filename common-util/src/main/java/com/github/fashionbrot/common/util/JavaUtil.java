@@ -4,6 +4,8 @@ import com.github.fashionbrot.common.enums.ClassTypeEnum;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 
@@ -117,8 +119,52 @@ public class JavaUtil {
      * @return boolean
      */
     public static boolean isArray(Class clazz) {
-        return clazz!=null && isArray(clazz.getTypeName());
+        return clazz!=null && clazz.isArray();
     }
 
+
+    public static boolean isBooleanClass(Class type){
+        return type!=null && (type == boolean.class ||type == Boolean.class);
+    }
+
+    public static boolean isByteClass(Class type){
+        return type!=null && (type == byte.class ||type == Byte.class);
+    }
+
+    public static boolean isCharClass(Class type){
+        return type!=null && (type == char.class ||type == Character.class);
+    }
+
+    public static boolean isStringClass(Class type){
+        return type!=null && (type == String.class ||type == CharSequence.class);
+    }
+
+    public static boolean isFloatClass(Class type) {
+        return type != null && (type == float.class || type == Float.class);
+    }
+
+    public static boolean isIntClass(Class type) {
+        return type != null && (type == int.class || type == Integer.class);
+    }
+
+    public static boolean isLongClass(Class type) {
+        return type != null && (type == long.class || type == Long.class);
+    }
+
+    public static boolean isShortClass(Class type) {
+        return type != null && (type == short.class || type == Short.class);
+    }
+
+    public static boolean isDoubleClass(Class type) {
+        return type != null && (type == double.class || type == Double.class);
+    }
+
+    public static boolean isBigDecimalClass(Class type) {
+        return type != null && type == BigDecimal.class;
+    }
+
+    public static boolean isBigIntegerClass(Class type) {
+        return type != null && type == BigInteger.class;
+    }
 
 }

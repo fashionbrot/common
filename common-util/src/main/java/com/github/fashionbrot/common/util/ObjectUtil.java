@@ -297,6 +297,9 @@ public class ObjectUtil {
      * @return String
      */
     public static String formatString(final Object object) {
+        if (object instanceof CharSequence){
+            return (String) object;
+        }
         return (object == null) ? "" : object.toString();
     }
 
@@ -307,6 +310,9 @@ public class ObjectUtil {
      * @return 对象的字符串表示，如果对象为null，则返回空字符串
      */
     public static String toString(final Object var) {
+        if (var instanceof CharSequence){
+            return (String) var;
+        }
         return (var == null) ? "" : var.toString();
     }
 
@@ -431,7 +437,6 @@ public class ObjectUtil {
         if (isEmpty(str)) {
             return defaultValue;
         }
-
         try {
             return Float.valueOf(str);
         } catch (NumberFormatException e) {
@@ -493,7 +498,6 @@ public class ObjectUtil {
         if (isEmpty(str)) {
             return defaultValue;
         }
-
         try {
             return Integer.valueOf(str);
         } catch (NumberFormatException e) {
@@ -524,7 +528,6 @@ public class ObjectUtil {
         if (isEmpty(str)) {
             return defaultValue;
         }
-
         try {
             return Long.parseLong(str);
         } catch (NumberFormatException e) {
@@ -553,7 +556,6 @@ public class ObjectUtil {
         if (isEmpty(str)) {
             return defaultValue;
         }
-
         try {
             return Boolean.parseBoolean(str);
         } catch (Exception e) {
@@ -572,14 +574,8 @@ public class ObjectUtil {
         if (object == null) {
             return 0;
         }
-
-        String str = object.toString();
-        if (!isNumeric(str)) {
-            return 0;
-        }
-
         try {
-            return Integer.valueOf(str);
+            return Integer.valueOf(toString(object));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -595,12 +591,7 @@ public class ObjectUtil {
         if (object == null) {
             return 0L;
         }
-
-        String str = object.toString();
-        if (!isNumeric(str)) {
-            return 0L;
-        }
-
+        String str = toString(object);
         try {
             return Long.valueOf(str);
         } catch (NumberFormatException e) {
@@ -619,9 +610,8 @@ public class ObjectUtil {
         if (object == null) {
             return 0.00;
         }
-
         try {
-            return Double.valueOf(object.toString());
+            return Double.valueOf(toString(object));
         } catch (Exception e) {
             return 0.00;
         }
@@ -640,7 +630,7 @@ public class ObjectUtil {
             return 0.0F;
         } else {
             try {
-                return Float.valueOf(object.toString());
+                return Float.valueOf(toString(object));
             } catch (Exception e) {
                 return 0.0F;
             }
@@ -659,7 +649,7 @@ public class ObjectUtil {
             return 0;
         } else {
             try {
-                return Short.valueOf(object.toString());
+                return Short.valueOf(toString(object));
             } catch (Exception e) {
                 return 0;
             }
@@ -692,10 +682,9 @@ public class ObjectUtil {
         if (object == null) {
             return false;
         } else {
-            String str = object.toString();
             try {
                 // 尝试将字符串解析为 boolean 类型
-                return Boolean.parseBoolean(str);
+                return Boolean.parseBoolean(toString(object));
             } catch (Exception e) {
                 return false;
             }
@@ -1374,6 +1363,7 @@ public class ObjectUtil {
     public static boolean le(boolean condition, Double column, double val) {
         return condition && column != null && column <= val;
     }
+
 
 
 
