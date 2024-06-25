@@ -33,7 +33,7 @@ public class TLVSerializeUtil {
         }else{
             byteList.add(entityToBytes(input));;
         }
-        return mergeByteArrayList(byteList);
+        return ByteUtil.mergeByteArrayList(byteList);
     }
 
 
