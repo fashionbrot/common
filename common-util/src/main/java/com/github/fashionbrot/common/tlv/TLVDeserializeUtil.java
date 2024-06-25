@@ -25,9 +25,12 @@ public class TLVDeserializeUtil {
         if (reader.isReadComplete()){
             return null;
         }
-        if (TypeHandleFactory.isPrimitive(type)){
+        if (TypeHandleFactory.isPrimitive(type)) {
             byte[] nextBytes = getNextBytes(reader);
             return (T) TypeHandleFactory.toJava(deserializeClass, nextBytes);
+        }else if (Object.class == type){
+            byte[] nextBytes = getNextBytes(reader);
+            return (T) TypeHandleFactory.toJava(reader.getLastBinaryType().getType()[0], nextBytes);
         }else if (List.class.isAssignableFrom(type)){
             return (T) deserializeList(deserializeClass,reader);
         }else if (type.isArray()){
@@ -47,7 +50,11 @@ public class TLVDeserializeUtil {
             return list;
         }
         while (!reader.isReadComplete()){
-            list.add(deserializeEntity(clazz, reader));
+            if (TypeHandleFactory.isPrimitive(clazz) || clazz == Object.class){
+                list.add(deserialize(clazz,clazz, reader));
+            }else{
+                list.add(deserializeEntity(clazz, reader));
+            }
         }
         return list;
     }
@@ -62,7 +69,11 @@ public class TLVDeserializeUtil {
         }
         List<Object> list=new ArrayList<>();
         while (!reader.isReadComplete()){
-            list.add(deserialize(clazz,clazz, reader));
+            if (TypeHandleFactory.isPrimitive(clazz) || clazz == Object.class) {
+                list.add(deserialize(clazz, clazz, reader));
+            }else {
+                list.add(deserialize(clazz, clazz, reader));
+            }
         }
         return (T[]) list.toArray((Object[]) Array.newInstance(clazz, list.size()));
     }

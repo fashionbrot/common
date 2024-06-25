@@ -181,21 +181,21 @@ public class TLVSerializeTest {
     @Data
     public static class ListObjectEntity{
         private List<Object> a1;
-//        private List<Object> b1;
-//        private List c1;
+        private List<Object> b1;
+        private List c1;
     }
     @Test
     public void test7()  {
 
-        List<Object> a1 = Arrays.asList(1, "2");
+        List<Object> a1 = Arrays.asList(1, "你好");
 
         ArrayList b1 = new ArrayList<>();
         b1.add("b1");
 
         ListObjectEntity beanEntity=new ListObjectEntity();
         beanEntity.setA1(a1);
-//        beanEntity.setB1(b1);
-//        beanEntity.setC1(null);
+        beanEntity.setB1(b1);
+        beanEntity.setC1(null);
 
 
         byte[] bytes = TLVSerializeUtil.serialize( beanEntity);
@@ -204,11 +204,8 @@ public class TLVSerializeTest {
 
         ListObjectEntity deserialized = TLVDeserializeUtil.deserialize(ListObjectEntity.class, bytes);
         System.out.println(deserialized);
-//        System.out.println(a1.get(0));
-        Assert.assertEquals(a1.get(0),deserialized.getA1().get(0));
-        Assert.assertEquals(a1.get(1),deserialized.getA1().get(1));
-//        Assert.assertEquals(a1.get(2),deserialized.getA1().get(2));
-//        Assert.assertEquals(b1.get(0),deserialized.getB1().get(0));
+
+        Assert.assertTrue("test7失败",Objects.equals(beanEntity,deserialized));
     }
 
 }
