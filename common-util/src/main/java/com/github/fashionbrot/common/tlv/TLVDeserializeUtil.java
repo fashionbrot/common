@@ -2,12 +2,13 @@ package com.github.fashionbrot.common.tlv;
 
 import com.github.fashionbrot.common.tlv.annotation.TLVField;
 import com.github.fashionbrot.common.util.ByteUtil;
-import com.github.fashionbrot.common.util.JavaUtil;
 import com.github.fashionbrot.common.util.MethodUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
+import com.github.fashionbrot.common.util.TypeUtil;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +18,47 @@ import java.util.List;
 public class TLVDeserializeUtil {
 
     public static <T> T deserialize(Class<T> deserializeClass,byte[] data)  {
-        return deserialize(deserializeClass,new ByteArrayReader(data));
+        return deserialize(deserializeClass,deserializeClass,new ByteArrayReader(data));
     }
 
-    public static <T> T deserialize(Class<T> deserializeClass,ByteArrayReader reader)  {
-        if (TypeHandleFactory.isPrimitive(deserializeClass)){
-            byte[] nextBytes = getNextBytes(reader);
-            return (T) TypeHandleFactory.toJava(deserializeClass, nextBytes);
-        }
+    public static <T> T deserialize(Class type , Class<T> deserializeClass,ByteArrayReader reader)  {
         if (reader.isReadComplete()){
             return null;
         }
-        T instance = (T) deserializeEntity(deserializeClass, reader);
-        return instance;
+        if (TypeHandleFactory.isPrimitive(type)){
+            byte[] nextBytes = getNextBytes(reader);
+            return (T) TypeHandleFactory.toJava(deserializeClass, nextBytes);
+        }else if (List.class.isAssignableFrom(type)){
+            return (T) deserializeList(deserializeClass,reader);
+        }else if (type.isArray()){
+            return (T) deserializeArray(deserializeClass,reader);
+        }else{
+            return (T) deserializeEntity(deserializeClass, reader);
+        }
+    }
+
+    public static <T> List<T> deserializeList(Class<T> clazz,byte[] bytes)  {
+        return deserializeList(clazz,new ByteArrayReader(bytes));
+    }
+
+    public static <T> List<T> deserializeList(Class<T> clazz,ByteArrayReader reader)  {
+        List<T> list= new ArrayList<>();
+        while (!reader.isReadComplete()){
+            list.add(deserializeEntity(clazz, reader));
+        }
+        return list;
+    }
+
+    public static <T> T[] deserializeArray(Class<T> clazz,byte[] bytes) {
+        return deserializeArray(clazz,new ByteArrayReader(bytes));
+    }
+
+    public static <T> T[] deserializeArray(Class<T> clazz,ByteArrayReader reader) {
+        List<Object> list=new ArrayList<>();
+        while (!reader.isReadComplete()){
+            list.add(deserialize(clazz,clazz, reader));
+        }
+        return (T[]) list.toArray((Object[]) Array.newInstance(clazz, list.size()));
     }
 
 
@@ -48,8 +77,16 @@ public class TLVDeserializeUtil {
             if (annotation!=null && !annotation.serialize()){
                 continue;
             }
-            Class<?> fieldType = field.getType();
-            Object fieldValue = deserialize(fieldType, reader);
+
+            Class type = field.getType();
+            Class deserializeClass =  field.getType();
+            if (List.class.isAssignableFrom(type)){
+                deserializeClass = getListGenericClass(field);
+            }else if (type.isArray()){
+                deserializeClass = type.getComponentType();
+            }
+
+            Object fieldValue = deserialize(type,deserializeClass, reader);
             MethodUtil.setFieldValue(field,instance,fieldValue);
         }
         return instance;
@@ -72,6 +109,14 @@ public class TLVDeserializeUtil {
         return reader.readFromTo(readIndex +1+ valueByteLengthLength, readIndex +1 + valueByteLengthLength+ valueByteLength);
     }
 
+
+    public static Class getListGenericClass(Field field){
+        Type[] actualTypeArguments = TypeUtil.getActualTypeArguments(field);
+        if (ObjectUtil.isNotEmpty(actualTypeArguments)) {
+            return TypeUtil.convertTypeToClass(actualTypeArguments[0]);
+        }
+        return Object.class;
+    }
 
 
 

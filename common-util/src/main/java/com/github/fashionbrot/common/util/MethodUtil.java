@@ -115,20 +115,18 @@ public class MethodUtil {
     }
 
 
-    public static <T> T newInstance(Class<T> resultClass) {
+    public static <T> T newInstance(Class<T> clazz) {
         try {
-            Constructor<T> constructor = resultClass.getDeclaredConstructor();
-            constructor.setAccessible(true); // 确保可以访问私有构造函数
+            Constructor<T> constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
             return constructor.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Failed to instantiate instance of " + resultClass.getName() + ". The class might be abstract or an interface.", e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to access the constructor of " + resultClass.getName(), e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException("Constructor threw an exception for " + resultClass.getName(), e.getCause());
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("No default constructor found for " + resultClass.getName(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("No default constructor found for " + clazz.getName(), e);
         }
+    }
+
+    public static <T> T[] newArrayInstance(Class<T> clazz, int length) {
+        return (T[]) java.lang.reflect.Array.newInstance(clazz, length);
     }
 
 }

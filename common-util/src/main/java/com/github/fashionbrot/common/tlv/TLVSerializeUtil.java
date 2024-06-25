@@ -16,19 +16,23 @@ import java.util.List;
  * @author fashionbrot
  */
 public class TLVSerializeUtil {
-
-
+//
     public static byte[] serialize(Object input){
         if (input==null){
             return null;
         }
-        Class<?> clazz = input.getClass();
+        Class<?> inputClass = input.getClass();
+        return serialize(input,inputClass);
+    }
+
+    public static byte[] serialize(Object input,Class inputClass){
+
         List<byte[]> byteList=new ArrayList<>();
-        if (TypeHandleFactory.isPrimitive(clazz)){
-            byteList.add(primitiveToBytes(input));
-        }else if (List.class.isAssignableFrom(clazz)){
+        if (TypeHandleFactory.isPrimitive(inputClass)){
+            byteList.add(primitiveToBytes(input,inputClass));
+        }else if (List.class.isAssignableFrom(inputClass)){
             byteList.add(listToBytes(input));
-        }else if (clazz.isArray()){
+        }else if (inputClass.isArray()){
             byteList.add(arrayToBytes(input));
         }else{
             byteList.add(entityToBytes(input));;
@@ -37,8 +41,7 @@ public class TLVSerializeUtil {
     }
 
 
-    private static byte[] primitiveToBytes(Object input){
-        Class<?> inputClass = input.getClass();
+    private static byte[] primitiveToBytes(Object input,Class inputClass){
         byte[] valueBytes = TypeHandleFactory.toByte(inputClass, input);
         byte tag = generateTag(inputClass, valueBytes);
         // 计算总长度
@@ -74,8 +77,9 @@ public class TLVSerializeUtil {
             if (annotation!=null && !annotation.serialize()){
                 continue;
             }
+            Class<?> fieldType = field.getType();
             Object fieldValue = MethodUtil.getFieldValue(field, input);
-            byte[] serialize = serialize(fieldValue);
+            byte[] serialize = serialize(fieldValue,fieldType);
             byteList.add(serialize);
         }
         return ByteUtil.mergeByteArrayList(byteList);
@@ -85,19 +89,31 @@ public class TLVSerializeUtil {
         if (input==null){
             return null;
         }
+
         List<Object> objectList = (List<Object>) input;
         if (objectList != null && objectList.size() == 0) {
             return new byte[1];
         }
         List<byte[]> byteList = new ArrayList<>();
         for (Object obj : objectList) {
-            byteList.add(serialize(obj));
+            byteList.add(serialize(obj,obj.getClass()));
         }
         return ByteUtil.mergeByteArrayList(byteList);
     }
 
     private static byte[] arrayToBytes(Object input){
-        return null;
+        if (input==null){
+            return null;
+        }
+        Object[] arrayValue = (Object[])input;
+        if (arrayValue!=null && arrayValue.length==0){
+            return new byte[1];
+        }
+        List<byte[]> byteList=new ArrayList<>();
+        for (Object array : arrayValue) {
+            byteList.add(serialize(array,array.getClass()));
+        }
+        return ByteUtil.mergeByteArrayList(byteList);
     }
 
 

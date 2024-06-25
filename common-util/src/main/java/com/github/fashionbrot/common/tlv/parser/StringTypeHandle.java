@@ -11,6 +11,9 @@ public class StringTypeHandle implements TypeHandle {
 
     @Override
     public byte[] toByte(Object value) {
+        if (value==null){
+            return new byte[]{};
+        }
         if (((String)value).length()==0){
             return new byte[1];
         }

@@ -6,10 +6,8 @@ import lombok.Data;
  * @author fashionbrot
  */
 @Data
-public class Test1Entity {
+public class Test2ChildEntity {
 
-    private int a1;
-
-    private String s1;
+    private Long l1;
 
 }

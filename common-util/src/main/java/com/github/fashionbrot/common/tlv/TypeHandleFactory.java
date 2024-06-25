@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TypeHandleFactory {
 
+    private static final byte[] BYTE_EMPTY = new byte[]{};
     private static Map<Class,TypeHandle> TYPE_HANDLE_MAP=new ConcurrentHashMap<>();
     static {
         addTypeHandle(new IntegerTypeHandle(),Integer.class,int.class);
@@ -60,6 +61,9 @@ public class TypeHandleFactory {
     }
 
     public static byte[] toByte(Class type,Object value){
+        if (value==null){
+            return BYTE_EMPTY;
+        }
         TypeHandle typeHandle = getTypeHandle(type);
         return typeHandle.toByte(value);
     }
