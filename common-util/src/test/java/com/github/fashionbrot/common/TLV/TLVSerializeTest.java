@@ -4,12 +4,17 @@ import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.TLV.entity.Test1Entity;
 import com.github.fashionbrot.common.TLV.entity.Test2ChildEntity;
 import com.github.fashionbrot.common.TLV.entity.Test2Entity;
+import com.github.fashionbrot.common.TLVBuffer.ArrayBeanTest;
+import com.github.fashionbrot.common.TLVBuffer.ListObjectTest;
+import com.github.fashionbrot.common.tlv.TLVBufferUtil;
 import com.github.fashionbrot.common.tlv.TLVDeserializeUtil;
 import com.github.fashionbrot.common.tlv.TLVSerializeUtil;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
+import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,5 +140,75 @@ public class TLVSerializeTest {
 
     }
 
+
+    @Data
+    public static class ListChildEntity{
+        private String abc;
+    }
+
+    @Data
+    public static class ListBeanEntity{
+        private ListChildEntity[] a1;
+        private ListChildEntity[] b1;
+        private ListChildEntity[] c1;
+    }
+
+    @Test
+    public void test6()  {
+
+        ListChildEntity childEntity=new ListChildEntity();
+        childEntity.setAbc("1");
+
+        ListBeanEntity beanEntity=new ListBeanEntity();
+        beanEntity.setA1(new ListChildEntity[]{childEntity});
+        beanEntity.setB1(new ListChildEntity[]{});
+        beanEntity.setC1(null);
+
+
+        byte[] bytes = TLVSerializeUtil.serialize(beanEntity);
+        System.out.println(Arrays.toString(bytes));
+        System.out.println(bytes.length);
+
+        ListBeanEntity deserialized = TLVDeserializeUtil.deserialize(ListBeanEntity.class, bytes);
+        System.out.println(deserialized);
+
+        Assert.assertEquals(beanEntity.getA1()[0].getAbc(),childEntity.getAbc());
+    }
+
+
+
+
+    @Data
+    public static class ListObjectEntity{
+        private List<Object> a1;
+//        private List<Object> b1;
+//        private List c1;
+    }
+    @Test
+    public void test7()  {
+
+        List<Object> a1 = Arrays.asList(1, "2");
+
+        ArrayList b1 = new ArrayList<>();
+        b1.add("b1");
+
+        ListObjectEntity beanEntity=new ListObjectEntity();
+        beanEntity.setA1(a1);
+//        beanEntity.setB1(b1);
+//        beanEntity.setC1(null);
+
+
+        byte[] bytes = TLVSerializeUtil.serialize( beanEntity);
+        System.out.println(bytes.length);
+        System.out.println(Arrays.toString(bytes));
+
+        ListObjectEntity deserialized = TLVDeserializeUtil.deserialize(ListObjectEntity.class, bytes);
+        System.out.println(deserialized);
+//        System.out.println(a1.get(0));
+        Assert.assertEquals(a1.get(0),deserialized.getA1().get(0));
+        Assert.assertEquals(a1.get(1),deserialized.getA1().get(1));
+//        Assert.assertEquals(a1.get(2),deserialized.getA1().get(2));
+//        Assert.assertEquals(b1.get(0),deserialized.getB1().get(0));
+    }
 
 }

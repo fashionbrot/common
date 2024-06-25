@@ -64,11 +64,33 @@ public class TLVSerializeUtil {
         return result;
     }
 
+    private static byte[] listOrArrayToByte(byte[] listValue,Class type){
+        byte tag = generateTag(type, listValue);
+        // 计算总长度
+        byte[] lengthBytes = TLVTypeUtil.encodeVarInteger(listValue.length);
+        int totalLength = 1 + lengthBytes.length + listValue.length;
+        // 创建结果数组
+        byte[] result = new byte[totalLength];
+        // 填充结果数组
+        int currentIndex = 0;
+        // 添加 tag
+        result[currentIndex++] = tag;
+        // 添加 length
+        for (byte b : lengthBytes) {
+            result[currentIndex++] = b;
+        }
+        // 添加 valueBytes
+        for (byte b : listValue) {
+            result[currentIndex++] = b;
+        }
+        return result;
+    }
+
     private static byte[] entityToBytes(Object input){
         Class<?> inputClass = input.getClass();
         List<Field> fieldList = getSortedClassField(inputClass);
         if (fieldList == null || fieldList.isEmpty()) {
-            return new byte[]{};
+            return ByteUtil.BYTE_ARRAY_EMPTY;
         }
 
         List<byte[]> byteList=new ArrayList<>();
@@ -78,9 +100,21 @@ public class TLVSerializeUtil {
                 continue;
             }
             Class<?> fieldType = field.getType();
-            Object fieldValue = MethodUtil.getFieldValue(field, input);
-            byte[] serialize = serialize(fieldValue,fieldType);
-            byteList.add(serialize);
+            if (List.class.isAssignableFrom(fieldType)){
+                Object fieldValue = MethodUtil.getFieldValue(field, input);
+                byte[] serialize = serialize(fieldValue,fieldType);
+                byteList.add(listOrArrayToByte(serialize, fieldType));
+            }else if (fieldType.isArray()){
+                Object fieldValue = MethodUtil.getFieldValue(field, input);
+                byte[] serialize = serialize(fieldValue,fieldType);
+                byteList.add(listOrArrayToByte(serialize, fieldType));
+            }else{
+                Object fieldValue = MethodUtil.getFieldValue(field, input);
+                byte[] serialize = serialize(fieldValue,fieldType);
+                byteList.add(serialize);
+            }
+
+
         }
         return ByteUtil.mergeByteArrayList(byteList);
     }
@@ -92,7 +126,7 @@ public class TLVSerializeUtil {
 
         List<Object> objectList = (List<Object>) input;
         if (objectList != null && objectList.size() == 0) {
-            return new byte[1];
+            return ByteUtil.BYTE_ARRAY_ONE;
         }
         List<byte[]> byteList = new ArrayList<>();
         for (Object obj : objectList) {
@@ -107,7 +141,7 @@ public class TLVSerializeUtil {
         }
         Object[] arrayValue = (Object[])input;
         if (arrayValue!=null && arrayValue.length==0){
-            return new byte[1];
+            return ByteUtil.BYTE_ARRAY_ONE;
         }
         List<byte[]> byteList=new ArrayList<>();
         for (Object array : arrayValue) {

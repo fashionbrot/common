@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class ByteUtil {
 
+    public static final byte[] BYTE_ARRAY_EMPTY = new byte[]{};
+    public static final byte[] BYTE_ARRAY_ONE = new byte[1];
 
     public static void main(String[] args) {
         byte[] newArray=new byte[10];

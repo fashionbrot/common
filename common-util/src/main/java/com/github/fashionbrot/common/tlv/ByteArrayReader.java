@@ -59,4 +59,8 @@ public  class ByteArrayReader {
     public boolean isReadComplete() {
         return lastReadIndex == data.length;
     }
+
+    public boolean isCollectionEmpty(){
+        return this.data.length==1 && data[0] == 0x00;
+    }
 }

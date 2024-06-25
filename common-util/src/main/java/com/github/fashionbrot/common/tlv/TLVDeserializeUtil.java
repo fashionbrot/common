@@ -43,6 +43,9 @@ public class TLVDeserializeUtil {
 
     public static <T> List<T> deserializeList(Class<T> clazz,ByteArrayReader reader)  {
         List<T> list= new ArrayList<>();
+        if (reader.isCollectionEmpty()){
+            return list;
+        }
         while (!reader.isReadComplete()){
             list.add(deserializeEntity(clazz, reader));
         }
@@ -54,6 +57,9 @@ public class TLVDeserializeUtil {
     }
 
     public static <T> T[] deserializeArray(Class<T> clazz,ByteArrayReader reader) {
+        if (reader.isCollectionEmpty()){
+            return MethodUtil.newArrayInstance(clazz,0);
+        }
         List<Object> list=new ArrayList<>();
         while (!reader.isReadComplete()){
             list.add(deserialize(clazz,clazz, reader));
@@ -82,12 +88,19 @@ public class TLVDeserializeUtil {
             Class deserializeClass =  field.getType();
             if (List.class.isAssignableFrom(type)){
                 deserializeClass = getListGenericClass(field);
+                byte[] nextBytes = getNextBytes(reader);
+                Object fieldValue = deserialize(type,deserializeClass, new ByteArrayReader(nextBytes));
+                MethodUtil.setFieldValue(field,instance,fieldValue);
             }else if (type.isArray()){
                 deserializeClass = type.getComponentType();
+                byte[] nextBytes = getNextBytes(reader);
+                Object fieldValue = deserialize(type,deserializeClass, new ByteArrayReader(nextBytes));
+                MethodUtil.setFieldValue(field,instance,fieldValue);
+            }else{
+                Object fieldValue = deserialize(type,deserializeClass, reader);
+                MethodUtil.setFieldValue(field,instance,fieldValue);
             }
 
-            Object fieldValue = deserialize(type,deserializeClass, reader);
-            MethodUtil.setFieldValue(field,instance,fieldValue);
         }
         return instance;
     }
@@ -104,7 +117,7 @@ public class TLVDeserializeUtil {
 
         int valueByteLength = TLVTypeUtil.decodeVarInteger(reader.readFromTo(readIndex + 1, readIndex + 1 + valueByteLengthLength));
         if (valueByteLength==0){
-            return new byte[]{};
+            return ByteUtil.BYTE_ARRAY_EMPTY;
         }
         return reader.readFromTo(readIndex +1+ valueByteLengthLength, readIndex +1 + valueByteLengthLength+ valueByteLength);
     }
