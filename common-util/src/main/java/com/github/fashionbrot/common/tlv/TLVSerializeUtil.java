@@ -78,7 +78,7 @@ public class TLVSerializeUtil {
             byte[] serialize = serialize(fieldValue);
             byteList.add(serialize);
         }
-        return mergeByteArrayList(byteList);
+        return ByteUtil.mergeByteArrayList(byteList);
     }
 
     private static byte[] listToBytes(Object input){
@@ -93,7 +93,7 @@ public class TLVSerializeUtil {
         for (Object obj : objectList) {
             byteList.add(serialize(obj));
         }
-        return mergeByteArrayList(byteList);
+        return ByteUtil.mergeByteArrayList(byteList);
     }
 
     private static byte[] arrayToBytes(Object input){
@@ -158,27 +158,6 @@ public class TLVSerializeUtil {
         return null;
     }
 
-    // 将 List 中的 byte[] 数组合并为一个单独的字节数组
-    public static byte[] mergeByteArrayList(List<byte[]> list) {
-        // 计算总长度
-        int totalLength = 0;
-        for (byte[] array : list) {
-            if (array != null && array.length > 0) {
-                totalLength += array.length;
-            }
-        }
-        // 创建结果数组
-        byte[] result = new byte[totalLength];
-        // 合并字节数组
-        int currentIndex = 0;
-        for (byte[] array : list) {
-            if (array != null && array.length > 0) {
-                for (byte b : array) {
-                    result[currentIndex++] = b;
-                }
-            }
-        }
-        return result;
-    }
+
 
 }
