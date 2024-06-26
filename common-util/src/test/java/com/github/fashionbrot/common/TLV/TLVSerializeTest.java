@@ -181,7 +181,7 @@ public class TLVSerializeTest {
     @Data
     public static class ListObjectEntity{
         private List<Object> a1;
-        private List<Object> b1;
+        private Object[] b1;
         private List c1;
     }
     @Test
@@ -189,8 +189,7 @@ public class TLVSerializeTest {
 
         List<Object> a1 = Arrays.asList(1, "你好");
 
-        ArrayList b1 = new ArrayList<>();
-        b1.add("b1");
+        Object[] b1 = {1,"2"};
 
         ListObjectEntity beanEntity=new ListObjectEntity();
         beanEntity.setA1(a1);
