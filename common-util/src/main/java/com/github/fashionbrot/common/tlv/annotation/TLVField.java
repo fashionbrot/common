@@ -14,7 +14,7 @@ public @interface TLVField {
 
     /**
      * 是否序列化
-     * @return
+     * @return boolean
      */
     boolean serialize() default true;
 }

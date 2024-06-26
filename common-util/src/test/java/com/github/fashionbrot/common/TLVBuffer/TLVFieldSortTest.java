@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import com.github.fashionbrot.common.tlv.annotation.TLVField;
 import com.github.fashionbrot.common.util.ObjectUtil;
 import lombok.Data;
@@ -31,10 +31,10 @@ public class TLVFieldSortTest {
         tlvEntity.setB1("2");
         tlvEntity.setC1(3);
 
-        byte[] serialize = TLVBufferUtil.serialize(tlvEntity);
+        byte[] serialize = TLVUtil.serialize(tlvEntity);
         System.out.println(Arrays.toString(serialize));
 
-        TLVEntity deserialize = TLVBufferUtil.deserialize(TLVEntity.class, serialize);
+        TLVEntity deserialize = TLVUtil.deserialize(TLVEntity.class, serialize);
         System.out.println(deserialize);
 
         Assert.assertTrue(deserialize.getA1()==null);

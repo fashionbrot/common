@@ -1,4 +1,4 @@
-package com.github.fashionbrot.common.TLVBuffer;
+package com.github.fashionbrot.common.TLV;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.fashionbrot.common.TLVBuffer.entity.JsEntity1;

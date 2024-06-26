@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,9 +20,9 @@ public class BooleanTest {
         BooleanEntity entity=new BooleanEntity();
         entity.setA1(Boolean.TRUE);
         entity.setB1(Boolean.FALSE);
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
 
-        BooleanEntity deserialized = TLVBufferUtil.deserialize(BooleanEntity.class, bytes);
+        BooleanEntity deserialized = TLVUtil.deserialize(BooleanEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.isB1(),deserialized.isB1());
@@ -33,9 +33,9 @@ public class BooleanTest {
         BooleanEntity entity=new BooleanEntity();
         entity.setA1(null);
         entity.setB1(false);
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
 
-        BooleanEntity deserialized = TLVBufferUtil.deserialize(BooleanEntity.class, bytes);
+        BooleanEntity deserialized = TLVUtil.deserialize(BooleanEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.isB1(),deserialized.isB1());

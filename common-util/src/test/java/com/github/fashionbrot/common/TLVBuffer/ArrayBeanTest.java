@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,9 +33,9 @@ public class ArrayBeanTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVBufferUtil.serialize(beanEntity);
+        byte[] bytes = TLVUtil.serialize(beanEntity);
 
-        ListBeanEntity deserialized = TLVBufferUtil.deserialize(ListBeanEntity.class, bytes);
+        ListBeanEntity deserialized = TLVUtil.deserialize(ListBeanEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(beanEntity.getA1()[0].getAbc(),childEntity.getAbc());
     }
@@ -58,9 +58,9 @@ public class ArrayBeanTest {
         entity2.setB1(new Object[]{});
         entity2.setC1(null);
 
-        byte[] bytes = TLVBufferUtil.serialize(entity2);
+        byte[] bytes = TLVUtil.serialize(entity2);
 
-        ListBeanEntity2 deserialized = TLVBufferUtil.deserialize(ListBeanEntity2.class, bytes);
+        ListBeanEntity2 deserialized = TLVUtil.deserialize(ListBeanEntity2.class, bytes);
         System.out.println(deserialized);
         Assert.assertArrayEquals(entity2.getA1(),deserialized.getA1());
         Assert.assertArrayEquals(entity2.getB1(),deserialized.getB1());
@@ -87,10 +87,10 @@ public class ArrayBeanTest {
         ListBeanEntity3 listBeanEntity3= new ListBeanEntity3();
         listBeanEntity3.setA1(new ListBeanEntity4[]{listBeanEntity4});
 
-        byte[] bytes = TLVBufferUtil.serialize(listBeanEntity3);
+        byte[] bytes = TLVUtil.serialize(listBeanEntity3);
         System.out.println(Arrays.toString(bytes));
 
-        ListBeanEntity3 deserialized = TLVBufferUtil.deserialize(ListBeanEntity3.class, bytes);
+        ListBeanEntity3 deserialized = TLVUtil.deserialize(ListBeanEntity3.class, bytes);
         System.out.println(deserialized);
         Assert.assertArrayEquals(listBeanEntity3.getA1(),deserialized.getA1());
         Assert.assertArrayEquals(listBeanEntity3.getA1()[0].getA1(),deserialized.getA1()[0].getA1());

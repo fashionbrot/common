@@ -1,20 +1,12 @@
 package com.github.fashionbrot.common.TLV;
 
 import com.alibaba.fastjson2.JSON;
-import com.github.fashionbrot.common.TLV.entity.Test1Entity;
-import com.github.fashionbrot.common.TLV.entity.Test2ChildEntity;
-import com.github.fashionbrot.common.TLV.entity.Test2Entity;
-import com.github.fashionbrot.common.TLVBuffer.ArrayBeanTest;
-import com.github.fashionbrot.common.TLVBuffer.ListObjectTest;
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
-import com.github.fashionbrot.common.tlv.TLVDeserializeUtil;
-import com.github.fashionbrot.common.tlv.TLVSerializeUtil;
-import com.github.fashionbrot.common.util.BigDecimalUtil;
+import com.github.fashionbrot.common.TLV.entity.*;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,13 +23,13 @@ public class TLVSerializeTest {
 
         Integer abc= 11;
 
-        byte[] serialize = TLVSerializeUtil.serialize(abc);
+        byte[] serialize = TLVUtil.serialize(abc);
         System.out.println(serialize.length);
         System.out.println(Arrays.toString(serialize));
         byte[] expected = new byte[]{32, 1, 11};
         Assert.assertTrue("基本类型序列化失败",Arrays.equals(expected,serialize));
 
-        Integer deserialize = TLVDeserializeUtil.deserialize(abc.getClass(), serialize);
+        Integer deserialize = TLVUtil.deserialize(abc.getClass(), serialize);
         System.out.println(deserialize);
         Assert.assertEquals("基本类型反序列化失败",abc,deserialize);
     }
@@ -49,7 +41,7 @@ public class TLVSerializeTest {
         entity.setA1(12);
         entity.setS1("你好");
 
-        byte[] serialize = TLVSerializeUtil.serialize(entity);
+        byte[] serialize = TLVUtil.serialize(entity);
         System.out.println(serialize.length);
         System.out.println(Arrays.toString(serialize));
 
@@ -57,7 +49,7 @@ public class TLVSerializeTest {
 
         Assert.assertTrue("Entity序列化失败",Arrays.equals(expected,serialize));
 
-        Test1Entity deserialize = TLVDeserializeUtil.deserialize(Test1Entity.class, serialize);
+        Test1Entity deserialize = TLVUtil.deserialize(Test1Entity.class, serialize);
         System.out.println(deserialize.toString());
         Assert.assertEquals("基本类型反序列化失败",entity.toString(),deserialize.toString());
     }
@@ -76,14 +68,14 @@ public class TLVSerializeTest {
         entityList.add(entity);
         entityList.add(entity1);
 
-        byte[] serialize = TLVSerializeUtil.serialize(entityList);
+        byte[] serialize = TLVUtil.serialize(entityList);
         System.out.println(serialize.length);
         System.out.println(Arrays.toString(serialize));
 
         byte[] expected = new byte[]{32, 1, 12, 64, 0, 32, 1, 13, 64, 0};
         Assert.assertTrue("ListEntity序列化失败",Arrays.equals(expected,serialize));
 
-        List<Test1Entity> deserialize = TLVDeserializeUtil.deserializeList(Test1Entity.class, serialize);
+        List<Test1Entity> deserialize = TLVUtil.deserializeList(Test1Entity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
         System.out.println(JSON.toJSONString(deserialize).toString().getBytes().length);
 
@@ -100,7 +92,7 @@ public class TLVSerializeTest {
 
         Test1Entity[] entityList ={entity,entity1};
 
-        byte[] serialize = TLVSerializeUtil.serialize(entityList);
+        byte[] serialize = TLVUtil.serialize(entityList);
         System.out.println(serialize.length);
         System.out.println(Arrays.toString(serialize));
 
@@ -108,7 +100,7 @@ public class TLVSerializeTest {
         Assert.assertTrue("ArrayEntity序列化失败",Arrays.equals(expected,serialize));
 
 
-        Test1Entity[] deserialize = TLVDeserializeUtil.deserializeArray(Test1Entity.class, serialize);
+        Test1Entity[] deserialize = TLVUtil.deserializeArray(Test1Entity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
         System.out.println(JSON.toJSONString(deserialize).toString().getBytes().length);
 
@@ -126,13 +118,13 @@ public class TLVSerializeTest {
         entity.setArray(new Test2ChildEntity[]{child});
         entity.setList(Arrays.asList(child));
 
-        byte[] serialize = TLVSerializeUtil.serialize(entity);
+        byte[] serialize = TLVUtil.serialize(entity);
         System.out.println(serialize.length);
         System.out.println(Arrays.toString(serialize));
         byte[] expected = new byte[]{48, 0};
 
 
-        Test2Entity deserialize = TLVDeserializeUtil.deserialize(Test2Entity.class, serialize);
+        Test2Entity deserialize = TLVUtil.deserialize(Test2Entity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
         System.out.println(JSON.toJSONString(deserialize).toString().getBytes().length);
 
@@ -165,11 +157,11 @@ public class TLVSerializeTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVSerializeUtil.serialize(beanEntity);
+        byte[] bytes = TLVUtil.serialize(beanEntity);
         System.out.println(Arrays.toString(bytes));
         System.out.println(bytes.length);
 
-        ListBeanEntity deserialized = TLVDeserializeUtil.deserialize(ListBeanEntity.class, bytes);
+        ListBeanEntity deserialized = TLVUtil.deserialize(ListBeanEntity.class, bytes);
         System.out.println(deserialized);
 
         Assert.assertEquals(beanEntity.getA1()[0].getAbc(),childEntity.getAbc());
@@ -197,14 +189,84 @@ public class TLVSerializeTest {
         beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVSerializeUtil.serialize( beanEntity);
+        byte[] bytes = TLVUtil.serialize( beanEntity);
         System.out.println(bytes.length);
         System.out.println(Arrays.toString(bytes));
 
-        ListObjectEntity deserialized = TLVDeserializeUtil.deserialize(ListObjectEntity.class, bytes);
+        ListObjectEntity deserialized = TLVUtil.deserialize(ListObjectEntity.class, bytes);
         System.out.println(deserialized);
 
         Assert.assertTrue("test7失败",Objects.equals(beanEntity,deserialized));
     }
+
+
+
+    @Data
+    public static class ListBeanEntity3{
+        private ListBeanEntity4[] a1;
+
+    }
+
+    @Data
+    public static class ListBeanEntity4{
+        private Object[] a1;
+    }
+
+    @Test
+    public void test8()  {
+        ListBeanEntity4 listBeanEntity4=new ListBeanEntity4();
+        listBeanEntity4.setA1(new Object[]{1,2,'A'});
+
+        ListBeanEntity3 listBeanEntity3= new ListBeanEntity3();
+        listBeanEntity3.setA1(new ListBeanEntity4[]{listBeanEntity4});
+
+        byte[] bytes = TLVUtil.serialize(listBeanEntity3);
+        System.out.println(Arrays.toString(bytes));
+        System.out.println(JSON.toJSONString(listBeanEntity3).getBytes().length);
+
+        ListBeanEntity3 deserialized = TLVUtil.deserialize(ListBeanEntity3.class, bytes);
+        System.out.println(deserialized);
+        Assert.assertArrayEquals(listBeanEntity3.getA1(),deserialized.getA1());
+        Assert.assertArrayEquals(listBeanEntity3.getA1()[0].getA1(),deserialized.getA1()[0].getA1());
+        System.out.println(JSON.toJSONString(deserialized));
+    }
+
+
+    @Test
+    public void test9(){
+
+        Test2ChildEntity childEntity=new Test2ChildEntity();
+        childEntity.setL1(1L);
+
+        Test2ChildEntity childEntity2=new Test2ChildEntity();
+        childEntity2.setL1(2L);
+
+        Test2Entity entity=new Test2Entity();
+        entity.setArray(new Test2ChildEntity[]{childEntity2,childEntity});
+        entity.setList(Arrays.asList(childEntity,childEntity2));
+
+
+        PageResponse pageResponse=new PageResponse();
+        pageResponse.setRows(Arrays.asList(entity));
+        pageResponse.setTotal(1);
+
+
+        Response response=new Response();
+        response.setData(pageResponse);
+        response.setCode(0);
+        response.setMsg("成功");
+
+
+        byte[] bytes = TLVUtil.serialize(response);
+        System.out.println(Arrays.toString(bytes));
+        System.out.println(bytes.length);
+
+        Response deserialize = TLVUtil.deserialize(Response.class, bytes);
+        String jsonString = JSON.toJSONString(deserialize);
+        System.out.println(jsonString);
+        System.out.println(jsonString.getBytes().length);
+        Assert.assertTrue(Objects.equals(response,deserialize));
+    }
+
 
 }

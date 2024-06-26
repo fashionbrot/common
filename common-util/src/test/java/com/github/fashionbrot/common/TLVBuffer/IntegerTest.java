@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import com.github.fashionbrot.common.tlv.annotation.TLVField;
 import lombok.Data;
 import org.junit.Assert;
@@ -25,9 +25,9 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(Integer.MAX_VALUE);
         entity.setB1(Integer.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
 
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -38,10 +38,10 @@ public class IntegerTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(0);
         entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serialize(entity);
+        byte[] bytes = TLVUtil.serialize(entity);
         System.out.println(Arrays.toString(bytes));
 
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -50,10 +50,10 @@ public class IntegerTest {
     @Test
     public void test3(){
         Integer abc = 12;
-        byte[] bytes = TLVBufferUtil.serialize(abc);
+        byte[] bytes = TLVUtil.serialize(abc);
         System.out.println(Arrays.toString(bytes));
 
-        Integer deserialized = TLVBufferUtil.deserialize(Integer.class, bytes);
+        Integer deserialized = TLVUtil.deserialize(Integer.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(abc,deserialized);
     }

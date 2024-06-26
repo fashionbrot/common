@@ -7,7 +7,7 @@ import com.github.fashionbrot.common.TLVBuffer.entity.Test1Child;
 import com.github.fashionbrot.common.date.LocalDateTimeUtil;
 import com.github.fashionbrot.common.date.LocalDateUtil;
 import com.github.fashionbrot.common.date.LocalTimeUtil;
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -77,11 +77,11 @@ public class Test {
         System.out.println(JSON.toJSONString(entity));
         System.out.println(JSON.toJSONString(entity).getBytes(StandardCharsets.UTF_8).length);
 
-        byte[] serialize = TLVBufferUtil.serialize(entity);
+        byte[] serialize = TLVUtil.serialize(entity);
         System.out.println(Arrays.toString(serialize));
         System.out.println(serialize.length);
 
-        JsEntity1 deserialize = TLVBufferUtil.deserialize(JsEntity1.class, serialize);
+        JsEntity1 deserialize = TLVUtil.deserialize(JsEntity1.class, serialize);
         System.out.println(deserialize);
     }
 
@@ -98,11 +98,11 @@ public class Test {
         t.setC1(child);
 //        t.setList1(Arrays.asList(child));
 
-        byte[] serialize = TLVBufferUtil.serialize(t);
+        byte[] serialize = TLVUtil.serialize(t);
         System.out.println(Arrays.toString(serialize));
         System.out.println(serialize.length);
 
-        Test1 deserialize = TLVBufferUtil.deserialize(Test1.class, serialize);
+        Test1 deserialize = TLVUtil.deserialize(Test1.class, serialize);
         System.out.println(deserialize);
     }
 }

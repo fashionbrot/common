@@ -7,7 +7,7 @@ import com.github.fashionbrot.common.date.LocalTimeUtil;
 import com.github.fashionbrot.common.entity.LLVEntity;
 import com.github.fashionbrot.common.entity.LVVListEntity;
 import com.github.fashionbrot.common.util.BigDecimalUtil;
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 
 import java.io.IOException;
@@ -20,12 +20,12 @@ public class LLvBufferUtilTest {
     public static void main(String[] args) throws IOException, DataFormatException {
         long l = System.currentTimeMillis();
 
-//        for (int i = 0; i < 1000; i++) {
-//            test();
-//        }
+        for (int i = 0; i < 10000; i++) {
+            test();
+        }
 
 //        test();
-        test();
+//        test();
 
         System.out.println(System.currentTimeMillis()-l);
     }
@@ -64,7 +64,7 @@ public class LLvBufferUtilTest {
         build.setD1(2222L);
 
         System.out.println("原始数据json序列化长度："+ JSON.toJSONString(build).getBytes().length+" byte");
-        byte[] serialize = TLVBufferUtil.serialize( build);
+        byte[] serialize = TLVUtil.serialize( build);
         System.out.println("自己实现序列化长度："+serialize.length+" byte");
         System.out.println(Arrays.toString(serialize));
 
@@ -76,7 +76,7 @@ public class LLvBufferUtilTest {
 //        System.out.println(inputStream.isReadComplete());
 
 
-        LLVEntity deserialize = TLVBufferUtil.deserialize(LLVEntity.class, serialize);
+        LLVEntity deserialize = TLVUtil.deserialize(LLVEntity.class, serialize);
         System.out.println(JSON.toJSONString(deserialize));
 //
 //        byte[] compress = GzipUtil.compress(JSON.toJSONString(build));

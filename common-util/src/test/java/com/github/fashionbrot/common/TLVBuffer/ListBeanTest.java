@@ -3,7 +3,7 @@ package com.github.fashionbrot.common.TLVBuffer;
 import com.github.fashionbrot.common.TLVBuffer.entity.Test1;
 import com.github.fashionbrot.common.TLVBuffer.entity.Test1Child;
 import com.github.fashionbrot.common.tlv.ByteArrayReader;
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,10 +39,10 @@ public class ListBeanTest {
 //        beanEntity.setC1(null);
 
 
-        byte[] bytes = TLVBufferUtil.serialize( beanEntity);
+        byte[] bytes = TLVUtil.serialize( beanEntity);
         System.out.println(Arrays.toString(bytes));
 
-        ListBeanEntity deserialized = TLVBufferUtil.deserialize(ListBeanEntity.class, bytes);
+        ListBeanEntity deserialized = TLVUtil.deserialize(ListBeanEntity.class, bytes);
         System.out.println(deserialized);
 //        Assert.assertEquals(beanEntity.getA1().get(0).getAbc(),childEntity.getAbc());
     }
@@ -63,10 +63,10 @@ public class ListBeanTest {
         childEntity2.setAbc("222222");
 
 
-        byte[] bytes = TLVBufferUtil.serialize(Arrays.asList(childEntity,childEntity2));
+        byte[] bytes = TLVUtil.serialize(Arrays.asList(childEntity,childEntity2));
         System.out.println(Arrays.toString(bytes));
 
-        List<ListChildEntity> deserialized = TLVBufferUtil.deserializeList(ListChildEntity.class, (bytes));
+        List<ListChildEntity> deserialized = TLVUtil.deserializeList(ListChildEntity.class, (bytes));
         System.out.println(deserialized);
         Assert.assertEquals(childEntity.getAbc(),deserialized.get(0).getAbc());
         Assert.assertEquals(childEntity2.getAbc(),deserialized.get(1).getAbc());
@@ -85,11 +85,11 @@ public class ListBeanTest {
         t.setC1(child);
 //        t.setList1(Arrays.asList(child));
 
-        byte[] serialize = TLVBufferUtil.serialize(t);
+        byte[] serialize = TLVUtil.serialize(t);
         System.out.println(Arrays.toString(serialize));
         System.out.println(serialize.length);
 
-        Test1 deserialize = TLVBufferUtil.deserialize(Test1.class, serialize);
+        Test1 deserialize = TLVUtil.deserialize(Test1.class, serialize);
         System.out.println(deserialize);
         Assert.assertEquals(t.getA1(),deserialize.getA1());
         Assert.assertEquals(t.getC1().getB1(),deserialize.getC1().getB1());

@@ -1,6 +1,6 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,9 +21,9 @@ public class LongTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(Long.MAX_VALUE);
         entity.setB1(Long.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serialize(entity);
+        byte[] bytes = TLVUtil.serialize(entity);
         System.out.println(Arrays.toString(bytes));
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -34,9 +34,9 @@ public class LongTest {
         IntegerEntity entity=new IntegerEntity();
         entity.setA1(null);
         entity.setB1(100L);
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
         System.out.println(Arrays.toString(bytes));
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
+        IntegerEntity deserialized = TLVUtil.deserialize(IntegerEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());

@@ -1,7 +1,7 @@
 package com.github.fashionbrot.common.TLVBuffer;
 
 import com.github.fashionbrot.common.util.BigDecimalUtil;
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
+import com.github.fashionbrot.common.tlv.TLVUtil;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,9 +23,9 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(BigDecimal.ZERO);
         entity.setB1(BigDecimalUtil.format("0.00000000001"));
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
 
-        BigDecimalEntity deserialized = TLVBufferUtil.deserialize(BigDecimalEntity.class, bytes);
+        BigDecimalEntity deserialized = TLVUtil.deserialize(BigDecimalEntity.class, bytes);
         System.out.println(deserialized);
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
@@ -37,9 +37,9 @@ public class BigDecimalTest {
         BigDecimalEntity entity=new BigDecimalEntity();
         entity.setA1(null);
         entity.setB1(BigDecimalUtil.format("1"));
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+        byte[] bytes = TLVUtil.serialize( entity);
         System.out.println(Arrays.toString(bytes));
-        BigDecimalEntity deserialized = TLVBufferUtil.deserialize(BigDecimalEntity.class, bytes);
+        BigDecimalEntity deserialized = TLVUtil.deserialize(BigDecimalEntity.class, bytes);
         System.out.println(deserialized.toString());
         Assert.assertEquals(entity.getA1(),deserialized.getA1());
         Assert.assertEquals(entity.getB1(),deserialized.getB1());
