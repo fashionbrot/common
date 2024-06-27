@@ -5,65 +5,47 @@
 
 ### 工具包
 ```gradle
-implementation "com.github.fashionbrot:common-util:0.1.3"
+implementation "com.github.fashionbrot:common-util:0.1.4"
 ```
 
 ### 增加 tlv 序列化
 ```java
-package com.github.fashionbrot.common.TLVBuffer;
-
-import com.github.fashionbrot.common.tlv.TLVBufferUtil;
-import lombok.Data;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
-public class IntegerTest {
-
-    @Data
-    public static class IntegerEntity{
-        private int a1;
-        private Integer b1;
-    }
+public class TLVSerializeTest {
 
     @Test
-    public void test1() throws IOException {
-        IntegerEntity entity=new IntegerEntity();
-        entity.setA1(Integer.MAX_VALUE);
-        entity.setB1(Integer.MIN_VALUE);
-        byte[] bytes = TLVBufferUtil.serialize( entity);
+    public void test9(){
 
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
-        System.out.println(deserialized);
-        Assert.assertEquals(entity.getA1(),deserialized.getA1());
-        Assert.assertEquals(entity.getB1(),deserialized.getB1());
-    }
+        Test2ChildEntity childEntity=new Test2ChildEntity();
+        childEntity.setL1(1L);
 
-    @Test
-    public void test2() throws IOException {
-        IntegerEntity entity=new IntegerEntity();
-        entity.setA1(0);
-        entity.setB1(null);
-        byte[] bytes = TLVBufferUtil.serialize(entity);
+        Test2ChildEntity childEntity2=new Test2ChildEntity();
+        childEntity2.setL1(2L);
 
-        IntegerEntity deserialized = TLVBufferUtil.deserialize(IntegerEntity.class, bytes);
-        System.out.println(deserialized);
-        Assert.assertEquals(entity.getA1(),deserialized.getA1());
-        Assert.assertEquals(entity.getB1(),deserialized.getB1());
-    }
+        Test2Entity entity=new Test2Entity();
+        entity.setArray(new Test2ChildEntity[]{childEntity2,childEntity});
+        entity.setList(Arrays.asList(childEntity,childEntity2));
 
-    @Test
-    public void test3(){
-        Integer abc = 12;
-        byte[] bytes = TLVBufferUtil.serialize(abc);
+
+        PageResponse pageResponse=new PageResponse();
+        pageResponse.setRows(Arrays.asList(entity));
+        pageResponse.setTotal(1);
+
+
+        Response response=new Response();
+        response.setData(pageResponse);
+        response.setCode(0);
+        response.setMsg("成功");
+
+
+        byte[] bytes = TLVUtil.serialize(response);
         System.out.println(Arrays.toString(bytes));
+        System.out.println(bytes.length);
 
-        Integer deserialized = TLVBufferUtil.deserialize(Integer.class, bytes);
-        System.out.println(deserialized);
-        Assert.assertEquals(abc,deserialized);
+        Response deserialize = TLVUtil.deserialize(Response.class, bytes);
+        String jsonString = JSON.toJSONString(deserialize);
+        System.out.println(jsonString);
+        System.out.println(jsonString.getBytes().length);
+        Assert.assertTrue(Objects.equals(response,deserialize));
     }
 
 }
