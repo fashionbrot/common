@@ -127,6 +127,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.10'
 
 
+
     testImplementation 'cn.hutool:hutool-all:5.8.1'
     testImplementation "junit:junit:4.13.2"
     testImplementation 'org.slf4j:slf4j-api:1.7.10'
@@ -137,6 +138,7 @@ dependencies {
     testImplementation 'com.alibaba.fastjson2:fastjson2:2.0.8'
     testImplementation 'com.google.protobuf:protobuf-java:3.15.3'
     testImplementation 'com.google.protobuf:protobuf-java-util:3.15.3'
+    testImplementation 'com.google.code.gson:gson:2.8.6'
 }
 
 

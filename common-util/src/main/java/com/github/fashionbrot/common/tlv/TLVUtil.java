@@ -217,10 +217,11 @@ public class TLVUtil {
         if (reader.isReadComplete()) {
             return null;
         }
+
         if (TypeHandleFactory.isPrimitive(type)) {
             byte[] nextBytes = getNextBytes(reader);
             return (T) TypeHandleFactory.toJava(deserializeClass, nextBytes);
-        } else if (Object.class == type) {
+        } else if (type.isAssignableFrom(Object.class)) {
             byte[] nextBytes = getNextBytes(reader);
             return (T) TypeHandleFactory.toJava(reader.getLastBinaryType().getType()[0], nextBytes);
         } else if (List.class.isAssignableFrom(type)) {
