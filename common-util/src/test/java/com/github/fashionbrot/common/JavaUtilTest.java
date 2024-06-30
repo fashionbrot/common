@@ -17,7 +17,7 @@ public class JavaUtilTest {
         boolean array = JavaUtil.isArray(obj.getClass());
         System.out.println(array);
         Assert.assertEquals(true,array);
-        Assert.assertEquals(true,JavaUtil.isArray(obj.getClass().getTypeName()));
+        Assert.assertEquals(true,JavaUtil.isArray(obj.getClass()));
     }
 
     @Test

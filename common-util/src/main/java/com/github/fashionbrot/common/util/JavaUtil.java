@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -53,118 +54,147 @@ public class JavaUtil {
         return !isPrimitive(typeName);
     }
 
-    /**
-     * 判断Class 是集合
-     * @param  clazz  clazz
-     * @return boolean
-     */
-    public static boolean isCollection(Class clazz) {
-        return clazz!=null && Collection.class.isAssignableFrom(clazz);
+
+
+    public static boolean isCollection(Class type) {
+        return type!=null && Collection.class.isAssignableFrom(type);
+    }
+
+    public static boolean isNotCollection(Class type){
+        return !isCollection(type);
     }
 
 
-    /**
-     * 判断Class 是Map
-     * @param clazz Class
-     * @return boolean
-     */
-    public static boolean isMap(Class clazz) {
-        return clazz!=null && Map.class.isAssignableFrom(clazz);
+
+
+    public static boolean isMap(Class type) {
+        return type!=null && Map.class.isAssignableFrom(type);
+    }
+
+    public static boolean isNotMap(Class type){
+        return !isMap(type);
     }
 
 
-    /**
-     * 判断对象是 Object
-     * @param clazz Class
-     * @return boolean
-     */
-    public static boolean isObject(Class clazz){
-        return clazz!=null && clazz == Object.class;
+
+    public static boolean isObject(Class type){
+        return type!=null && type.isAssignableFrom(Object.class);
     }
 
-    /**
-     * 判断对象不是 Object
-     * @param clazz Class
-     * @return boolean
-     */
-    public static boolean isNotObject(Class clazz){
-        if (clazz==null){
+
+    public static boolean isNotObject(Class type){
+        if (type==null){
             return false;
         }
-        return !isObject(clazz);
+        return !isObject(type);
     }
 
 
-    /**
-     * 判断class TypeName 是Array
-     * @param typeName Class TypeName
-     * @return boolean
-     */
-    public static boolean isArray(String typeName) {
-        return ObjectUtil.isNotEmpty(typeName) && typeName.endsWith("[]");
+    public static boolean isArray(Class type) {
+        return type!=null && type.isArray();
     }
 
-    /**
-     * 判断class TypeName 不是Array
-     * @param typeName Class TypeName
-     * @return boolean
-     */
-    public static boolean isNotArray(String typeName){
-        return !isArray(typeName);
-    }
-
-    /**
-     * 判断Class 是Array
-     * @param clazz type name
-     * @return boolean
-     */
-    public static boolean isArray(Class clazz) {
-        return clazz!=null && clazz.isArray();
+    public static boolean isNotArray(Class type){
+        return !isArray(type);
     }
 
 
-    public static boolean isBooleanClass(Class type){
+
+    public static boolean isBoolean(Class type){
         return type!=null && (type == boolean.class ||type == Boolean.class);
     }
 
-    public static boolean isByteClass(Class type){
+    public static boolean isNotBoolean(Class type){
+        return !isBoolean(type);
+    }
+
+    public static boolean isByte(Class type){
         return type!=null && (type == byte.class ||type == Byte.class);
     }
 
-    public static boolean isCharClass(Class type){
+    public static boolean isNotByte(Class type){
+        return !isByte(type);
+    }
+
+    public static boolean isChar(Class type){
         return type!=null && (type == char.class ||type == Character.class);
     }
 
-    public static boolean isStringClass(Class type){
+    public static boolean isNotChar(Class type){
+        return !isChar(type);
+    }
+
+    public static boolean isString(Class type){
         return type!=null && (type == String.class ||type == CharSequence.class);
     }
 
-    public static boolean isFloatClass(Class type) {
+    public static boolean isNotString(Class type){
+        return !isString(type);
+    }
+
+    public static boolean isFloat(Class type) {
         return type != null && (type == float.class || type == Float.class);
     }
 
-    public static boolean isIntClass(Class type) {
+    public static boolean isNotFloat(Class type){
+        return !isFloat(type);
+    }
+
+    public static boolean isInt(Class type) {
         return type != null && (type == int.class || type == Integer.class);
     }
 
-    public static boolean isLongClass(Class type) {
+    public static boolean isNotInt(Class type){
+        return !isInt(type);
+    }
+
+    public static boolean isLong(Class type) {
         return type != null && (type == long.class || type == Long.class);
     }
 
-    public static boolean isShortClass(Class type) {
+    public static boolean isNotLong(Class type){
+        return !isLong(type);
+    }
+
+    public static boolean isShort(Class type) {
         return type != null && (type == short.class || type == Short.class);
     }
 
-    public static boolean isDoubleClass(Class type) {
+    public static boolean isNotShort(Class type){
+        return !isShort(type);
+    }
+
+    public static boolean isDouble(Class type) {
         return type != null && (type == double.class || type == Double.class);
     }
 
-    public static boolean isBigDecimalClass(Class type) {
+    public static boolean isNotDouble(Class type){
+        return !isDouble(type);
+    }
+
+    public static boolean isBigDecimal(Class type) {
         return type != null && type == BigDecimal.class;
     }
 
-    public static boolean isBigIntegerClass(Class type) {
+    public static boolean isNotBigDecimal(Class type){
+        return !isBigDecimal(type);
+    }
+
+    public static boolean isBigInteger(Class type) {
         return type != null && type == BigInteger.class;
     }
+
+    public static boolean isNotBigInteger(Class type){
+        return !isBigInteger(type);
+    }
+
+    public static boolean isDate(Class type){
+        return type!=null && type == Date.class;
+    }
+
+    public static boolean isNotDate(Class type){
+        return !isDate(type);
+    }
+
 
 }
