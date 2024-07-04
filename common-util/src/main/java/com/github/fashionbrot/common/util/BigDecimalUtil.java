@@ -34,7 +34,7 @@ public class BigDecimalUtil {
     public static BigDecimal format(final Object object) {
         if (object != null) {
             try {
-                return new BigDecimal(object.toString());
+                return new BigDecimal(ObjectUtil.toString(object));
             } catch (NumberFormatException e) {
                 log.error("formatBigDecimal object:{} error:{}", object, e);
             }
@@ -52,7 +52,7 @@ public class BigDecimalUtil {
     public static BigDecimal format(final Integer value) {
         if (value != null) {
             try {
-                return new BigDecimal(Integer.toString(value));
+                return new BigDecimal(ObjectUtil.toString(value));
             } catch (NumberFormatException e) {
                 log.error("formatBigDecimal value:{} error:{}", value, e);
             }
@@ -69,7 +69,7 @@ public class BigDecimalUtil {
     public static BigDecimal format(final Long value) {
         if (value != null) {
             try {
-                return new BigDecimal(value.toString() );
+                return new BigDecimal(ObjectUtil.toString(value) );
             } catch (Exception var2) {
                 log.error("formatBigDecimal value:{} error:{}", value, var2);
             }
@@ -86,7 +86,7 @@ public class BigDecimalUtil {
     public static BigDecimal format(final Double value) {
         if (value != null) {
             try {
-                return new BigDecimal(value.toString());
+                return new BigDecimal(ObjectUtil.toString(value));
             } catch (NumberFormatException e) {
                 log.error("formatBigDecimal value:{} error:{}", value, e);
             }
