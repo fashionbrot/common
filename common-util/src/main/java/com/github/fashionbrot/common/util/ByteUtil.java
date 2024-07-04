@@ -10,16 +10,9 @@ public class ByteUtil {
 
     public static final byte[] BYTE_ARRAY_EMPTY = new byte[]{};
     public static final byte[] BYTE_ARRAY_ONE = new byte[1];
+    public static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-    public static void main(String[] args) {
-        byte[] newArray=new byte[10];
-        newArray[0]=0;
-        newArray[1]=1;
-        // 打印新的数组
-        for (byte b : newArray) {
-            System.out.print(b + " ");
-        }
-    }
+
 
     public static byte[][] splitByDoubleZeroBytes(byte[] originalArray) {
         List<byte[]> parts = new ArrayList<>();
@@ -143,6 +136,20 @@ public class ByteUtil {
             }
         }
         return result;
+    }
+
+
+    public static final String bytesToHexStringWithSpaces(byte[] bArray) {
+        StringBuilder sb = new StringBuilder(bArray.length * 3); // 设置合理的初始容量，避免频繁扩容
+        for (int i = 0; i < bArray.length; i++) {
+            if (i > 0) {
+                sb.append(' '); // 添加空格分隔符
+            }
+            int v = bArray[i] & 0xFF;
+            sb.append(HEX_ARRAY[v >>> 4]); // 右移4位获取高位
+            sb.append(HEX_ARRAY[v & 0x0F]); // 与运算获取低位
+        }
+        return sb.toString();
     }
 
 }
