@@ -173,11 +173,9 @@ public class DateUtil {
      * @return 增加指定天数后的日期
      */
     public static Date addDays(Date date, int days) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_MONTH, days);
-        return calendar.getTime();
+        return setCalendar(date,Calendar.DAY_OF_MONTH, days);
     }
+
 
 
     /**
@@ -188,10 +186,7 @@ public class DateUtil {
      * @return 增加指定月数后的日期
      */
     public static Date addMonths(Date date, int months) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.MONTH, months);
-        return calendar.getTime();
+        return setCalendar(date,Calendar.MONTH, months);
     }
 
     /**
@@ -212,10 +207,7 @@ public class DateUtil {
      * @return 增加指定年数后的日期
      */
     public static Date addYears(Date date, int years) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.YEAR, years);
-        return calendar.getTime();
+        return setCalendar(date,Calendar.YEAR, years);
     }
 
     /**
@@ -228,7 +220,76 @@ public class DateUtil {
         return addYears(new Date(), years);
     }
 
+    /**
+     * 将指定的秒数添加到当前日期和时间。
+     * @param secondsToAdd 要添加的秒数
+     * @return 带有添加秒数后的新 {@code Date} 对象
+     */
+    public static Date addSeconds(int secondsToAdd) {
+        return setCalendar(new Date(),Calendar.SECOND, secondsToAdd);
+    }
 
+    /**
+     * 将指定的秒数添加到给定的日期。
+     * @param date 要添加秒数的日期
+     * @param secondsToAdd 要添加的秒数
+     * @return 带有添加秒数后的新 {@code Date} 对象
+     */
+    public static Date addSeconds(Date date, int secondsToAdd) {
+        return setCalendar(date,Calendar.SECOND, secondsToAdd);
+    }
+
+    /**
+     * 将指定的分钟数添加到当前日期和时间。
+     * @param minutesToAdd 要添加的分钟数
+     * @return 带有添加分钟数后的新 {@code Date} 对象
+     */
+    public static Date addMinutes( int minutesToAdd) {
+        return setCalendar(new Date(),Calendar.MINUTE, minutesToAdd);
+    }
+
+    /**
+     * 将指定的分钟数添加到给定的日期。
+     * @param date 要添加分钟数的日期
+     * @param minutesToAdd 要添加的分钟数
+     * @return 带有添加分钟数后的新 {@code Date} 对象
+     */
+    public static Date addMinutes(Date date, int minutesToAdd) {
+        return setCalendar(date,Calendar.MINUTE, minutesToAdd);
+    }
+
+    /**
+     * 将指定的小时数添加到当前日期和时间。
+     * @param hoursToAdd 要添加的小时数
+     * @return 带有添加小时数后的新 {@code Date} 对象
+     */
+    public static Date addHours( int hoursToAdd) {
+        return setCalendar(new Date(),Calendar.HOUR_OF_DAY, hoursToAdd);
+    }
+
+    /**
+     * 将指定的小时数添加到给定的日期。
+     * @param date 要添加小时数的日期
+     * @param hoursToAdd 要添加的小时数
+     * @return 带有添加小时数后的新 {@code Date} 对象
+     */
+    public static Date addHours(Date date, int hoursToAdd) {
+        return setCalendar(date,Calendar.HOUR_OF_DAY, hoursToAdd);
+    }
+
+    /**
+     * 设置给定日期的指定日历字段（例如，SECOND，MINUTE，HOUR_OF_DAY）为给定的值。
+     * @param date 要修改的日期
+     * @param field 要修改的日历字段
+     * @param amount 字段的新值
+     * @return 带有修改后的日历字段值的新 {@code Date} 对象
+     */
+    public static Date setCalendar(Date date,int field,int amount) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(field, amount);
+        return calendar.getTime();
+    }
 
     /**
      * 截断日期的时间部分，仅保留日期。
@@ -341,18 +402,8 @@ public class DateUtil {
         if (targetDate == null || startDate == null || endDate == null) {
             return false;
         }
-
-        Calendar targetCalendar = Calendar.getInstance();
-        targetCalendar.setTime(targetDate);
-
-        Calendar startCalendar = Calendar.getInstance();
-        startCalendar.setTime(startDate);
-
-        Calendar endCalendar = Calendar.getInstance();
-        endCalendar.setTime(endDate);
-
         // 使用 compareTo 方法比较日期
-        return targetCalendar.compareTo(startCalendar) >= 0 && targetCalendar.compareTo(endCalendar) <= 0;
+        return !targetDate.before(startDate) && !targetDate.after(endDate);
     }
 
 
