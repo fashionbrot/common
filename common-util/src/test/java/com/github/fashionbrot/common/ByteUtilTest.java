@@ -7,6 +7,7 @@ import com.github.fashionbrot.common.tlv.TLVUtil;
 import com.github.fashionbrot.common.util.MethodUtil;
 import com.github.fashionbrot.common.util.ObjectUtil;
 import com.github.fashionbrot.common.tlv.TLVTypeUtil;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -129,35 +130,23 @@ public class ByteUtilTest {
         System.out.println("转成json："+jsonBytes.length);
 
 
-        long l2 = System.currentTimeMillis();
-        System.out.println("----------------------自己实现的压缩---------------------start");
-        TestEntity build2 = TestEntity.builder()
-                .id(22L)
-                .name(TLVTypeUtil.maxString())
-                .parentId(33L)
-                .parentName(TLVTypeUtil.maxString())
-                .test5(55L)
-                .test6(66L)
-                .test7(TLVTypeUtil.maxString())
-                .test8(88L)
-                .test9(99L)
-                .test10("aa")
-                .build();
-//        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
-        byte[] bytes2 = TLVUtil.serialize( build2);
-        System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
-//        System.out.println(Arrays.toString(bytes2));
-
-
-//        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
-        TestEntity testEntity = TLVUtil.deserialize(TestEntity.class, bytes2);
-//        System.out.println(testEntity.toString());
-
-        System.out.println(System.currentTimeMillis()-l2+"毫秒");
-        System.out.println("----------------------自己实现的压缩---------------------end");
 
 
 
+        protobuf();
+
+
+        tlv();
+
+
+        byte[] bytes = objectToByte(build);
+        System.out.println("value本身占用："+bytes.length);
+
+
+
+    }
+
+    private static void protobuf() throws InvalidProtocolBufferException {
         long l1 = System.currentTimeMillis();
         System.out.println("----------------------protobuf---------------------start");
         TestEntityProto.TestEntity test= TestEntityProto.TestEntity.newBuilder()
@@ -194,13 +183,35 @@ public class ByteUtilTest {
         System.out.println(System.currentTimeMillis()-l1+"毫秒");
         System.out.println("----------------------protobuf---------------------end");
         System.out.println();
+    }
+
+    private static void tlv() {
+        long l2 = System.currentTimeMillis();
+        System.out.println("----------------------自己实现的压缩---------------------start");
+        TestEntity build2 = TestEntity.builder()
+                .id(22L)
+                .name(TLVTypeUtil.maxString())
+                .parentId(33L)
+                .parentName(TLVTypeUtil.maxString())
+                .test5(55L)
+                .test6(66L)
+                .test7(TLVTypeUtil.maxString())
+                .test8(88L)
+                .test9(99L)
+                .test10("aa")
+                .build();
+//        byte[] bytes2 = compressObjectToByte(build2,TestEntity.class);
+        byte[] bytes2 = TLVUtil.serialize( build2);
+        System.out.println("Varint压缩后 value本身占用："+bytes2.length+"byte");
+//        System.out.println(Arrays.toString(bytes2));
 
 
-        byte[] bytes = objectToByte(build);
-        System.out.println("value本身占用："+bytes.length);
+//        TestEntity testEntity = deCompressObject(bytes2, TestEntity.class);
+        TestEntity testEntity = TLVUtil.deserialize(TestEntity.class, bytes2);
+//        System.out.println(testEntity.toString());
 
-
-
+        System.out.println(System.currentTimeMillis()-l2+"毫秒");
+        System.out.println("----------------------自己实现的压缩---------------------end");
     }
 
     public static  <T> T newInstance(Class<T> resultClass){

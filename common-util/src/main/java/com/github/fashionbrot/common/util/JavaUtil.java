@@ -79,7 +79,7 @@ public class JavaUtil {
      * @return boolean
      */
     public static boolean isObject(Class clazz){
-        return "java.lang.Object".equals(clazz.getTypeName());
+        return clazz!=null && clazz == Object.class;
     }
 
     /**
