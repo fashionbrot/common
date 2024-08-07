@@ -1,6 +1,7 @@
 package com.github.fashionbrot.common;
 
 import com.github.fashionbrot.common.util.BigDecimalUtil;
+import com.github.fashionbrot.common.util.ObjectUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public class BigDecimalUtilTest {
     @Test
     public void testFormatWithValidInput() {
         // 测试使用有效的输入转换为 BigDecimal 对象
-        BigDecimal result = BigDecimalUtil.format(new Float("123.45"));
+        BigDecimal result = BigDecimalUtil.format(ObjectUtil.formatFloat("123.45"));
         assertTrue(BigDecimalUtil.equals(new BigDecimal("123.45"), result));
     }
 

@@ -3,9 +3,7 @@ package com.github.fashionbrot.common;
 import com.github.fashionbrot.common.util.ObjectUtil;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.util.List;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -181,6 +179,46 @@ public class ObjectUtilTest {
         assertFalse(result);
     }
 
+
+    @Test
+    public void tryCatchTest() {
+
+
+
+        ObjectUtil.Optional
+                .acceptException(() -> {
+                    if (true) {
+                        throw new Exception("放肆");
+                    }
+                    return "你大爷";
+                }).isNull(m -> {
+                    System.out.println("is null");
+                }).notNull(m->{
+                    System.out.println("not null");
+                })
+                .throwException(exception -> {
+                    System.err.println("exception message:" + exception.getMessage());
+                });
+
+
+        ObjectUtil.Optional.
+                of( null)
+                .notNull(v -> {
+                    System.out.println("object not null");
+                }).isNull(v -> {
+                    System.out.println("object is null");
+                });
+
+        ObjectUtil.Optional.
+                accept( ()->{
+                    return null;
+                })
+                .notNull(v -> {
+                    System.out.println("method object not null");
+                }).isNull(v -> {
+                    System.out.println("method object is null");
+                });
+    }
 
 
 }

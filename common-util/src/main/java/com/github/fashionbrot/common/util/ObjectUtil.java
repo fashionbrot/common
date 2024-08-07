@@ -2,13 +2,13 @@ package com.github.fashionbrot.common.util;
 
 
 import com.github.fashionbrot.common.consts.CharsetConst;
+import com.github.fashionbrot.common.function.ExceptionSupplier;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-
 import java.io.File;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 /**
@@ -1365,6 +1365,67 @@ public class ObjectUtil {
     }
 
 
+    public static final class Optional<T>{
+        private final T value;
+        private final Exception exception;
+
+        public Optional(){
+            this.value = null;
+            this.exception = null;
+        }
+
+        public Optional(T value) {
+            this.value = value;
+            this.exception = null;
+        }
+
+        public Optional(T value,Exception exception) {
+            this.value = value;
+            this.exception = exception;
+        }
+
+        public T getValue() {
+            return value;
+        }
+
+        public static <T> Optional<T> of(T value){
+            return new Optional<>(value);
+        }
+
+        public static <T> Optional<T> accept(Supplier<T> supplier){
+            return new Optional<>(supplier.get());
+        }
+
+        public static <T> Optional<T> acceptException(ExceptionSupplier<T> exceptionSupplier){
+            try {
+                return new Optional<>(exceptionSupplier.get());
+            }catch (Exception e){
+                return new Optional<>(null,e);
+            }
+        }
+
+        public Optional<T> notNull(Consumer<? super T> consumer) {
+            if (value != null) {
+                consumer.accept(value);
+            }
+            return this;
+        }
+
+        public Optional<T> isNull(Consumer<? super T> consumer){
+            if (value==null){
+                consumer.accept(null);
+            }
+            return this;
+        }
+
+        public Optional<T> throwException(Consumer<Exception> consumer) {
+            if (exception!=null){
+                consumer.accept(exception);
+            }
+            return this;
+        }
+
+    }
 
 
 }

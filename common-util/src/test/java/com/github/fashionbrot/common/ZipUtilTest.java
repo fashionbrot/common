@@ -7,7 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
 
 public class ZipUtilTest {
 
