@@ -39,6 +39,25 @@ public class ObjectUtil {
         return !equals(a, b);
     }
 
+
+    /**
+     * 比较对象是否在列表中。
+     *
+     * @param a 待比较的对象
+     * @param objectsList 待比较的对象列表
+     * @return 如果对象在列表中，则返回true；否则返回false。
+     */
+    public static boolean matchEquals(Object a,List<Objects> objectsList){
+        if (a == null) {
+            return false;
+        }
+        if (objectsList==null || objectsList.size()==0) {
+            return false;
+        }
+        return objectsList.stream().allMatch(obj -> equals(a, obj));
+    }
+
+
     /**
      * 去除字符串两端的空白字符。
      *

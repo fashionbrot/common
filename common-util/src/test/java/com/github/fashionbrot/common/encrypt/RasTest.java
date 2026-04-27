@@ -52,4 +52,27 @@ public class RasTest {
 
     }
 
+
+
+    @Test
+    public void test3() {
+        KeyPair keyPair = RsaUtil.genKeyPair(512);
+        RSAPublicKey publicKey = ((RSAPublicKey) keyPair.getPublic());
+        RSAPrivateKey privateKey = ((RSAPrivateKey) keyPair.getPrivate());
+
+        long l = System.currentTimeMillis();
+        for (int i = 0; i < 1; i++) {
+            String str = "{\"id\":1111111,\"name\":\"我是你大爷\"}";
+            System.out.println("str:"+str);
+
+            String encrypt = RsaUtil.encrypt(str, publicKey);
+            System.out.println("encrypt:"+encrypt);
+
+            String decrypt = RsaUtil.decrypt(encrypt, privateKey);
+            System.out.println("decrypt:"+decrypt);
+        }
+        System.out.println((System.currentTimeMillis()-l));
+
+    }
+
 }

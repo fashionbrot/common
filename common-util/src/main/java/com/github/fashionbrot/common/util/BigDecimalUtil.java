@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * @author fashionbrot
@@ -16,13 +19,25 @@ public class BigDecimalUtil {
     }
 
     /**
+     * 判断 BigDecimal 是否为零值
+     * @param val
+     * @return
+     */
+    public static boolean isZero( BigDecimal val){
+        if (format(val).compareTo(BigDecimal.ZERO)==0){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 格式化 BigDecimal 值，将 null 值转换为零值。
      *
      * @param val 要格式化的 BigDecimal 值
      * @return 格式化后的 BigDecimal 值，如果输入为 null 则返回零值
      */
     public static BigDecimal format(final BigDecimal val) {
-        return val == null ? BigDecimal.ZERO : val;
+        return val == null ? java.math.BigDecimal.ZERO : val;
     }
 
     /**
@@ -39,7 +54,7 @@ public class BigDecimalUtil {
                 log.error("formatBigDecimal object:{} error:{}", object, e);
             }
         }
-        return BigDecimal.ZERO;
+        return java.math.BigDecimal.ZERO;
     }
 
 
@@ -57,7 +72,7 @@ public class BigDecimalUtil {
                 log.error("formatBigDecimal value:{} error:{}", value, e);
             }
         }
-        return BigDecimal.ZERO;
+        return java.math.BigDecimal.ZERO;
     }
 
     /**
@@ -74,7 +89,7 @@ public class BigDecimalUtil {
                 log.error("formatBigDecimal value:{} error:{}", value, var2);
             }
         }
-        return BigDecimal.ZERO;
+        return java.math.BigDecimal.ZERO;
     }
 
     /**
@@ -91,7 +106,7 @@ public class BigDecimalUtil {
                 log.error("formatBigDecimal value:{} error:{}", value, e);
             }
         }
-        return BigDecimal.ZERO;
+        return java.math.BigDecimal.ZERO;
     }
 
     /**
@@ -108,7 +123,7 @@ public class BigDecimalUtil {
                 log.error("formatBigDecimal value:{} error:{}", value, exception);
             }
         }
-        return BigDecimal.ZERO;
+        return java.math.BigDecimal.ZERO;
     }
 
     /**
@@ -239,7 +254,7 @@ public class BigDecimalUtil {
         if (ObjectUtil.isEmpty(values)){
             return 0D;
         }
-        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal sum = java.math.BigDecimal.ZERO;
         for (Double value : values) {
             sum = add(sum, format(value));
         }
@@ -254,9 +269,9 @@ public class BigDecimalUtil {
      */
     public static BigDecimal add(BigDecimal... values) {
         if (ObjectUtil.isEmpty(values)){
-            return BigDecimal.ZERO;
+            return java.math.BigDecimal.ZERO;
         }
-        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal sum = java.math.BigDecimal.ZERO;
         for (BigDecimal value : values) {
             if (value != null) {
                 sum = sum.add(value);
@@ -274,7 +289,7 @@ public class BigDecimalUtil {
      */
     public static BigDecimal avg(BigDecimal... values) {
         if (ObjectUtil.isEmpty(values)){
-            return BigDecimal.ZERO;
+            return java.math.BigDecimal.ZERO;
         }
         BigDecimal sum = BigDecimal.ZERO;
         for (BigDecimal value : values) {
@@ -736,5 +751,42 @@ public class BigDecimalUtil {
         return BigDecimalUtil.format(bigDecimal).toPlainString();
     }
 
+
+    /**
+     * 对集合中的元素进行 BigDecimal 求和
+     * @param list 数据集合
+     * @param mapper 从元素中提取数值的函数
+     * @param <T> 集合元素类型
+     * @param <R> 数值类型
+     * @return 求和结果
+     */
+    public static <T, R> BigDecimal sum(List<T> list, Function<? super T, ? extends R> mapper) {
+        if (ObjectUtil.isEmpty(list)) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal sum = BigDecimal.ZERO;
+        for (T item : list) {
+            if (item == null) {
+                continue;
+            }
+            R value = mapper.apply(item);
+            if (value == null) {
+                continue;
+            }
+            BigDecimal decimalValue = format(value);
+            sum = sum.add(decimalValue);
+        }
+        return sum;
+    }
+
+    public static <T, R> BigDecimal divide(List<T> list, Function<? super T, ? extends R> mapper, BigDecimal divisor, int scale, RoundingMode roundingMode) {
+        BigDecimal sum = sum(list,mapper);
+        return divide(sum,divisor,scale,roundingMode);
+    }
+
+    public static <T, R> BigDecimal multiply(List<T> list, Function<? super T, ? extends R> mapper, BigDecimal divisor, int scale, RoundingMode roundingMode) {
+        BigDecimal sum = sum(list,mapper);
+        return multiply(sum,divisor,scale,roundingMode);
+    }
 
 }
